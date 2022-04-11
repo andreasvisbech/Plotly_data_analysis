@@ -34,6 +34,7 @@ args = parser.parse_args()
 
 # Set parameters to be used throughout script
 param_dict = {}
+
 if args.advanced_option_box == True:
 
     import tkinter as tk
@@ -191,7 +192,7 @@ if args.advanced_option_box == True:
     e27.insert(10, np.inf)
     e28.insert(10, 0)
     e29.insert(10, np.inf)
-    e30.insert(10, 0)
+    e30.insert(10, -np.inf)
     e31.insert(10, np.inf)
 
     e1.grid(row=0, column=1)
@@ -274,8 +275,8 @@ else:
     param_dict['Bmax_max'] = np.inf
     param_dict['KD_fit_min'] = 0
     param_dict['KD_fit_max'] = np.inf
-    param_dict['k_coop_min'] = 0.9999
-    param_dict['k_coop_max'] = 1
+    param_dict['k_coop_min'] = -np.inf
+    param_dict['k_coop_max'] = np.inf
 
 
 #################################
@@ -283,7 +284,6 @@ else:
 print('Loading Python functions')
 
 # Define functions for script
-
 def linear_model(x, a, b):
     y = x * a + b
     return y
@@ -298,7 +298,15 @@ def Model_FIDA_excess(x, RI, RIA, Kd, CI):
     return y
 
 def Hill_equation(x, Bmin, Bmax, KD, k_coop):
-    y = Bmin + ((x**k_coop)*(Bmax-Bmin))/(KD + (x**k_coop))
+    y = Bmin + ((x**k_coop)*(Bmax-Bmin))/((KD**k_coop) + (x**k_coop))
+    return y
+
+def Hill_simple(x, Bmin, Bmax, KD):
+    y = Bmin + (x*(Bmax-Bmin))/(KD + x)
+    return y
+    
+def Fit_4PL(x, Bmin, Bmax, KD, k_coop):
+    y = Bmax + (Bmin - Bmax)/(1 + (x/KD)**k_coop)
     return y
 
 def FIDA_fitting(model, x_val, y_val):
@@ -768,37 +776,46 @@ def table_plot(figure, col_names_list, col_values_list):
     for b1 in range(1, len(col_names_list)):
         df_func[col_names_list[b1]] = col_values_list[b1]
     
-    # Code for extracting the user defined table coordinates i.e. what line in the table the data should be inputted on. 
-    # First loop iterates through ID_list i.e. the samples in the data sheet and extracts the flags separated by semi colon.
-    # The code goes over each flag and if table_pos= flag is present it extracts the integer following the equal sign. 
-    for b2 in range(len(ID_list)):
-        func_var = python_misc[b2].split(';')
-        
+    # Check if the number of samples given by user is the same as given to the function. Deviations can occur e.g. in global fittings where the code is generating extra traces. 
+    if len(ID_list) == len(col_values_list[0]):   
+        # Code for extracting the user defined table coordinates i.e. what line in the table the data should be inputted on. 
+        # First loop iterates through ID_list i.e. the samples in the data sheet and extracts the flags separated by semi colon.
+        # The code goes over each flag and if table_pos= flag is present it extracts the integer following the equal sign. 
+
+        for b2 in range(len(ID_list)):
+            func_var = python_misc[b2].split(';')
+            
         # If user has specified table_pos in the python_misc column the entry will be extracted into dummy list. 
-        func_list = []
-        for b3 in range(len(func_var)):
-            if 'table_pos=' in func_var[b3]:
-                func_list.append(func_var[b3])
-        
+            func_list = []
+            for b3 in range(len(func_var)):
+                if 'table_pos=' in func_var[b3]:
+                    func_list.append(func_var[b3])
+            
         # If no table position has been specified the code will just use the row index from excel sheet.          
-        if len(func_list) == 0:
-            table_pos_list.append(b2+1)
-        else:
-            func_coord = func_var[b3].split('=')[1]
-            func_coord = int(func_coord)
-            table_pos_list.append(func_coord)
-    
-    # Add the table position list to the dataframe
-    df_func['table_coords'] = table_pos_list
-    
-    # Sort the dataframe by the table coordiates to get the desired order
-    df_func2 = df_func.sort_values(by='table_coords', ascending=True)
-    del df_func2['table_coords'] 
-    
-    figure.add_trace(go.Table(header=dict(values=list(df_func2.columns),
-                                          align='left'),
-                              cells=dict(values=df_func2.transpose().values.tolist(),
-                                          align='left', height=50)))
+            if len(func_list) == 0:
+                table_pos_list.append(b2+1)
+            else:
+                func_coord = func_var[b3].split('=')[1]
+                func_coord = int(func_coord)
+                table_pos_list.append(func_coord)
+
+        # Add the table position list to the dataframe
+        df_func['table_coords'] = table_pos_list
+
+        # Sort the dataframe by the table coordiates to get the desired order
+        df_func2 = df_func.sort_values(by='table_coords', ascending=True)
+        del df_func2['table_coords'] 
+
+        figure.add_trace(go.Table(header=dict(values=list(df_func2.columns),
+                                              align='left'),
+                                  cells=dict(values=df_func2.transpose().values.tolist(),
+                                              align='left', height=50)))
+                                              
+    else:
+        figure.add_trace(go.Table(header=dict(values=list(df_func.columns),
+                                              align='left'),
+                                  cells=dict(values=df_func.transpose().values.tolist(),
+                                              align='left', height=50)))
 
 def scatter_fit(model_function, model_name, x_val, y_val, fitting_mode, fitting_min, fitting_max):
     
@@ -807,26 +824,66 @@ def scatter_fit(model_function, model_name, x_val, y_val, fitting_mode, fitting_
     x_val_list = []
     y_val_list = []
     
+    unique_x = list(dict.fromkeys(x_val))
+    
     
     if model_name == 'Hill':
         bound_param = [(param_dict['Bmin_min'], param_dict['Bmax_min'], param_dict['KD_fit_min'], param_dict['k_coop_min']),
                        (param_dict['Bmin_max'], param_dict['Bmax_max'], param_dict['KD_fit_max'], param_dict['k_coop_max'])]
+    elif model_name == 'Hill_simple':
+        bound_param = [(param_dict['Bmin_min'], param_dict['Bmax_min'], param_dict['KD_fit_min']),
+                       (param_dict['Bmin_max'], param_dict['Bmax_max'], param_dict['KD_fit_max'])]
+                       
+    if model_name == '4PL':
+        bound_param = [(param_dict['Bmin_min'], param_dict['Bmax_min'], param_dict['KD_fit_min'], param_dict['k_coop_min']),
+                       (param_dict['Bmin_max'], param_dict['Bmax_max'], param_dict['KD_fit_max'], param_dict['k_coop_max'])]
     
     if fitting_mode == 'Local':
-        # Create x_val list without redundancy.
-        unique_x = list(dict.fromkeys(x_val))
+        
+        # In local fitting mode the list of unique x values is the only x list needed. 
         x_val_list.append(unique_x)
-        #out_dict['unique_x'] = unique_x
 
         # Calculate mean and std error on replicate values in the data
         y_mean = replicate_mean_error(unique_x, x_val, y_val)[0]
         y_val_list.append(y_mean)
         y_mean_err = replicate_mean_error(unique_x, x_val, y_val)[1]     
         out_dict['y_mean'] = y_mean
+        
+    elif fitting_mode == 'Global':
+        
+        # Get the max number of times a concentration value occurs in raw data. This is the number of graphs to calculate. 
+        func_conc_count = []
+        for m in unique_x:
+            func_conc_count.append(list(x_val).count(m))
+        graph_number = max(func_conc_count)
+        
+        # Create list of empty lists for filling with the individual graphs.
+        x_val_list = [[] for _ in range(graph_number)]  
+        y_val_list = [[] for _ in range(graph_number)]
+        
+        # Sort the data values into the appropriate lists 
+        for j in unique_x:
+            conc_indices = [k for k, x in enumerate(list(x_val)) if x == j]  ###Getting indices of the specific concentration
+            for k in range(len(conc_indices)):
+                x_val_list[k].append(list(x_val)[conc_indices[k]])
+                y_val_list[k].append(list(y_val)[conc_indices[k]])
+          
+    func_KD_list = []
+    func_R2_list = []
     
     for c in range(len(x_val_list)):
         parameters, covariance = curve_fit(model_function, list(x_val_list[c]), list(y_val_list[c]), bounds=bound_param, method='trf', maxfev=10000)
-        #print(parameters[1])
+        
+        if len(x_val_list) == 1:
+            master_dict['ID_list_new'].append(str(ID_list[i]))
+            master_dict['notes_list'].append(sample_notes[i])
+            master_dict['model_list'].append(fit_models[i]+ ', ' + fitting_mode)
+            
+        elif len(x_val_list) > 1:
+            master_dict['ID_list_new'].append(str(ID_list[i])+'_fit'+str(c+1))
+            master_dict['notes_list'].append(' ')
+            master_dict['model_list'].append(' ')
+        
         if model_name == 'Hill':
             
             # Generating a fitting curve with many points for the plot
@@ -835,15 +892,76 @@ def scatter_fit(model_function, model_name, x_val, y_val, fitting_mode, fitting_
             plot_func(fig, graph_name+'_fit', x_fit, y_fit, 'line', x_titles[i], y_titles[i], subplot_row[i], subplot_col[i], 'None')
         
             # Calcularing R squared value
-            y_fit_small = y_fit = Hill_equation(x_val_list[c], parameters[0], parameters[1], parameters[2], parameters[3])
-            out_dict['R_square'] = r2_score(y_val_list[c], y_fit_small)
-            #r_square = r2_score(y_val_list[c], y_fit_small)
+            y_fit_small = Hill_equation(x_val_list[c], parameters[0], parameters[1], parameters[2], parameters[3])
+            r_square = r2_score(y_val_list[c], y_fit_small)
+            master_dict['R_square'].append("{:.3f}".format(r_square))
+            func_R2_list.append(r_square)
+            
+            func_Bmin = "{:.3f}".format(parameters[0])
+            func_Bmax = "{:.3f}".format(parameters[1])
+            func_KD = "{:.3f}".format(parameters[2])
+            func_KD_list.append(parameters[2])
+            func_k_coop = "{:.3f}".format(parameters[3])
+            
+            master_dict['KD_fit'].append(func_KD)
+            master_dict['fit_parameters'].append('Bmin='+str(func_Bmin)+', Bmax='+str(func_Bmax)+', k_coop='+str(func_k_coop))
         
-            out_dict['Bmin'] = parameters[0]
-            out_dict['Bmax'] = parameters[1]
-            out_dict['KD_fit'] = parameters[2]
-            out_dict['k_coop'] = parameters[3]
+        elif model_name == 'Hill_simple':
+            # Generating a fitting curve with many points for the plot
+            x_fit = interval_generator(fitting_min, fitting_max)
+            y_fit = Hill_simple(x_fit, parameters[0], parameters[1], parameters[2])            
+            plot_func(fig, graph_name+'_fit', x_fit, y_fit, 'line', x_titles[i], y_titles[i], subplot_row[i], subplot_col[i], 'None')
+            
+            # Calcularing R squared value
+            y_fit_small = Hill_simple(np.asarray(x_val_list[c]), parameters[0], parameters[1], parameters[2])
+            r_square = r2_score(y_val_list[c], y_fit_small)
+            master_dict['R_square'].append("{:.3f}".format(r_square))
+            func_R2_list.append(r_square)
+            
+            func_Bmin = "{:.3f}".format(parameters[0])
+            func_Bmax = "{:.3f}".format(parameters[1])
+            func_KD = "{:.3f}".format(parameters[2])
+            func_KD_list.append(parameters[2])
+            
+            master_dict['KD_fit'].append(func_KD)
+            master_dict['fit_parameters'].append('Bmin='+str(func_Bmin)+', Bmax='+str(func_Bmax))
+            
+        elif model_name == '4PL':
+            
+            # Generating a fitting curve with many points for the plot
+            x_fit = interval_generator(fitting_min, fitting_max)
+            y_fit = Fit_4PL(x_fit, parameters[0], parameters[1], parameters[2], parameters[3])            
+            plot_func(fig, graph_name+'_fit', x_fit, y_fit, 'line', x_titles[i], y_titles[i], subplot_row[i], subplot_col[i], 'None')
+            
+            # Calcularing R squared value
+            y_fit_small = Fit_4PL(x_val_list[c], parameters[0], parameters[1], parameters[2], parameters[3])
+            r_square = r2_score(y_val_list[c], y_fit_small)
+            master_dict['R_square'].append("{:.3f}".format(r_square))
+            func_R2_list.append(r_square)
+            
+            func_Bmin = "{:.3f}".format(parameters[0])
+            func_Bmax = "{:.3f}".format(parameters[1])
+            func_KD = "{:.3f}".format(parameters[2])
+            func_KD_list.append(parameters[2])
+            func_k_coop = "{:.3f}".format(parameters[3])
+            
+            master_dict['KD_fit'].append(func_KD)
+            master_dict['fit_parameters'].append('Bmin='+str(func_Bmin)+', Bmax='+str(func_Bmax)+', k_coop='+str(func_k_coop))
+            
         
+    # If global fitting (i.e. more than one KD and R^2 has been calculated for the data) add final result to table
+    if fitting_mode == 'Global':
+        master_dict['ID_list_new'].append(str(ID_list[i]))
+        master_dict['notes_list'].append(sample_notes[i])
+        master_dict['model_list'].append(fit_models[i]+ ', ' + fitting_mode)
+        master_dict['fit_parameters'].append(' ')
+        
+        global_KD = statistics.mean(func_KD_list)
+        global_R2 = statistics.stdev(func_KD_list)
+        master_dict['KD_fit'].append("{:.3f}".format(global_KD) + ' ' + u"\u00B1" + ' ' + str("{:.3f}".format(global_R2)))
+        master_dict['R_square'].append(' ')
+    
+    
     return out_dict
             
         
@@ -917,6 +1035,8 @@ master_dict['inflection_points'] = []
 master_dict['fit_parameters'] = []
 master_dict['R_square'] = []
 master_dict['KD_fit'] = []
+master_dict['ID_list_new'] = []
+master_dict['table_coords'] = []
 
 if args.plot_type == 'AKTA':
 
@@ -1282,8 +1402,6 @@ elif args.plot_type == 'FIDA':
 
 elif args.plot_type == 'Panta':
 
-    #vertex_points_list = []
-
     for i in range(len(ID_list)):
 
         master_dict['notes_list'].append(sample_notes[i])
@@ -1341,19 +1459,6 @@ elif args.plot_type == 'Panta':
     table_plot(fig, ['Sample ID', 'Sample notes', 'Vertex points min (beta)', 'Vertex points max (beta)', 'Peak onset (beta)', 'Inflection points (beta)'], 
                     [ID_list, master_dict['notes_list'], master_dict['vertex_min'], master_dict['vertex_max'], master_dict['peak_onset'], master_dict['inflection_points']])
     
-    #fig.add_trace(go.Table(header=dict(values=['Sample ID',
-    #                                           'Sample notes',
-    #                                           'Vertex points min (beta)',
-    #                                           'Vertex points max (beta)',
-    #                                           'Peak onset (beta)',
-    #                                           'Inflection points (beta)'], align='left'),
-    #                       cells=dict(values=[ID_list,
-    #                                          master_dict['notes_list'],
-    #                                          master_dict['vertex_min'],
-    #                                          master_dict['vertex_max'],
-    #                                          master_dict['peak_onset'],
-    #                                          master_dict['inflection_points']], align='left', height=50)))
-
     #Add dropdown
     fig.update_layout(
         updatemenus=[
@@ -1367,8 +1472,6 @@ elif args.plot_type == 'Panta':
 elif args.plot_type in ['Bar', 'bar', 'Bar_group', 'bar_group']:
 
     x_labels = df['x1']
-
-    # df.columns = df.columns.str.lower()     ### Convert all column names to lower case letters
 
     for i in range(len(ID_list)):
 
@@ -1388,14 +1491,7 @@ elif args.plot_type in ['Bar', 'bar', 'Bar_group', 'bar_group']:
             error_values = error_values.replace(np.nan, 0)
             plot_func(fig, Group_name, x_labels, y_values, 'N/A', x_titles[i], y_titles[i], subplot_row[i], subplot_col[i], 'Bar_error')
             plot_func(plot_fig, Group_name, x_labels, y_values, 'N/A', x_titles[i], y_titles[i], subplot_row[i], subplot_col[i], 'Bar_error')
-            
-            
-            #fig.add_trace(go.Bar(name=Group_name, x=x_labels, y=y_values,
-            #                     error_y=dict(type='data', array=error_values, visible=True),
-            #                     marker=dict(color=color_list[color_count])))
-            #plot_fig.add_trace(go.Bar(name=Group_name, x=x_labels, y=y_values,
-            #                          error_y=dict(type='data', array=error_values, visible=True),
-            #                          marker=dict(color=color_list[color_count])))
+
         else:
             plot_func(fig, Group_name, x_labels, y_values, 'N/A', x_titles[i], y_titles[i], subplot_row[i], subplot_col[i], 'Bar')
             plot_func(plot_fig, Group_name, x_labels, y_values, 'N/A', x_titles[i], y_titles[i], subplot_row[i], subplot_col[i], 'Bar')
@@ -1409,7 +1505,7 @@ elif args.plot_type in ['Scatter', 'scatter']:
 
     for i in range(len(ID_list)):
         
-        master_dict['notes_list'].append(sample_notes[i])
+        #master_dict['notes_list'].append(sample_notes[i])
         
         print('Analysing data: ' + str(ID_list[i]))
 
@@ -1418,9 +1514,12 @@ elif args.plot_type in ['Scatter', 'scatter']:
 
         graph_name = ID_list[i]
 
-        ### Extracting the raw x and y values from the excel sheet
+        # Extracting the raw x and y values from the excel sheet.
+        # Replace commas with dots in case user has e.g. Danish Excel.
         xs = df[x_id][pd.to_numeric(df[x_id], errors='coerce').notnull()]
         ys = df[y_id][pd.to_numeric(df[y_id], errors='coerce').notnull()]
+        xs = pd.to_numeric(xs.astype(str).str.replace(",", "."))
+        ys = pd.to_numeric(ys.astype(str).str.replace(",", "."))
 
         ### Slicing the data so only data within the specified data interval is included. 
         if data_interval[i] != 0:
@@ -1440,22 +1539,17 @@ elif args.plot_type in ['Scatter', 'scatter']:
             fitting_interval[j] = float(fitting_interval[j].replace(",", "."))  ### Replace commas with proper dots to get proper numbers.
         
         if fit_models[i] == 'Hill':         
-            
-            master_dict['model_list'].append('Hill')
-            
             # Running fitting function and extracting parameters. 
-            Hill_out = scatter_fit(Hill_equation, 'Hill', xs, ys, fit_modes[i], fitting_interval[0], fitting_interval[1]) 
+            Hill_out = scatter_fit(Hill_equation, 'Hill', xs, ys, fit_modes[i], fitting_interval[0], fitting_interval[1])
+
+        elif fit_models[i].lower() == 'hill_simple':
+            Hill_simple_out = scatter_fit(Hill_simple, 'Hill_simple', xs, ys, fit_modes[i], fitting_interval[0], fitting_interval[1])
             
-            # Add parameters to master dictionary. The fitted values are rounded off and put into dummy variable for easier readability.  
-            parameter0 = "{:.3f}".format(Hill_out['Bmin'])
-            parameter1 = "{:.3f}".format(Hill_out['Bmax'])
-            parameter2 = "{:.3f}".format(Hill_out['KD_fit'])
-            parameter3 = "{:.3f}".format(Hill_out['k_coop'])
-            master_dict['KD_fit'].append(parameter2)
-            master_dict['fit_parameters'].append('Bmin='+str(parameter0)+', Bmax='+str(parameter1)+', k_coop='+str(parameter3))
-            master_dict['R_square'].append("{:.3f}".format(Hill_out['R_square']))
+        elif fit_models[i].lower() == '4pl':
+            Fit_4PL_out = scatter_fit(Fit_4PL, '4PL', xs, ys, fit_modes[i], fitting_interval[0], fitting_interval[1])
         
         else:
+            master_dict['notes_list'].append(sample_notes[i])
             master_dict['model_list'].append(' ')
             master_dict['fit_parameters'].append(' ')
             master_dict['R_square'].append(' ')
@@ -1466,9 +1560,10 @@ elif args.plot_type in ['Scatter', 'scatter']:
             
         
         color_count = color_selector(color_count, color_list)  ### Update color value using color_selector function
-        
-    table_plot(fig, ['Samples','Sample notes', 'Fitting models', 'Fitted KD/EC50', 'Fit parameters', 'R^2'], 
-                    [ID_list, master_dict['notes_list'], master_dict['model_list'], master_dict['KD_fit'], master_dict['fit_parameters'], master_dict['R_square']])   
+    
+    table_plot(fig, ['Samples','Sample notes', 'Fitting models', 'Fitted KD/EC50', 'R^2', 'Fit parameters'], 
+                    [master_dict['ID_list_new'], master_dict['notes_list'], master_dict['model_list'], master_dict['KD_fit'], master_dict['R_square'], master_dict['fit_parameters']])
+    
 
     #Add dropdown
     fig.update_layout(
@@ -1479,32 +1574,6 @@ elif args.plot_type in ['Scatter', 'scatter']:
                 buttons=list([dict(args=["type", "scatter"], label="Graphs", method="restyle"),
                               dict(args=["type", "table"], label="Stats", method="restyle")]),
                 pad={"r": 10, "t": 10}, showactive=True, x=0.11, xanchor="left", y=1.1, yanchor="top"), ])
-
-### SET FIGURE SETTINGS
-#fig.update_xaxes(title_text=df['Axis_titles'][0])
-#fig.update_yaxes(title_text=df['Axis_titles'][1])
-#plot_fig.update_xaxes(title_text=df['Axis_titles'][0])
-#plot_fig.update_yaxes(title_text=df['Axis_titles'][1])
-
-#if args.log_scale == True:
-#    fig.update_xaxes(type="log", dtick=1)
-#    plot_fig.update_xaxes(type="log", dtick=1)
-
-#fig.update_layout(
-#    template=param_dict['plot_template'],
-#    xaxis=dict(title_font=dict(size=param_dict['xaxis_title_font_size']),
-#               tickfont_size=param_dict['xaxis_ticks_font_size']),
-#    yaxis=dict(title_font=dict(size=param_dict['yaxis_title_font_size']),
-#               tickfont_size=param_dict['yaxis_ticks_font_size'])
-#)
-#plot_fig.update_layout(
-#    template=param_dict['plot_template'],
-#    xaxis=dict(title_font=dict(size=param_dict['xaxis_title_font_size']),
-#               tickfont_size=param_dict['xaxis_ticks_font_size']),
-#    yaxis=dict(title_font=dict(size=param_dict['yaxis_title_font_size']),
-#               tickfont_size=param_dict['yaxis_ticks_font_size'])
-#    )
-
 
 #######################
 
