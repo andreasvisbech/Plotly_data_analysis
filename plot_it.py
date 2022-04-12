@@ -1597,6 +1597,7 @@ def main_func(args):
 								  dict(args=["type", "table"], label="Stats", method="restyle")]),
 					pad={"r": 10, "t": 10}, showactive=True, x=0.11, xanchor="left", y=1.1, yanchor="top"), ])
 
+	os.makedirs(args.output, exist_ok=True)
 	pd_out.to_csv(args.output.join('Output_data_file.csv'), sep=';')
 
 	# Write output file
