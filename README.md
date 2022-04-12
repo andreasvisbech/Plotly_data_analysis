@@ -3,7 +3,7 @@ A one-stop solution analysis scripts for Andreas' PhD. Script is continuously de
 
 The script is developed for routine analysis of data that are deposited in Excel sheets. As input the scripts takes an Excel file that contains certain columns specifying how the analysis should be performed. The data to be analyzed within the file is specified by putting x1, x2, x3 etc. and y1, y2, y3 etc. above the data columns. 
 
-Running the script: 
+Running the script:  
 python $SCRIPT.py -s $ANALYSIS_TYPE (AKTA, FIDA, Bar, Scatter, Panta) -i $EXCEL_FILE.xlsx -advanced (optional)
 
 Columns for specifying how the analysis should be done: 
@@ -21,6 +21,6 @@ Columns for specifying how the analysis should be done:
 - "Fit_model": Used for fitting data. Can be "1to1 or "Excess" for FIDA fitting. Can be "Hill", "Hill_simple" or "4PL" for general scatter fitting. 
 - "Fit_approach": Used for fitting data. Can be "Local" or "Global". Local fitting will calculate mean y values and standard errors for identical x values and then do fitting on the mean values. "Global fitting" will treat each data set individually.
 - "Python_misc": Enables user to customize the analysis. Takes several arguments separated by ";".
-      1. "logx" forces x axis logarithmic. 
-      2. "logy" forces y axis logarithmic. 
-      3. "table_pos=$VALUE". Allows user to specify positions of data samples in the analysis table. Can make comparison easier in case of large datasets.   
+  1. "logx" forces x axis logarithmic. 
+  2. "logy" forces y axis logarithmic. 
+  3. "table_pos=$VALUE". Allows user to specify positions of data samples in the analysis table. Can make comparison easier in case of large datasets.   
