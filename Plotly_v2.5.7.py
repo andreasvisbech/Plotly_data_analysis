@@ -21,8 +21,7 @@ from scipy.signal import savgol_filter
 # globals
 
 # Loading a list with colors for plotting. The colors come from https://plotly.com/python/discrete-color/.
-# If the number of samples equals the length of the color list the script will append one extra color to avoid the same
-# color comparisons in subplots.
+
 color_list_global = ['#1F77B4', '#FF7F0E', '#2CA02C', '#9467BD', '#FECB52', '#8C564B', '#E377C2', '#7F7F7F', '#BCBD22', '#17BECF']
 color_count_global = 0
 python_misc_global = []
@@ -1008,11 +1007,11 @@ def main_func():
 	ID_list = df['IDs'].tolist()
 	ID_list = [x for x in ID_list if str(x) != 'nan']
 
+	# If the number of samples equals the length of the color list the script will append one extra color to avoid the same
+	# color comparisons in subplots.
 	if len(ID_list) % len(color_list_global) == 0:
 		color_list_global.append('#B6E880')
-	else:
-		# TODO: Does nothing, remove?
-		None
+
 
 	# Get the data intervals for slicing the data to only analyse sections of full dataset.
 	data_interval = df['Data_interval'].fillna(0).replace(',', '.').tolist()
