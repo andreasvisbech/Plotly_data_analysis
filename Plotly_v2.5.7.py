@@ -2,10 +2,8 @@
 import os
 import argparse
 import statistics
-from tkinter import StringVar
 
 import peakutils
-
 import pandas as pd
 import numpy as np
 
@@ -20,7 +18,7 @@ from scipy.optimize import curve_fit
 from scipy.interpolate import interp1d
 from scipy.signal import savgol_filter
 
-### initialize arguments
+# initialize arguments
 parser = argparse.ArgumentParser()
 parser.add_argument("-s", "--plot_type", help="plot type", required=True)
 parser.add_argument("-i", "--input_file", help="Excel file", required=True)
@@ -34,8 +32,8 @@ args = parser.parse_args()
 # Set parameters to be used throughout script
 param_dict = {}
 
-if args.advanced_option_box == True:
 
+if args.advanced_option_box:
 	import tkinter as tk
 
 	test = []
@@ -126,15 +124,15 @@ if args.advanced_option_box == True:
 	e7 = tk.Entry(master)
 	e8 = tk.Entry(master)
 
-	var = StringVar(master)
+	var = tk.StringVar(master)
 	var.set('linear')
 	e9 = tk.OptionMenu(master, var, 'linear', 'peakutils')
 
-	var1 = StringVar(master)
-	var1.set(1)
-	e10 = tk.OptionMenu(master, var1, 0, 1, 2, 3)
+	var1 = tk.StringVar(master)
+	var1.set("1")
+	e10 = tk.OptionMenu(master, var1, "0", "1", "2", "3")
 
-	var2 = StringVar(master)
+	var2 = tk.StringVar(master)
 	var2.set('no')
 	e13 = tk.OptionMenu(master, var2, 'no', 'yes')
 
@@ -145,7 +143,7 @@ if args.advanced_option_box == True:
 	e16 = tk.Entry(master)
 	e17 = tk.Entry(master)
 
-	var3 = StringVar(master)
+	var3 = tk.StringVar(master)
 	var3.set('plotly')
 	e18 = tk.OptionMenu(master, var3, 'plotly', 'plotly_white', 'simple_white')
 
@@ -154,7 +152,7 @@ if args.advanced_option_box == True:
 	e21 = tk.Entry(master)
 	e22 = tk.Entry(master)
 
-	var4 = StringVar(master)
+	var4 = tk.StringVar(master)
 	var4.set('no')
 	e23 = tk.OptionMenu(master, var4, 'no', 'yes')
 
@@ -167,29 +165,29 @@ if args.advanced_option_box == True:
 	e30 = tk.Entry(master)
 	e31 = tk.Entry(master)
 
-	e1.insert(10, 0)
+	e1.insert(10, "0")
 	e2.insert(10, np.inf)
-	e3.insert(10, 0)
+	e3.insert(10, "0")
 	e4.insert(10, np.inf)
-	e5.insert(10, 0)
+	e5.insert(10, "0")
 	e6.insert(10, np.inf)
-	e7.insert(10, 0)
+	e7.insert(10, "0")
 	e8.insert(10, np.inf)
-	e11.insert(10, 0.2)
-	e12.insert(10, 2)
-	e14.insert(10, 12)
-	e15.insert(10, 12)
-	e16.insert(10, 12)
-	e17.insert(10, 12)
-	e19.insert(10, 2)
-	e20.insert(10, 10)
-	e21.insert(10, 100)
-	e22.insert(10, 0.5)
-	e24.insert(10, 0)
+	e11.insert(10, "0.2")
+	e12.insert(10, "2")
+	e14.insert(10, "12")
+	e15.insert(10, "12")
+	e16.insert(10, "12")
+	e17.insert(10, "12")
+	e19.insert(10, "2")
+	e20.insert(10, "10")
+	e21.insert(10, "100")
+	e22.insert(10, "0.5")
+	e24.insert(10, "0")
 	e25.insert(10, np.inf)
-	e26.insert(10, 0)
+	e26.insert(10, "0")
 	e27.insert(10, np.inf)
-	e28.insert(10, 0)
+	e28.insert(10, "0")
 	e29.insert(10, np.inf)
 	e30.insert(10, -np.inf)
 	e31.insert(10, np.inf)
@@ -226,19 +224,10 @@ if args.advanced_option_box == True:
 	e30.grid(row=14, column=1)
 	e31.grid(row=14, column=4)
 
-	tk.Button(master,
-			  text='Run',
-			  command=master.quit).grid(row=20,
-										column=1,
-										sticky=tk.W,
-										pady=4)
-	tk.Button(master, text='Register', command=show_entry_fields).grid(row=20,
-																	   column=0,
-																	   sticky=tk.W,
-																	   pady=4)
+	tk.Button(master, text='Run', command=master.quit).grid(row=20, column=1, sticky=tk.W, pady=4)
+	tk.Button(master, text='Register', command=show_entry_fields).grid(row=20, column=0, sticky=tk.W, pady=4)
 
 	master.mainloop()
-
 	tk.mainloop()
 
 else:
@@ -277,7 +266,7 @@ else:
 	param_dict['k_coop_min'] = -np.inf
 	param_dict['k_coop_max'] = np.inf
 
-#################################
+###########
 
 print('Loading Python functions')
 
@@ -288,8 +277,8 @@ def linear_model(x, a, b):
 	return y
 
 
-def Model_FIDA_1to1(x, RI, RIA, Kd):
-	y = (1 + (1 / Kd) * x) / (((1 / RI) - (1 / RIA)) + (1 + ((1 / Kd) * x)) * (1 / RIA))
+def model_fida_1to1(x, ri, ria, kd):
+	y = (1 + (1 / kd) * x) / (((1 / ri) - (1 / ria)) + (1 + ((1 / kd) * x)) * (1 / ria))
 	return y
 
 
@@ -322,34 +311,35 @@ def FIDA_fitting(model, x_val, y_val):
 	elif str(model).count('Model_FIDA_excess') > 0:
 		bound_param = ((param_dict['RI min'], param_dict['RIA min'], param_dict['KD min'], param_dict['CI min']),
 					   (param_dict['RI max'], param_dict['RIA max'], param_dict['KD max'], param_dict['CI max']))
+	else:
+		# TODO: Implement something if the above two "if's" both fail. (Either script exit or default bound_param)
+		pass
 
 	parameters, covariance = curve_fit(model, x_val, y_val, method='trf', bounds=bound_param, maxfev=10000)
 
-	Out_dict_fit = dict()
-	Out_dict_fit['fit_RI'] = parameters[0]
-	Out_dict_fit['fit_RIA'] = parameters[1]
-	Out_dict_fit['fit_Kd'] = parameters[2]
+	out_dict_fit = dict()
+	out_dict_fit['fit_RI'] = parameters[0]
+	out_dict_fit['fit_RIA'] = parameters[1]
+	out_dict_fit['fit_Kd'] = parameters[2]
 
 	if str(model).count('Model_FIDA_1to1') > 0:
-		y_pred = Model_FIDA_1to1(np.asarray(x_val), Out_dict_fit['fit_RI'], Out_dict_fit['fit_RIA'],
-								 Out_dict_fit['fit_Kd'])
+		y_pred = model_fida_1to1(np.asarray(x_val), out_dict_fit['fit_RI'], out_dict_fit['fit_RIA'], out_dict_fit['fit_Kd'])
 
-	if str(model).count('Model_FIDA_excess') > 0:  ### If model used for fitting is the excess model
-		Out_dict_fit['fit_CI'] = parameters[3]
-		y_pred = Model_FIDA_excess(np.asarray(x_val), Out_dict_fit['fit_RI'], Out_dict_fit['fit_RIA'],
-								   Out_dict_fit['fit_Kd'], Out_dict_fit['fit_CI'])
+	if str(model).count('Model_FIDA_excess') > 0:  # If model used for fitting is the excess model
+		out_dict_fit['fit_CI'] = parameters[3]
+		y_pred = Model_FIDA_excess(np.asarray(x_val), out_dict_fit['fit_RI'], out_dict_fit['fit_RIA'], out_dict_fit['fit_Kd'], out_dict_fit['fit_CI'])
 
-	Out_dict_fit['R_squared'] = r2_score(y_val, y_pred)
+	# TODO: Do something if both the above 2 "if's" fail (either script exit or default y_pred
+	out_dict_fit['R_squared'] = r2_score(y_val, y_pred)
 
-	return Out_dict_fit
+	return out_dict_fit
 
 
 def FIDA_text2floats(x_id, y_id):
 	func_list = []
 	func_list2 = []
 
-	data_slice = df[df[x_id].str.contains(
-		'nM]') == True]  ### Slice the dataframe to only include the rows that contain a concentration
+	data_slice = df[df[x_id].str.contains('nM]')]  # Slice the dataframe to only include the rows that contain a concentration
 	xdata_list = data_slice[x_id].tolist()
 	ydata_list = pd.to_numeric(data_slice[y_id].astype(str).str.replace(",", ".")).tolist()
 	for m in range(len(xdata_list)):
@@ -362,8 +352,15 @@ def FIDA_text2floats(x_id, y_id):
 
 
 def replicate_mean_error(unique_conc, redundant_conc, y_val):
-	# The function takes a list of unique concentrations, the redundant concentration list and a list of y values corresponding to the redundant concentration list.
-	# The function then calculates appropriate mean values and the standard deviation on the values used for the mean calculation.
+	"""
+	The function takes a list of unique concentrations, the redundant concentration list and a list of y values corresponding to the redundant concentration list.
+	The function then calculates appropriate mean values and the standard deviation on the values used for the mean calculation.
+	
+	:param unique_conc: 
+	:param redundant_conc: 
+	:param y_val: 
+	:return: 
+	"""
 
 	func_mean = []
 	func_std = []
@@ -372,14 +369,14 @@ def replicate_mean_error(unique_conc, redundant_conc, y_val):
 
 	for a4 in range(len(unique_conc)):
 		conc_indices = [k for k, x in enumerate(redundant_conc) if
-						x == unique_conc[a4]]  ###Getting indices of the specific concentration
+						x == unique_conc[a4]]  # Getting indices of the specific concentration
 
 		func_var = []
 		for a5 in range(len(conc_indices)):
 			func_var.append(y_val[conc_indices[a5]])
 		func_mean.append(sum(func_var) / len(func_var))
 
-		### If more than one replicate is present in the dataset calculate standard deviation.
+		# If more than one replicate is present in the dataset calculate standard deviation.
 		if len(conc_indices) == 1:
 			func_std.append(0)
 		elif len(conc_indices) > 1:
@@ -401,15 +398,13 @@ def interval_generator(start, end):
 		counter = counter + 0.00001
 
 	while counter < end:
-		counter = counter + counter * 0.005  ### Setting the step size increment
+		counter = counter + counter * 0.005  # Setting the step size increment
 		interval.append(counter)
 
 	return np.array(interval)
 
 
 def AKTA_baseline(baseline, x_val, y_val, mode):
-	Baseline_dict = dict();
-
 	baseline_values = [[], []]
 
 	for k in range(0, len(baseline)):
@@ -420,22 +415,22 @@ def AKTA_baseline(baseline, x_val, y_val, mode):
 
 	elif len(baseline) == 2:
 
-		### Calculate flat baseline similar to Unicorn software
+		# Calculate flat baseline similar to Unicorn software
 		baseline_x1 = float(x_val.iloc[(xs - baseline[0]).abs().argsort()[:1]])
 		baseline_y1 = float(y_val.iloc[(xs - baseline[0]).abs().argsort()[:1]])
 		baseline_x2 = float(x_val.iloc[(xs - baseline[1]).abs().argsort()[:1]])
 		baseline_y2 = float(y_val.iloc[(xs - baseline[1]).abs().argsort()[:1]])
 
 		if mode == 'linear':
-			a = (baseline_y2 - baseline_y1) / (baseline_x2 - baseline_x1)  ### Calculate slope of linar baseline curve
-			b = baseline_y1 - (a * baseline_x1)  ### Calculate intercept of linear baseline curve
+			a = (baseline_y2 - baseline_y1) / (baseline_x2 - baseline_x1)  # Calculate slope of linar baseline curve
+			b = baseline_y1 - (a * baseline_x1)  # Calculate intercept of linear baseline curve
 
 			baseline_values = [x_val, linear_model(x_val, a, b)]
 
 		elif mode == 'peakutils':
 			x_val_baseline = x_val[(x_val >= baseline_x1) & (x_val <= baseline_x2)]
 			y_val_baseline = y_val[(x_val >= baseline_x1) & (
-					x_val <= baseline_x2)]  ### Getting all y values that are within the baseline interval
+					x_val <= baseline_x2)]  # Getting all y values that are within the baseline interval
 
 			baseline_values = [x_val_baseline, peakutils.baseline(y_val_baseline, deg=param_dict['AKTA baseline deg'])]
 
@@ -443,8 +438,14 @@ def AKTA_baseline(baseline, x_val, y_val, mode):
 
 
 def color_selector(color_count, color_list):
-	# The function is used to set the color-determining index used in the plotting function.
-	# If more graphs are plotted than there are colors in the color_list then the counting will start over.
+	"""
+	The function is used to set the color-determining index used in the plotting function.
+	If more graphs are plotted than there are colors in the color_list then the counting will start over.
+
+	:param color_count:
+	:param color_list:
+	:return:
+	"""
 
 	if color_count < len(color_list) - 1:
 		color_count = color_count + 1
@@ -455,8 +456,13 @@ def color_selector(color_count, color_list):
 
 
 def data_clean(data):
-	# Split columns where semicolon separator is used to indicate that the column
-	# should be used in more than one data analysis
+	"""
+	Split columns where semicolon separator is used to indicate that the column
+	should be used in more than one data analysis
+
+	:param data:
+	:return:
+	"""
 	for col in data.columns:
 		if str(col).count(';'):  # Check if semicolon separators are present in column names
 
@@ -493,10 +499,24 @@ def plot_customize(figure, flags, ax_id):
 
 
 def plot_func(figure, graph_name, x_val, y_val, marker, x_title, y_title, subplot_row, subplot_col, comment):
-	# The plotting function adds trace to the specified figure. 'graph_name' is the name of the added trace.
-	# 'x_val' and 'y_val' are the plotted data. 'marker' specifies line or dots. 'x_title' and 'y_title' is the
-	# axis names. 'subplot_row' and 'subplpot_col' specify which subplot to add to. 'comment' is used to specify
-	# special plotting cases e.g. baselines.
+	"""
+	The plotting function adds trace to the specified figure. 'graph_name' is the name of the added trace.
+	'x_val' and 'y_val' are the plotted data. 'marker' specifies line or dots. 'x_title' and 'y_title' is the
+	axis names. 'subplot_row' and 'subplpot_col' specify which subplot to add to. 'comment' is used to specify
+	special plotting cases e.g. baselines.
+
+	:param figure:
+	:param graph_name:
+	:param x_val:
+	:param y_val:
+	:param marker:
+	:param x_title:
+	:param y_title:
+	:param subplot_row:
+	:param subplot_col:
+	:param comment:
+	:return:
+	"""
 
 	used_graph_names.append(graph_name)
 	if used_graph_names.count(graph_name) > 1 and figure != 'plot_fig':
@@ -506,94 +526,64 @@ def plot_func(figure, graph_name, x_val, y_val, marker, x_title, y_title, subplo
 
 	if comment == 'None':
 		if marker.lower() in ['lines', 'line']:
-			figure.add_trace(go.Scatter(name=graph_name,
-										x=x_val,
-										y=y_val,
-										mode='lines',
-										legendgroup=graph_name,
-										showlegend=legend_show,
-										line=dict(width=param_dict['graph width'],
-												  color=color_list[color_count])),
-							 row=subplot_row, col=subplot_col)
+			figure.add_trace(
+				go.Scatter(name=graph_name, x=x_val, y=y_val, mode='lines', legendgroup=graph_name, showlegend=legend_show,
+						   line=dict(width=param_dict['graph width'], color=color_list[color_count])),
+				row=subplot_row, col=subplot_col
+			)
 
 		elif marker.lower() in ['dot', 'dots', 'marker', 'markers']:
-			figure.add_trace(go.Scatter(name=graph_name,
-										x=x_val,
-										y=y_val,
-										mode='markers',
-										legendgroup=graph_name,
-										showlegend=legend_show,
-										marker=dict(size=param_dict['marker_size'],
-													color=color_list[color_count])),
-							 row=subplot_row, col=subplot_col)
+			figure.add_trace(
+				go.Scatter(name=graph_name, x=x_val, y=y_val, mode='markers', legendgroup=graph_name, showlegend=legend_show,
+						   marker=dict(size=param_dict['marker_size'], color=color_list[color_count])),
+				row=subplot_row, col=subplot_col
+			)
 
 	elif comment == 'Scatter_error':
 		if marker.lower() in ['lines', 'line']:
-			figure.add_trace(go.Scatter(name=graph_name,
-										x=x_val,
-										y=y_val,
-										mode='lines',
-										legendgroup=graph_name,
-										showlegend=legend_show,
-										error_y=dict(type='data', array=std_dev, visible=True),
-										line=dict(width=param_dict['graph width'],
-												  color=color_list[color_count])),
-							 row=subplot_row, col=subplot_col)
+			figure.add_trace(
+				go.Scatter(name=graph_name, x=x_val, y=y_val, mode='lines', legendgroup=graph_name, showlegend=legend_show,
+						   error_y=dict(type='data', array=std_dev, visible=True),
+						   line=dict(width=param_dict['graph width'], color=color_list[color_count])),
+				row=subplot_row, col=subplot_col
+			)
 
 		elif marker.lower() in ['dot', 'dots', 'marker', 'markers']:
-			figure.add_trace(go.Scatter(name=graph_name,
-										x=x_val,
-										y=y_val,
-										mode='markers',
-										legendgroup=graph_name,
-										showlegend=legend_show,
-										error_y=dict(type='data', array=std_dev, visible=True),
-										marker=dict(size=param_dict['marker_size'],
-													color=color_list[color_count])),
-							 row=subplot_row, col=subplot_col)
+			figure.add_trace(
+				go.Scatter(name=graph_name, x=x_val, y=y_val, mode='markers', legendgroup=graph_name, showlegend=legend_show,
+						   error_y=dict(type='data', array=std_dev, visible=True),
+						   marker=dict(size=param_dict['marker_size'], color=color_list[color_count])),
+				row=subplot_row, col=subplot_col
+			)
 
 	elif comment == 'Bar':
-		figure.add_trace(go.Bar(name=graph_name,
-								x=x_val,
-								y=y_val,
-								legendgroup=graph_name,
-								showlegend=legend_show,
-								marker=dict(color=color_list[color_count])),
-						 row=subplot_row, col=subplot_col)
+		figure.add_trace(
+			go.Bar(name=graph_name, x=x_val, y=y_val, legendgroup=graph_name, showlegend=legend_show,
+				   marker=dict(color=color_list[color_count])),
+			row=subplot_row, col=subplot_col
+		)
 
 	elif comment == 'Bar_error':
-		figure.add_trace(go.Bar(name=graph_name,
-								x=x_val,
-								y=y_val,
-								legendgroup=graph_name,
-								showlegend=legend_show,
-								error_y=dict(type='data', array=error_values, visible=True),
-								marker=dict(color=color_list[color_count])),
-						 row=subplot_row, col=subplot_col)
-
+		figure.add_trace(
+			go.Bar(name=graph_name, x=x_val, y=y_val, legendgroup=graph_name, showlegend=legend_show,
+				   error_y=dict(type='data', array=error_values, visible=True),
+				   marker=dict(color=color_list[color_count])),
+			row=subplot_row, col=subplot_col
+		)
 
 	elif comment == 'AKTA_baseline':
-		figure.add_trace(go.Scatter(name=graph_name,
-									x=x_val,
-									y=y_val,
-									mode='lines',
-									legendgroup=graph_name,
-									showlegend=legend_show,
-									line=dict(width=param_dict['graph width'],
-											  color='rgb(255,0,0)')),
-						 row=subplot_row, col=subplot_col)
+		figure.add_trace(
+			go.Scatter(name=graph_name, x=x_val, y=y_val, mode='lines', legendgroup=graph_name, showlegend=legend_show,
+					   line=dict(width=param_dict['graph width'], color='rgb(255,0,0)')),
+			row=subplot_row, col=subplot_col
+		)
 
 	elif comment == 'AKTA_fraction':
-		figure.add_trace(go.Scatter(name=graph_name,
-									x=x_val,
-									y=y_val,
-									mode='lines',
-									fill='tozeroy',
-									legendgroup=graph_name,
-									showlegend=legend_show,
-									line=dict(width=param_dict['graph width'],
-											  color=color_list[color_count])),
-						 row=subplot_row, col=subplot_col)
+		figure.add_trace(
+			go.Scatter(name=graph_name, x=x_val, y=y_val, mode='lines', fill='tozeroy', legendgroup=graph_name,
+					   showlegend=legend_show, line=dict(width=param_dict['graph width'], color=color_list[color_count])),
+			row=subplot_row, col=subplot_col
+		)
 
 	# Determining the "number id" for the individual subplot. This can be used for targeting customization
 	# such as axis labels to this subplot.
@@ -613,10 +603,8 @@ def plot_func(figure, graph_name, x_val, y_val, marker, x_title, y_title, subplo
 
 	figure.update_layout(
 		template=param_dict['plot_template'],
-		xaxis=dict(title_font=dict(size=param_dict['xaxis_title_font_size']),
-				   tickfont_size=param_dict['xaxis_ticks_font_size']),
-		yaxis=dict(title_font=dict(size=param_dict['yaxis_title_font_size']),
-				   tickfont_size=param_dict['yaxis_ticks_font_size'])
+		xaxis=dict(title_font=dict(size=param_dict['xaxis_title_font_size']), tickfont_size=param_dict['xaxis_ticks_font_size']),
+		yaxis=dict(title_font=dict(size=param_dict['yaxis_title_font_size']), tickfont_size=param_dict['yaxis_ticks_font_size'])
 	)
 
 	# if args.log_scale == True:
@@ -647,7 +635,7 @@ def vertex_detect(x_val, y_val, window_size):
 
 
 def data_diff(x_val, y_val, bin_width, savgol_window, savgol_pol, plot_intermediate):
-	bin_size = len(y_val) / 10
+	bin_size = int(len(y_val) / 10)
 	bin_y = binned_statistic(list(x_val), list(y_val), statistic='mean', bins=bin_size)[0]  # Create bin for y values
 	bin_x = binned_statistic(list(x_val), list(x_val), statistic='mean', bins=bin_size)[0]  # Create bin for x values
 
@@ -661,7 +649,8 @@ def data_diff(x_val, y_val, bin_width, savgol_window, savgol_pol, plot_intermedi
 	# Create interpolation function based on the binned data
 	f = interp1d(bin_x, bin_y)
 
-	# Create new x_val and y_val using the interpolation function. This is basically to fill data between the bin points i.e. making data big again.
+	# Create new x_val and y_val using the interpolation function. This is basically to fill data between the bin
+	# points i.e. making data big again.
 	# I also create new x values that are evenly spaced in the original x value range
 	x_val_new = np.linspace(list(x_val)[0], list(x_val)[-1], len(x_val))
 	y_val_new = f(list(x_val_new))
@@ -673,14 +662,10 @@ def data_diff(x_val, y_val, bin_width, savgol_window, savgol_pol, plot_intermedi
 	y_val_filter2 = savgol_filter(y_val_filter, savgol_window, savgol_pol, deriv=1)
 
 	if plot_intermediate == 'yes':
-		plot_func(fig, graph_name + '_bin', bin_x, bin_y, 'line', x_titles[i], y_titles[i], subplot_row[i],
-				  subplot_col[i], 'None')
-		plot_func(fig, graph_name + '_interpolated', x_val_new, y_val_new, 'line', x_titles[i], y_titles[i],
-				  subplot_row[i], subplot_col[i], 'None')
-		plot_func(fig, graph_name + '_1st deriv', x_val_new, y_val_filter, 'line', x_titles[i], y_titles[i],
-				  subplot_row[i], subplot_col[i], 'None')
-		plot_func(fig, graph_name + '_2nd deriv', x_val_new, y_val_filter2, 'line', x_titles[i], y_titles[i],
-				  subplot_row[i], subplot_col[i], 'None')
+		plot_func(fig, graph_name + '_bin', bin_x, bin_y, 'line', x_titles[i], y_titles[i], subplot_row[i], subplot_col[i], 'None')
+		plot_func(fig, graph_name + '_interpolated', x_val_new, y_val_new, 'line', x_titles[i], y_titles[i], subplot_row[i], subplot_col[i], 'None')
+		plot_func(fig, graph_name + '_1st deriv', x_val_new, y_val_filter, 'line', x_titles[i], y_titles[i], subplot_row[i], subplot_col[i], 'None')
+		plot_func(fig, graph_name + '_2nd deriv', x_val_new, y_val_filter2, 'line', x_titles[i], y_titles[i], subplot_row[i], subplot_col[i], 'None')
 
 	return [x_val_new, y_val_new, y_val_filter, y_val_filter2]
 
@@ -699,6 +684,7 @@ def auto_baseline(x_val, y_val, y_val_diff2, plot_baseline):
 			if abs(data_window[a3]) < 0.03 * max(y_val_diff2):
 				counter = counter + 1
 			else:
+				# TODO: This does nothing...remove?
 				None
 
 		if counter == 10:
@@ -716,6 +702,7 @@ def auto_baseline(x_val, y_val, y_val_diff2, plot_baseline):
 					y_val_diff2) and a4 > baseline_start_idx:  # Make sure the index of baseline end is bigger than the start index
 				counter = counter + 1
 			else:
+				# TODO: This does nothing...remove?
 				None
 		if counter == 10:
 			baseline_end_idx = a4
@@ -736,8 +723,7 @@ def auto_baseline(x_val, y_val, y_val_diff2, plot_baseline):
 	y_pred = linear_model(x_val, parameters[0], parameters[1])
 
 	if plot_baseline == 'yes':
-		plot_func(fig, graph_name + '_auto_baseline', x_val, y_pred, 'line', x_titles[i], y_titles[i], subplot_row[i],
-				  subplot_col[i], 'None')
+		plot_func(fig, graph_name + '_auto_baseline', x_val, y_pred, 'line', x_titles[i], y_titles[i], subplot_row[i], subplot_col[i], 'None')
 
 	# Return coefficients for the linear fit
 	return [parameters[0], parameters[1], baseline_x[-1]]
@@ -751,8 +737,9 @@ def onset_detect(x_val, y_val, slope, intercept, detect_limit, baseline_cutoff):
 		data_obs = y_val_list[a6]
 		data_calc = linear_model(x_val_list[a6], slope, intercept)
 
-		# The onset is defined as as the point where the observed data deviates more and 0.5% from the linear baseline.
-		# It is further required that the x value is higher than the baseline cutoff to avoid predicting onsets on noise in the beginning of the dataset.
+		# The onset is defined as the point where the observed data deviates more and 0.5% from the linear baseline.
+		# It is further required that the x value is higher than the baseline cutoff to avoid predicting onsets on
+		# noise in the beginning of the dataset.
 		if data_obs > data_calc * (1 + (detect_limit / 100)) and x_val_list[a6] > baseline_cutoff:
 			onset_val = x_val_list[a6]
 			onset_val = "{:.1f}".format(onset_val)
@@ -780,10 +767,17 @@ def ip_detect(x_val, y_val, window_size, onset_cutoff):
 
 
 def table_plot(figure, col_names_list, col_values_list):
-	# The function is intended for making the table going into the html output.
-	# Variable "figure" specifies the figure that the table are added to.
-	# Variable "col_names_list" specifies a list the the column headers that should go into the table.
-	# Variable "col_values_list" is a list of lists. Each list contains data for an individual column
+	"""
+	The function is intended for making the table going into the html output.
+	Variable "figure" specifies the figure that the table are added to.
+	Variable "col_names_list" specifies a list the the column headers that should go into the table.
+	Variable "col_values_list" is a list of lists. Each list contains data for an individual column
+
+	:param figure:
+	:param col_names_list:
+	:param col_values_list:
+	:return:
+	"""
 
 	table_pos_list = []
 
@@ -795,7 +789,8 @@ def table_plot(figure, col_names_list, col_values_list):
 	for b1 in range(1, len(col_names_list)):
 		df_func[col_names_list[b1]] = col_values_list[b1]
 
-	# Check if the number of samples given by user is the same as given to the function. Deviations can occur e.g. in global fittings where the code is generating extra traces.
+	# Check if the number of samples given by user is the same as given to the function. Deviations can occur e.g. in
+	# global fittings where the code is generating extra traces.
 	if len(ID_list) == len(col_values_list[0]):
 		# Code for extracting the user defined table coordinates i.e. what line in the table the data should be inputted on.
 		# First loop iterates through ID_list i.e. the samples in the data sheet and extracts the flags separated by semi colon.
@@ -825,16 +820,18 @@ def table_plot(figure, col_names_list, col_values_list):
 		df_func2 = df_func.sort_values(by='table_coords', ascending=True)
 		del df_func2['table_coords']
 
-		figure.add_trace(go.Table(header=dict(values=list(df_func2.columns),
-											  align='left'),
-								  cells=dict(values=df_func2.transpose().values.tolist(),
-											 align='left', height=50)))
+		figure.add_trace(
+			go.Table(
+				header=dict(values=list(df_func2.columns), align='left'),
+				cells=dict(values=df_func2.transpose().values.tolist(), align='left', height=50))
+		)
 
 	else:
-		figure.add_trace(go.Table(header=dict(values=list(df_func.columns),
-											  align='left'),
-								  cells=dict(values=df_func.transpose().values.tolist(),
-											 align='left', height=50)))
+		figure.add_trace(
+			go.Table(
+				header=dict(values=list(df_func.columns), align='left'),
+				cells=dict(values=df_func.transpose().values.tolist(), align='left', height=50))
+		)
 
 
 def scatter_fit(model_function, model_name, x_val, y_val, fitting_mode, fitting_min, fitting_max):
@@ -884,7 +881,7 @@ def scatter_fit(model_function, model_name, x_val, y_val, fitting_mode, fitting_
 		# Sort the data values into the appropriate lists
 		for j in unique_x:
 			conc_indices = [k for k, x in enumerate(list(x_val)) if
-							x == j]  ###Getting indices of the specific concentration
+							x == j]  #Getting indices of the specific concentration
 			for k in range(len(conc_indices)):
 				x_val_list[k].append(list(x_val)[conc_indices[k]])
 				y_val_list[k].append(list(y_val)[conc_indices[k]])
@@ -893,8 +890,7 @@ def scatter_fit(model_function, model_name, x_val, y_val, fitting_mode, fitting_
 	func_R2_list = []
 
 	for c in range(len(x_val_list)):
-		parameters, covariance = curve_fit(model_function, list(x_val_list[c]), list(y_val_list[c]), bounds=bound_param,
-										   method='trf', maxfev=10000)
+		parameters, covariance = curve_fit(model_function, list(x_val_list[c]), list(y_val_list[c]), bounds=bound_param, method='trf', maxfev=10000)
 
 		if len(x_val_list) == 1:
 			master_dict['ID_list_new'].append(str(ID_list[i]))
@@ -991,7 +987,7 @@ def scatter_fit(model_function, model_name, x_val, y_val, fitting_mode, fitting_
 	return out_dict
 
 
-#######################################################################################
+#############################
 
 # Load data from excel sheet and prep it for analysis
 print('Loading and cleaning your data')
@@ -1001,8 +997,8 @@ df = data_clean(df)
 # Load user input from the excel sheet
 ID_list = df['IDs'].tolist()
 ID_list = [x for x in ID_list if str(x) != 'nan']
-data_interval = df['Data_interval'].fillna(0).replace(',',
-													  '.').tolist()  # Get the data intervals for slicing the data to only analyse sections of full dataset.
+# Get the data intervals for slicing the data to only analyse sections of full dataset.
+data_interval = df['Data_interval'].fillna(0).replace(',', '.').tolist()
 data_interval = data_interval[0:len(ID_list)]
 plot_markers = df['Plot_markers'].fillna('line').tolist()
 subplot_coord = df['Sub_plot'].fillna('1;1').tolist()
@@ -1026,16 +1022,17 @@ used_graph_names = []
 pd_out = pd.DataFrame({'IDs': ID_list})
 
 # Loading a list with colors for plotting. The colors come from https://plotly.com/python/discrete-color/. 
-# If the number of samples equals the length of the color list the script will append one extra color to avoid the same color comparisons in subplots.
-color_list = ['#1F77B4', '#FF7F0E', '#2CA02C', '#9467BD', '#FECB52', '#8C564B', '#E377C2', '#7F7F7F', '#BCBD22',
-			  '#17BECF']
+# If the number of samples equals the length of the color list the script will append one extra color to avoid the same
+# color comparisons in subplots.
+color_list = ['#1F77B4', '#FF7F0E', '#2CA02C', '#9467BD', '#FECB52', '#8C564B', '#E377C2', '#7F7F7F', '#BCBD22', '#17BECF']
 if len(ID_list) % len(color_list) == 0:
 	color_list.append('#B6E880')
 else:
+	#TODO: Does nothing, remove?
 	None
 color_count = 0
 
-### Setting up the figure for plotting.
+# Setting up the figure for plotting.
 subplot_row = []
 subplot_col = []
 subplot_coord = df['Sub_plot'].fillna('1;1').tolist()
@@ -1050,21 +1047,11 @@ fig = make_subplots(rows=subplot_row_count, cols=subplot_col_count, vertical_spa
 plot_fig = make_subplots(rows=subplot_row_count, cols=subplot_col_count, vertical_spacing=0.07, horizontal_spacing=0.07)
 
 # Defining master dictionary
-master_dict = {}
-master_dict['notes_list'] = []
-master_dict['vertex_max'] = []
-master_dict['vertex_min'] = []
-master_dict['model_list'] = []
-master_dict['peak_onset'] = []
-master_dict['inflection_points'] = []
-master_dict['fit_parameters'] = []
-master_dict['R_square'] = []
-master_dict['KD_fit'] = []
-master_dict['ID_list_new'] = []
-master_dict['table_coords'] = []
+master_dict = {'notes_list': [], 'vertex_max': [], 'vertex_min': [], 'model_list': [], 'peak_onset': [],
+			   'inflection_points': [], 'fit_parameters': [], 'R_square': [], 'KD_fit': [], 'ID_list_new': [],
+			   'table_coords': []}
 
 if args.plot_type == 'AKTA':
-
 	sample_areas_tot = []
 	baseline_area_tot = []
 	fraction_retentions = []
@@ -1076,38 +1063,39 @@ if args.plot_type == 'AKTA':
 	culture_yield = []
 
 	ext_coeff = df['AKTA_extinc_coeff'].fillna(0).replace(',',
-														  '.').tolist()  ### Get listed extinction coefficient from excel sheet and replace empty values with zero. Also make sure the the right decimal seperator is used in case people use e.g. Danish excel
-	ext_coeff = ext_coeff[0:len(ID_list)]  ### Restrict the list so it has the same length as ID list
+														  '.').tolist()  # Get listed extinction coefficient from excel sheet and replace empty values with zero. Also make sure the the right decimal seperator is used in case people use e.g. Danish excel
+	ext_coeff = ext_coeff[0:len(ID_list)]  # Restrict the list so it has the same length as ID list
 
 	volume_load = df['AKTA_volume_load'].fillna(0).replace(',',
-														   '.').tolist()  ### Get the volumes loaded. This is the total volume of supernatant loaded during experiments. Replace empty values with zero
-	volume_load = volume_load[0:len(ID_list)]  ### Restrict the list so it has the same length as ID list
+														   '.').tolist()  # Get the volumes loaded. This is the total volume of supernatant loaded during experiments. Replace empty values with zero
+	volume_load = volume_load[0:len(ID_list)]  # Restrict the list so it has the same length as ID list
 
 	for i in range(len(ID_list)):
 
 		print('Running data from: ' + str(ID_list[i]) + ' (' + str(sample_notes[i]) + ')')
 
-		x_id = 'x' + str(i + 1)
-		y_id = 'y' + str(i + 1)
+		x_id_global = 'x' + str(i + 1)
+		y_id_global = 'y' + str(i + 1)
 
 		graph_name = ID_list[i]
 		master_dict['notes_list'].append(sample_notes[i])
 
-		### Extracting the raw x and y values from the excel sheet
-		xs = df[x_id][pd.to_numeric(df[x_id], errors='coerce').notnull()]
-		ys = df[y_id][pd.to_numeric(df[y_id], errors='coerce').notnull()]
+		# Extracting the raw x and y values from the excel sheet
+		xs = df[x_id_global][pd.to_numeric(df[x_id_global], errors='coerce').notnull()]
+		ys = df[y_id_global][pd.to_numeric(df[y_id_global], errors='coerce').notnull()]
 
-		### Slicing the data so only data within the specified data interval is included.
+		# Slicing the data so only data within the specified data interval is included.
 		if data_interval[i] != 0:
 			# interval_var = list(data_interval[i].split(';'))
 			interval_var = data_interval[i].split(';')
 			xsys_interval = pd.concat([xs, ys], axis=1)
 			xsys_interval_slice = xsys_interval[
-				(xsys_interval[x_id] >= float(interval_var[0])) & (xsys_interval[x_id] <= float(interval_var[1]))]
-			xs = xsys_interval_slice[x_id]
-			ys = xsys_interval_slice[y_id]
+				(xsys_interval[x_id_global] >= float(interval_var[0])) & (xsys_interval[x_id_global] <= float(interval_var[1]))]
+			xs = xsys_interval_slice[x_id_global]
+			ys = xsys_interval_slice[y_id_global]
 
-		### If specified by user all the negative y values will be replaced by zeros. Can be relevant since the negative values negatively impact the area calculations
+		# If specified by user all the negative y values will be replaced by zeros. Can be relevant since the negative
+		# values negatively impact the area calculations
 		if param_dict['AKTA neg val handle'] == 'yes':
 			ys[ys < 0] = 0
 
@@ -1116,25 +1104,21 @@ if args.plot_type == 'AKTA':
 		elif df['AKTA_baseline'][i].count(';') > 0:
 			baseline_coord = list(df['AKTA_baseline'][i].replace(',', '.').split(';'))
 
-		baseline_values = AKTA_baseline(baseline_coord, xs, ys, param_dict[
-			'AKTA baseline mode'])  ### NOTE THIS IS THE PLACE TO CHANGE THE METHOD FOR BASELINE CALLING. THE MODE CAN BE 'peakutils' OR 'linear'.
+		# NOTE THIS IS THE PLACE TO CHANGE THE METHOD FOR BASELINE CALLING. THE MODE CAN BE 'peakutils' OR 'linear'.
+		baseline_values = AKTA_baseline(baseline_coord, xs, ys, param_dict['AKTA baseline mode'])
 
-		AUC_sample_tot = auc(xs, ys)  ### Calculate the total AUC from entire sample
+		AUC_sample_tot = auc(xs, ys)  # Calculate the total AUC from entire sample
 		sample_areas_tot.append("{:.3f}".format(AUC_sample_tot))
 
 		AUC_baseline_tot = auc(baseline_values[0], baseline_values[1])
 		baseline_area_tot.append("{:.3f}".format(AUC_baseline_tot))
 
-		plot_func(fig, graph_name, xs, ys, plot_markers[i], x_titles[i], y_titles[i], subplot_row[i], subplot_col[i],
-				  'None')
-		plot_func(fig, graph_name + '_baseline', baseline_values[0], baseline_values[1], 'lines', x_titles[i],
-				  y_titles[i], subplot_row[i], subplot_col[i], 'AKTA_baseline')
-		plot_func(plot_fig, graph_name, xs, ys, plot_markers[i], x_titles[i], y_titles[i], subplot_row[i],
-				  subplot_col[i], 'None')
-		plot_func(plot_fig, graph_name + '_baseline', baseline_values[0], baseline_values[1], plot_markers[i],
-				  x_titles[i], y_titles[i], subplot_row[i], subplot_col[i], 'AKTA_baseline')
+		plot_func(fig, graph_name, xs, ys, plot_markers[i], x_titles[i], y_titles[i], subplot_row[i], subplot_col[i], 'None')
+		plot_func(fig, graph_name + '_baseline', baseline_values[0], baseline_values[1], 'lines', x_titles[i], y_titles[i], subplot_row[i], subplot_col[i], 'AKTA_baseline')
+		plot_func(plot_fig, graph_name, xs, ys, plot_markers[i], x_titles[i], y_titles[i], subplot_row[i], subplot_col[i], 'None')
+		plot_func(plot_fig, graph_name + '_baseline', baseline_values[0], baseline_values[1], plot_markers[i], x_titles[i], y_titles[i], subplot_row[i], subplot_col[i], 'AKTA_baseline')
 
-		### Make section in case fraction is not included in analysis
+		# Make section in case fraction is not included in analysis
 		if str(df['AKTA_fraction'][i]).count(';') == 0:
 			fraction_areas.append('N/A')
 			fraction_baseline.append('N/A')
@@ -1144,33 +1128,33 @@ if args.plot_type == 'AKTA':
 			culture_yield.append('N/A')
 			fraction_retentions.append('N/A')
 
-		### Make section for data where sample has been fractionated e.g. for elution
+		# Make section for data where sample has been fractionated e.g. for elution
 		elif str(df['AKTA_fraction'][i]).count(';') == 1:
 
-			### Get fraction boundaries from excel and turn them to floats
+			# Get fraction boundaries from excel and turn them to floats
 			fraction = list(df['AKTA_fraction'][i].replace(',', '.').split(';'))
 			for j in range(0, len(fraction)):
 				fraction[j] = float(fraction[j])
 			frac_volume = abs(fraction[1] - fraction[0])
 
-			### Slicing AKTA data to only get data points that are part of the fraction interval
+			# Slicing AKTA data to only get data points that are part of the fraction interval
 			xsys = pd.concat([xs, ys], axis=1)
-			xsys_slice = xsys[(xsys[x_id] >= fraction[0]) & (xsys[x_id] <= fraction[1])]
+			xsys_slice = xsys[(xsys[x_id_global] >= fraction[0]) & (xsys[x_id_global] <= fraction[1])]
 
-			### Slicing baseline data to only get data points that are part of fraction interval
-			xsys_baseline = pd.DataFrame({str(x_id): baseline_values[0], str(y_id): baseline_values[
-				1]})  ### Create a dataframe from the lists containing the baseline values
+			# Slicing baseline data to only get data points that are part of fraction interval
+			xsys_baseline = pd.DataFrame({str(x_id_global): baseline_values[0], str(y_id_global): baseline_values[
+				1]})  # Create a dataframe from the lists containing the baseline values
 			xsys_baseline_slice = xsys_baseline[
-				(xsys_baseline[x_id] >= fraction[0]) & (xsys_baseline[x_id] <= fraction[1])]
+				(xsys_baseline[x_id_global] >= fraction[0]) & (xsys_baseline[x_id_global] <= fraction[1])]
 
-			Retention_frac = float(xsys_slice[x_id][xsys_slice[y_id] == max(
-				xsys[y_id])])  ### The retention time/volume is defined as the x value where the y value hits max
+			Retention_frac = float(xsys_slice[x_id_global][xsys_slice[y_id_global] == max(
+				xsys[y_id_global])])  # The retention time/volume is defined as the x value where the y value hits max
 			fraction_retentions.append("{:.3f}".format(Retention_frac))
 
-			AUC_frac = auc(xsys_slice[x_id], xsys_slice[y_id])
+			AUC_frac = auc(xsys_slice[x_id_global], xsys_slice[y_id_global])
 			fraction_areas.append("{:.3f}".format(AUC_frac))
 
-			AUC_frac_baseline = auc(xsys_baseline_slice[x_id], xsys_baseline_slice[y_id])
+			AUC_frac_baseline = auc(xsys_baseline_slice[x_id_global], xsys_baseline_slice[y_id_global])
 			fraction_baseline.append("{:.3f}".format(AUC_frac_baseline))
 
 			AUC_calculation = AUC_frac - AUC_frac_baseline
@@ -1186,55 +1170,41 @@ if args.plot_type == 'AKTA':
 			cul_yield = (frac_yield / volume_load[i] * 1000)
 			culture_yield.append("{:.3f}".format(cul_yield))
 
-			plot_func(fig, graph_name + '_fraction', xsys_slice[x_id], xsys_slice[y_id], 'lines',
+			plot_func(fig, graph_name + '_fraction', xsys_slice[x_id_global], xsys_slice[y_id_global], 'lines',
 					  x_titles[i], y_titles[i], subplot_row[i], subplot_col[i], 'AKTA_fraction')
-			plot_func(plot_fig, graph_name + '_fraction', xsys_slice[x_id], xsys_slice[y_id], 'lines',
+			plot_func(plot_fig, graph_name + '_fraction', xsys_slice[x_id_global], xsys_slice[y_id_global], 'lines',
 					  x_titles[i], y_titles[i], subplot_row[i], subplot_col[i], 'AKTA_fraction')
 
 			# Adding the raw data generated in code above to a dataframe that can be outputted to look at the raw data.
 			# In the concattenated dataframes the index is reset because the dataframes do not have the same length
-			pd_out = pd.concat([pd_out, pd.DataFrame({x_id: xs, y_id: ys}).reset_index(drop=True), pd.DataFrame(
-				{x_id + '_baseline': baseline_values[0], y_id + '_baseline': baseline_values[1]}).reset_index(
+			pd_out = pd.concat([pd_out, pd.DataFrame({x_id_global: xs, y_id_global: ys}).reset_index(drop=True), pd.DataFrame(
+				{x_id_global + '_baseline': baseline_values[0], y_id_global + '_baseline': baseline_values[1]}).reset_index(
 				drop=True), pd.DataFrame(
-				{x_id + '_fraction': xsys_slice[x_id], y_id + '_fraction': xsys_slice[y_id]}).reset_index(drop=True)],
+				{x_id_global + '_fraction': xsys_slice[x_id_global], y_id_global + '_fraction': xsys_slice[y_id_global]}).reset_index(drop=True)],
 							   ignore_index=False, axis=1)
 		color_count = color_selector(color_count, color_list)  # Update color value using color_selector function
-	fig.add_trace(go.Table(header=dict(values=['Sample ID',
-											   'Sample notes',
-											   'Total sample area',
-											   'Total baseline area',
-											   'Retention time/volume (beta)',
-											   'Area of fraction',
-											   'Baseline area (fraction)',
-											   'Area used for calculation',
-											   'Concentration in fraction [mg/mL]',
-											   'Fraction yield [mg]',
-											   'Culture yield [ug/mL]'], align='left'),
-						   cells=dict(values=[ID_list,
-											  master_dict['notes_list'],
-											  sample_areas_tot,
-											  baseline_area_tot,
-											  fraction_retentions,
-											  fraction_areas,
-											  fraction_baseline,
-											  fraction_calculation,
-											  fraction_concentrations,
-											  fraction_yield,
-											  culture_yield], align='left',
-									  height=50)))
+
+	fig.add_trace(
+		go.Table(
+			header=dict(values=['Sample ID', 'Sample notes', 'Total sample area', 'Total baseline area',
+								'Retention time/volume (beta)', 'Area of fraction', 'Baseline area (fraction)',
+								'Area used for calculation', 'Concentration in fraction [mg/mL]', 'Fraction yield [mg]',
+								'Culture yield [ug/mL]'], align='left'),
+			cells=dict(values=[ID_list, master_dict['notes_list'], sample_areas_tot, baseline_area_tot,
+							   fraction_retentions, fraction_areas, fraction_baseline, fraction_calculation,
+							   fraction_concentrations, fraction_yield, culture_yield], align='left', height=50))
+	)
 
 	# Add the values from the plotly table to the output table
-	pd_out = pd.concat([pd_out, pd.DataFrame({'Sample ID': ID_list,
-											  'Sample notes': master_dict['notes_list'],
-											  'Total sample area': sample_areas_tot,
-											  'Total baseline area': baseline_area_tot,
-											  'Area of fraction': fraction_areas,
-											  'Baseline area (fraction)': fraction_baseline,
-											  'Area used for calculation': fraction_calculation,
-											  'Concentration in fraction [mg/mL]': fraction_concentrations,
-											  'Fraction yield [mg]': fraction_yield,
-											  'Culture yield [ug/mL]': culture_yield}).reset_index(drop=True)],
-					   ignore_index=False, axis=1)
+	pd_out = pd.concat([
+		pd_out,
+		pd.DataFrame({'Sample ID': ID_list, 'Sample notes': master_dict['notes_list'],
+					  'Total sample area': sample_areas_tot, 'Total baseline area': baseline_area_tot,
+					  'Area of fraction': fraction_areas, 'Baseline area (fraction)': fraction_baseline,
+					  'Area used for calculation': fraction_calculation,
+					  'Concentration in fraction [mg/mL]': fraction_concentrations,
+					  'Fraction yield [mg]': fraction_yield, 'Culture yield [ug/mL]': culture_yield}).reset_index(drop=True)
+	], ignore_index=False, axis=1)
 
 	# Add dropdown
 	fig.update_layout(
@@ -1254,39 +1224,39 @@ elif args.plot_type == 'FIDA':
 	R_square_list = []
 	ID_list_working = []
 
-	### Extract the fitting models to be used into list
+	# Extract the fitting models to be used into list
 	fit_models = [x for x in df['Fit_model'].tolist() if str(x) != 'nan']
 
-	### Extract the mode of fitting for each dataset into list
+	# Extract the mode of fitting for each dataset into list
 	fit_mode = [x for x in df['Fit_approach'].tolist() if str(x) != 'nan']
 
 	for i in range(len(ID_list)):
 
 		print('Running data from: ' + str(ID_list[i]) + ' (' + str(sample_notes[i]) + ')')
 
-		### Define lists unique for the individual sample ID.
+		# Define lists unique for the individual sample ID.
 		conc_list = []
 		mean_list = []
 		std_dev = []
 		graph_name = ID_list[i]
 
-		x_id = 'x' + str(i + 1)
-		y_id = 'y' + str(i + 1)
+		x_id_global = 'x' + str(i + 1)
+		y_id_global = 'y' + str(i + 1)
 
-		conc_list = FIDA_text2floats(x_id, y_id)[0]  ### Extract concentration float values from the text FIDA output
-		ydata_list = FIDA_text2floats(x_id, y_id)[1]  ### Extract appropriate y values from the FIDA data
+		conc_list = FIDA_text2floats(x_id_global, y_id_global)[0]  # Extract concentration float values from the text FIDA output
+		ydata_list = FIDA_text2floats(x_id_global, y_id_global)[1]  # Extract appropriate y values from the FIDA data
 		unique_conc = list(dict.fromkeys(
-			conc_list))  ### Create a list with unique concentration values. These should include ALL relevant x values.
+			conc_list))  # Create a list with unique concentration values. These should include ALL relevant x values.
 
-		### Extract boundaries for the fit from the excel sheet and turn to list of floats
+		# Extract boundaries for the fit from the excel sheet and turn to list of floats
 
 		fit_interval = fit_intervals[i].split(';')
 		# fit_interval = list(df['Fitting_interval'][i].split(';'))
 		for j in range(0, len(fit_interval)):
 			fit_interval[j] = float(
-				fit_interval[j].replace(",", "."))  ### Replace commas with proper dots to get proper numbers.
+				fit_interval[j].replace(",", "."))  # Replace commas with proper dots to get proper numbers.
 
-		### Get the max number of times a concentration value occurs in raw data. This is the number of graphs to calculate.
+		# Get the max number of times a concentration value occurs in raw data. This is the number of graphs to calculate.
 		conc_count = []
 		for m in unique_conc:
 			conc_count.append(conc_list.count(m))
@@ -1299,14 +1269,14 @@ elif args.plot_type == 'FIDA':
 			i] == 'local':
 
 			if fit_models[i] == '1to1':
-				Out_dict_fit = FIDA_fitting(Model_FIDA_1to1, unique_conc, mean_list)
+				Out_dict_fit = FIDA_fitting(model_fida_1to1, unique_conc, mean_list)
 				parameter_fit_list.append(
 					'Indicator size=' + str(float("{:.1f}".format(Out_dict_fit['fit_RI']))) + ' nM, ')
 				parameter_fit_list[i] = parameter_fit_list[i] + 'Complex size=' + str(
 					float("{:.1f}".format(Out_dict_fit['fit_RIA']))) + ' nM'
-				fit_x = interval_generator(fit_interval[0], fit_interval[1])  ### Call x values for the fit.
-				fit_y = Model_FIDA_1to1(fit_x, Out_dict_fit['fit_RI'], Out_dict_fit['fit_RIA'],
-										Out_dict_fit['fit_Kd'])  ### Call y values using the function and fitted values
+				fit_x = interval_generator(fit_interval[0], fit_interval[1])  # Call x values for the fit.
+				fit_y = model_fida_1to1(fit_x, Out_dict_fit['fit_RI'], Out_dict_fit['fit_RIA'],
+										Out_dict_fit['fit_Kd'])  # Call y values using the function and fitted values
 				master_dict['model_list'].append('Local, 1to1')
 
 			elif fit_models[i] == 'Excess':
@@ -1315,12 +1285,8 @@ elif args.plot_type == 'FIDA':
 					float("{:.1f}".format(Out_dict_fit['fit_RI']))) + ' nM, Complex size=' + str(
 					float("{:.1f}".format(Out_dict_fit['fit_RIA']))) + ' nM, Indicator concentration=' + str(
 					float("{:.2f}".format(Out_dict_fit['fit_CI']))) + ' nM')
-				fit_x = interval_generator(fit_interval[0], fit_interval[1])  ### Call x values for the fit.
-				fit_y = Model_FIDA_excess(fit_x, Out_dict_fit['fit_RI'],
-										  Out_dict_fit['fit_RIA'],
-										  Out_dict_fit['fit_Kd'],
-										  Out_dict_fit[
-											  'fit_CI'])  ### Call y values using the function and fitted values
+				fit_x = interval_generator(fit_interval[0], fit_interval[1])  # Call x values for the fit.
+				fit_y = Model_FIDA_excess(fit_x, Out_dict_fit['fit_RI'], Out_dict_fit['fit_RIA'], Out_dict_fit['fit_Kd'], Out_dict_fit[ 'fit_CI'])  # Call y values using the function and fitted values
 				master_dict['model_list'].append('Local, excess')
 
 			else:
@@ -1340,21 +1306,21 @@ elif args.plot_type == 'FIDA':
 					  subplot_row[i], subplot_col[i], 'Scatter_error')
 			plot_func(plot_fig, str(graph_name) + '_fit', fit_x, fit_y, 'lines', x_titles[i], y_titles[i],
 					  subplot_row[i], subplot_col[i], 'None')
-			color_count = color_selector(color_count, color_list)  ### Update color value using color_selector function
+			color_count = color_selector(color_count, color_list)  # Update color value using color_selector function
 
-			### Appending the plotted values to the output dataframe
-			pd_out = pd.concat([pd_out, pd.DataFrame({x_id: unique_conc, y_id: mean_list, 'err' + str(i + 1): std_dev}),
-								pd.DataFrame({x_id + '_fit': fit_x, y_id + '_fit': fit_y})], ignore_index=False, axis=1)
+			# Appending the plotted values to the output dataframe
+			pd_out = pd.concat([pd_out, pd.DataFrame({x_id_global: unique_conc, y_id_global: mean_list, 'err' + str(i + 1): std_dev}),
+								pd.DataFrame({x_id_global + '_fit': fit_x, y_id_global + '_fit': fit_y})], ignore_index=False, axis=1)
 
 		elif fit_mode[i] == 'singles' or fit_mode[i] == 'single' or fit_mode[i] == 'Global' or fit_mode[i] == 'global':
 
 			graph_list_x = [[] for _ in range(
-				graph_number)]  ### Create list of empty lists for filling with the individual graphs.
+				graph_number)]  # Create list of empty lists for filling with the individual graphs.
 			graph_list_y = [[] for _ in range(graph_number)]
 
 			for j in unique_conc:
 				conc_indices = [k for k, x in enumerate(conc_list) if
-								x == j]  ###Getting indices of the specific concentration
+								x == j]  #Getting indices of the specific concentration
 				for k in range(len(conc_indices)):
 					graph_list_x[k].append(conc_list[conc_indices[k]])
 					graph_list_y[k].append(ydata_list[conc_indices[k]])
@@ -1368,10 +1334,10 @@ elif args.plot_type == 'FIDA':
 				master_dict['notes_list'].append('')
 
 				if fit_models[i] == '1to1':
-					Out_dict_fit = FIDA_fitting(Model_FIDA_1to1, graph_list_x[m], graph_list_y[m])
-					fit_x = interval_generator(fit_interval[0], fit_interval[1])  ### Call x values for the fit.
-					fit_y = Model_FIDA_1to1(fit_x, Out_dict_fit['fit_RI'], Out_dict_fit['fit_RIA'], Out_dict_fit[
-						'fit_Kd'])  ### Call y values using the function and fitted values
+					Out_dict_fit = FIDA_fitting(model_fida_1to1, graph_list_x[m], graph_list_y[m])
+					fit_x = interval_generator(fit_interval[0], fit_interval[1])  # Call x values for the fit.
+					fit_y = model_fida_1to1(fit_x, Out_dict_fit['fit_RI'], Out_dict_fit['fit_RIA'], Out_dict_fit[
+						'fit_Kd'])  # Call y values using the function and fitted values
 					parameter_fit_list.append('Indicator size=' + str(
 						float("{:.1f}".format(Out_dict_fit['fit_RI']))) + ' nM, Complex size=' + str(
 						float("{:.1f}".format(Out_dict_fit['fit_RIA']))) + ' nM')
@@ -1380,7 +1346,7 @@ elif args.plot_type == 'FIDA':
 
 				elif fit_models[i] == 'Excess':
 					Out_dict_fit = FIDA_fitting(Model_FIDA_excess, graph_list_x[m], graph_list_y[m])
-					fit_x = interval_generator(fit_interval[0], fit_interval[1])  ### Call x values for the fit.
+					fit_x = interval_generator(fit_interval[0], fit_interval[1])  # Call x values for the fit.
 					fit_y = Model_FIDA_excess(fit_x, Out_dict_fit['fit_RI'], Out_dict_fit['fit_RIA'],
 											  Out_dict_fit['fit_Kd'], Out_dict_fit['fit_CI'])
 					parameter_fit_list.append('Indicator size=' + str(
@@ -1414,7 +1380,7 @@ elif args.plot_type == 'FIDA':
 					go.Scatter(name=str(str(graph_name) + '_' + str(m + 1) + '_fit'), x=fit_x, y=fit_y, mode='lines',
 							   marker=dict(size=10, color=color_list[color_count])))
 				color_count = color_selector(color_count,
-											 color_list)  ### Update color value using color_selector function
+											 color_list)  # Update color value using color_selector function
 
 			ID_list_working.append(str(graph_name))
 			master_dict['notes_list'].append(sample_notes[i])
@@ -1422,8 +1388,8 @@ elif args.plot_type == 'FIDA':
 			KD_std_dev = "{:.2f}".format(statistics.stdev(KD_working_list))
 			KD_mean = "{:.2f}".format(sum(KD_working_list) / len(KD_working_list))
 			KD_list.append(str(KD_mean) + ' ' + u"\u00B1" + ' ' + str(KD_std_dev))
-			parameter_fit_list.append('')  ### Append empty value to the average table entry
-			R_square_list.append('')  ### Append empty value to the average table entry
+			parameter_fit_list.append('')  # Append empty value to the average table entry
+			R_square_list.append('')  # Append empty value to the average table entry
 
 		else:
 			print('The fitting mode for ' + ID_list[i] + ' is not recognized!')
@@ -1435,7 +1401,7 @@ elif args.plot_type == 'FIDA':
 									R_square_list, parameter_fit_list],
 							align='left', height=50)))
 
-	### Add button
+	# Add button
 	fig.update_layout(
 		updatemenus=[
 			dict(
@@ -1453,27 +1419,25 @@ elif args.plot_type == 'Panta':
 
 		print('Running data from: ' + str(ID_list[i]) + ' (' + str(sample_notes[i]) + ')')
 
-		x_id = 'x' + str(i + 1)
-		y_id = 'y' + str(i + 1)
+		x_id_global = 'x' + str(i + 1)
+		y_id_global = 'y' + str(i + 1)
 		graph_name = ID_list[i]
 
-		### Extracting the raw x and y values from the excel sheet
-		xs = df[x_id][pd.to_numeric(df[x_id], errors='coerce').notnull()]
-		ys = df[y_id][pd.to_numeric(df[y_id], errors='coerce').notnull()]
+		# Extracting the raw x and y values from the excel sheet
+		xs = df[x_id_global][pd.to_numeric(df[x_id_global], errors='coerce').notnull()]
+		ys = df[y_id_global][pd.to_numeric(df[y_id_global], errors='coerce').notnull()]
 
-		### Slicing the data so only data within the specified data interval is included.
+		# Slicing the data so only data within the specified data interval is included.
 		if data_interval[i] != 0:
 			interval_var = list(data_interval[i].split(';'))
 			xsys_interval = pd.concat([xs, ys], axis=1)
 			xsys_interval_slice = xsys_interval[
-				(xsys_interval[x_id] >= float(interval_var[0])) & (xsys_interval[x_id] <= float(interval_var[1]))]
-			xs = xsys_interval_slice[x_id]
-			ys = xsys_interval_slice[y_id]
+				(xsys_interval[x_id_global] >= float(interval_var[0])) & (xsys_interval[x_id_global] <= float(interval_var[1]))]
+			xs = xsys_interval_slice[x_id_global]
+			ys = xsys_interval_slice[y_id_global]
 
-		plot_func(fig, graph_name, xs, ys, plot_markers[i], x_titles[i], y_titles[i], subplot_row[i], subplot_col[i],
-				  'None')
-		plot_func(plot_fig, graph_name, xs, ys, plot_markers[i], x_titles[i], y_titles[i], subplot_row[i],
-				  subplot_col[i], 'None')
+		plot_func(fig, graph_name, xs, ys, plot_markers[i], x_titles[i], y_titles[i], subplot_row[i], subplot_col[i], 'None')
+		plot_func(plot_fig, graph_name, xs, ys, plot_markers[i], x_titles[i], y_titles[i], subplot_row[i], subplot_col[i], 'None')
 
 		# Smoothing data and getting first and second derivative of the data. The last argument enables plotting of bin data,
 		# interpolated data, first derivative and second derivative ('yes')
@@ -1526,30 +1490,26 @@ elif args.plot_type in ['Bar', 'bar', 'Bar_group', 'bar_group']:
 
 		print('Analysing data: ' + str(ID_list[i]))
 
-		x_id = 'x' + str(i + 1)
-		y_id = 'y' + str(i + 1)
+		x_id_global = 'x' + str(i + 1)
+		y_id_global = 'y' + str(i + 1)
 		error_id = 'error' + str(i + 1)
 
 		Group_name = ID_list[i]
 
-		y_values = df[y_id]
+		y_values = df[y_id_global]
 		y_values = y_values.replace(np.nan, 0)
 
-		if error_id in df.columns:  ### Check if error column exists
+		if error_id in df.columns:  # Check if error column exists
 			error_values = df[error_id]
 			error_values = error_values.replace(np.nan, 0)
-			plot_func(fig, Group_name, x_labels, y_values, 'N/A', x_titles[i], y_titles[i], subplot_row[i],
-					  subplot_col[i], 'Bar_error')
-			plot_func(plot_fig, Group_name, x_labels, y_values, 'N/A', x_titles[i], y_titles[i], subplot_row[i],
-					  subplot_col[i], 'Bar_error')
+			plot_func(fig, Group_name, x_labels, y_values, 'N/A', x_titles[i], y_titles[i], subplot_row[i], subplot_col[i], 'Bar_error')
+			plot_func(plot_fig, Group_name, x_labels, y_values, 'N/A', x_titles[i], y_titles[i], subplot_row[i], subplot_col[i], 'Bar_error')
 
 		else:
-			plot_func(fig, Group_name, x_labels, y_values, 'N/A', x_titles[i], y_titles[i], subplot_row[i],
-					  subplot_col[i], 'Bar')
-			plot_func(plot_fig, Group_name, x_labels, y_values, 'N/A', x_titles[i], y_titles[i], subplot_row[i],
-					  subplot_col[i], 'Bar')
+			plot_func(fig, Group_name, x_labels, y_values, 'N/A', x_titles[i], y_titles[i], subplot_row[i], subplot_col[i], 'Bar')
+			plot_func(plot_fig, Group_name, x_labels, y_values, 'N/A', x_titles[i], y_titles[i], subplot_row[i], subplot_col[i], 'Bar')
 
-		color_count = color_selector(color_count, color_list)  ### Update color value using color_selector function
+		color_count = color_selector(color_count, color_list)  # Update color value using color_selector function
 
 	fig.update_layout(bargap=0.3, bargroupgap=0.05)
 	plot_fig.update_layout(bargap=0.3, bargroupgap=0.05)
@@ -1562,37 +1522,35 @@ elif args.plot_type in ['Scatter', 'scatter']:
 
 		print('Analysing data: ' + str(ID_list[i]))
 
-		x_id = 'x' + str(i + 1)
-		y_id = 'y' + str(i + 1)
+		x_id_global = 'x' + str(i + 1)
+		y_id_global = 'y' + str(i + 1)
 
 		graph_name = ID_list[i]
 
 		# Extracting the raw x and y values from the excel sheet.
 		# Replace commas with dots in case user has e.g. Danish Excel.
-		xs = df[x_id][pd.to_numeric(df[x_id], errors='coerce').notnull()]
-		ys = df[y_id][pd.to_numeric(df[y_id], errors='coerce').notnull()]
+		xs = df[x_id_global][pd.to_numeric(df[x_id_global], errors='coerce').notnull()]
+		ys = df[y_id_global][pd.to_numeric(df[y_id_global], errors='coerce').notnull()]
 		xs = pd.to_numeric(xs.astype(str).str.replace(",", "."))
 		ys = pd.to_numeric(ys.astype(str).str.replace(",", "."))
 
-		### Slicing the data so only data within the specified data interval is included.
+		# Slicing the data so only data within the specified data interval is included.
 		if data_interval[i] != 0:
 			interval_var = list(data_interval[i].split(';'))
 			xsys_interval = pd.concat([xs, ys], axis=1)
 			xsys_interval_slice = xsys_interval[
-				(xsys_interval[x_id] >= float(interval_var[0])) & (xsys_interval[x_id] <= float(interval_var[1]))]
-			xs = xsys_interval_slice[x_id]
-			ys = xsys_interval_slice[y_id]
+				(xsys_interval[x_id_global] >= float(interval_var[0])) & (xsys_interval[x_id_global] <= float(interval_var[1]))]
+			xs = xsys_interval_slice[x_id_global]
+			ys = xsys_interval_slice[y_id_global]
 
-		plot_func(fig, graph_name, xs, ys, plot_markers[i], x_titles[i], y_titles[i], subplot_row[i], subplot_col[i],
-				  'None')
-		plot_func(plot_fig, graph_name, xs, ys, plot_markers[i], x_titles[i], y_titles[i], subplot_row[i],
-				  subplot_col[i], 'None')
+		plot_func(fig, graph_name, xs, ys, plot_markers[i], x_titles[i], y_titles[i], subplot_row[i], subplot_col[i], 'None')
+		plot_func(plot_fig, graph_name, xs, ys, plot_markers[i], x_titles[i], y_titles[i], subplot_row[i], subplot_col[i], 'None')
 
-		### Extract boundaries for the fit from the excel sheet and turn to list of floats. If no interval is supplied code will automaticallt assign 0;0.
+		# Extract boundaries for the fit from the excel sheet and turn to list of floats. If no interval is supplied code will automaticallt assign 0;0.
 		fitting_interval = fit_intervals[i].split(';')
 		for j in range(0, len(fitting_interval)):
 			fitting_interval[j] = float(
-				fitting_interval[j].replace(",", "."))  ### Replace commas with proper dots to get proper numbers.
+				fitting_interval[j].replace(",", "."))  # Replace commas with proper dots to get proper numbers.
 
 		if fit_models[i] == 'Hill':
 			# Running fitting function and extracting parameters.
@@ -1618,7 +1576,7 @@ elif args.plot_type in ['Scatter', 'scatter']:
 			plot_func(plot_fig, graph_name, xs, ys, plot_markers[i], x_titles[i], y_titles[i], subplot_row[i],
 					  subplot_col[i], 'None')
 
-		color_count = color_selector(color_count, color_list)  ### Update color value using color_selector function
+		color_count = color_selector(color_count, color_list)  # Update color value using color_selector function
 
 	table_plot(fig, ['Samples', 'Sample notes', 'Fitting models', 'Fitted KD/EC50', 'R^2', 'Fit parameters'],
 			   [master_dict['ID_list_new'], master_dict['notes_list'], master_dict['model_list'], master_dict['KD_fit'],
@@ -1634,22 +1592,22 @@ elif args.plot_type in ['Scatter', 'scatter']:
 							  dict(args=["type", "table"], label="Stats", method="restyle")]),
 				pad={"r": 10, "t": 10}, showactive=True, x=0.11, xanchor="left", y=1.1, yanchor="top"), ])
 
-#######################
+#########
 
-if args.output == True:
+if args.output:
 	pd_out.to_csv('Output_data_file.csv', sep=';')
 
 # Write output file
 Output_file_name = 'Output_' + str(args.input_file[:len(args.input_file) - 5]) + '.html'
-if os.path.isfile(Output_file_name) == True:
+if os.path.isfile(Output_file_name):
 	print('\n')
 	new_file = input('A file with that name already exist. Do you wish to overwrite (Y/N)? ')
 	if new_file.lower() == 'y' or new_file.lower() == 'yes':
 		fig.write_html('Output_' + str(args.input_file[:len(args.input_file) - 5]) + '.html')
 	else:
 		print('I did not make any output file')
-elif os.path.isfile(Output_file_name) == False:
+elif not os.path.isfile(Output_file_name):
 	fig.write_html('Output_' + str(args.input_file[:len(args.input_file) - 5]) + '.html')
 
-if args.plotting == True:
+if args.plotting:
 	plot_fig.write_image(str(args.input_file[:len(args.input_file) - 5]) + '.svg', width=1000, height=650)
