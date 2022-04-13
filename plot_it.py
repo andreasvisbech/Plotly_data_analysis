@@ -1598,10 +1598,10 @@ def main_func(args):
 					pad={"r": 10, "t": 10}, showactive=True, x=0.11, xanchor="left", y=1.1, yanchor="top"), ])
 
 	os.makedirs(args.output, exist_ok=True)
-	pd_out.to_csv(args.output.join('Output_data_file.csv'), sep=';')
+	pd_out.to_csv(args.output.joinpath('Output_data_file.csv'), sep=';')
 
 	# Write output file
-	output_file_name = args.output.join('Output_' + str(args.input_file[:len(args.input_file) - 5]) + '.html')
+	output_file_name = args.output.joinpath('Output_' + str(args.input_file[:len(args.input_file) - 5]) + '.html')
 	if os.path.isfile(output_file_name):
 		print('\n')
 		new_file = input('A file with that name already exist. Do you wish to overwrite (Y/N)? ')
@@ -1613,7 +1613,7 @@ def main_func(args):
 		fig.write_html(output_file_name)
 
 	if args.plotting:
-		plot_fig.write_image(args.output.join(str(args.input_file[:len(args.input_file) - 5]) + '.svg'), width=1000, height=650)
+		plot_fig.write_image(args.output.joinpath(str(args.input_file[:len(args.input_file) - 5]) + '.svg'), width=1000, height=650)
 
 
 if __name__ == "__main__":
