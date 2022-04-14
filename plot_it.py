@@ -1572,6 +1572,7 @@ def main_func(args):
 				Fit_4PL_out = scatter_fit(fit_4pl, '4PL', xs, ys, fit_modes[i], fitting_interval[0], fitting_interval[1], i,ID_list, sample_notes, fit_models, fig, graph_name, x_titles, y_titles, subplot_row , subplot_col)
 
 			else:
+				master_dict['ID_list_new'].append(ID_list[i])
 				master_dict['notes_list'].append(sample_notes[i])
 				master_dict['model_list'].append(' ')
 				master_dict['fit_parameters'].append(' ')
