@@ -100,20 +100,14 @@ def parse_args():
         tk.Label(master, text='\t').grid(row=0, column=5)
         tk.Label(master, text="Graph width [Plot layot]").grid(row=0, column=6)
         tk.Label(master, text="RIA min [FIDA]").grid(row=1)
-        # tk.Label(master, text='\t').grid(row=1, column=2)
         tk.Label(master, text="RIA max [FIDA]").grid(row=1, column=3)
         tk.Label(master, text="Baseline graph width [Plot layot]").grid(row=1, column=6)
         tk.Label(master, text="Kd min [FIDA]").grid(row=2)
-        # tk.Label(master, text='\t').grid(row=2, column=2)
         tk.Label(master, text="Kd max [FIDA]").grid(row=2, column=3)
-        # tk.Label(master, text='\t').grid(row=2, column=4)
         tk.Label(master, text='Marker size').grid(row=2, column=6)
         tk.Label(master, text="CI min [FIDA]").grid(row=3)
-        # tk.Label(master, text='\t').grid(row=2, column=2)
         tk.Label(master, text="CI max [FIDA]").grid(row=3, column=3)
-        # tk.Label(master, text='\t').grid(row=3, column=4)
         tk.Label(master, text='X axis title font size').grid(row=3, column=6)
-        # tk.Label(master, text='\t').grid(row=2, column=8)
         tk.Label(master, text='Y axis title font size').grid(row=3, column=9)
         tk.Label(master, text="Baseline mode [AKTA]").grid(row=4, column=0)
         tk.Label(master, text="Plotting theme [layout]").grid(row=5, column=6)
@@ -318,39 +312,6 @@ def fit_4pl(x, bmin, bmax, kd, k_coop):
     y = bmax + (bmin - bmax) / (1 + (x / kd) ** k_coop)
     return y
 
-
-def fida_fitting(model, x_val, y_val):
-    if str(model).count('Model_FIDA_1to1') > 0:
-        bound_param = [(param_dict['RI min'], param_dict['RIA min'], param_dict['KD min']),
-                       (param_dict['RI max'], param_dict['RIA max'], param_dict['KD max'])]
-
-    elif str(model).count('Model_FIDA_excess') > 0:
-        bound_param = ((param_dict['RI min'], param_dict['RIA min'], param_dict['KD min'], param_dict['CI min']),
-                       (param_dict['RI max'], param_dict['RIA max'], param_dict['KD max'], param_dict['CI max']))
-    else:
-        # TODO: Implement something if the above two "if's" both fail. (Either script exit or default bound_param)
-        pass
-
-    parameters, covariance = curve_fit(model, x_val, y_val, method='trf', bounds=bound_param, maxfev=10000)
-
-    out_dict_fit = dict()
-    out_dict_fit['fit_RI'] = parameters[0]
-    out_dict_fit['fit_RIA'] = parameters[1]
-    out_dict_fit['fit_Kd'] = parameters[2]
-
-    if str(model).count('Model_FIDA_1to1') > 0:
-        y_pred = model_fida_1to1(np.asarray(x_val), out_dict_fit['fit_RI'], out_dict_fit['fit_RIA'], out_dict_fit['fit_Kd'])
-
-    if str(model).count('Model_FIDA_excess') > 0:  # If model used for fitting is the excess model
-        out_dict_fit['fit_CI'] = parameters[3]
-        y_pred = model_fida_excess(np.asarray(x_val), out_dict_fit['fit_RI'], out_dict_fit['fit_RIA'], out_dict_fit['fit_Kd'], out_dict_fit['fit_CI'])
-
-    # TODO: Do something if both the above 2 "if's" fail (either script exit or default y_pred
-    out_dict_fit['R_squared'] = r2_score(y_val, y_pred)
-
-    return out_dict_fit
-
-
 def fida_text2floats(x_id, y_id, df):
     func_list = []
     func_list2 = []
@@ -366,7 +327,6 @@ def fida_text2floats(x_id, y_id, df):
     func_list2.append(func_list)
     func_list2.append(ydata_list)
     return func_list2
-
 
 def replicate_mean_error(unique_conc, redundant_conc, y_val):
     """
