@@ -1,7 +1,7 @@
 import pandas as pd
-from plot_it import color_selector, color_list_global, main_func
+from plot_it import color_selector, color_list_global, main_func, set_param_dict
 from argparse import Namespace
-from pathlib import PosixPath
+from pathlib import Path
 
 
 class TestAktaData:
@@ -13,10 +13,13 @@ class TestAktaData:
 	def test_color_selector(self):
 		assert color_selector(3, color_list_global) == 4
 
-	def test_entire_script_in_one_go(self):
-		#main_func(
-		#	Namespace(plot_type='AKTA', input_file='Plotly_excel_template.xlsx', data_fit=False, log_scale=False,
-		#			  output=PosixPath('output'), plotting=True, advanced_option_box=False)
-		#)
+	def test_entire_script_in_one_go(self, tmp_path):
+		args = Namespace(
+			plot_type='akta', input_file=Path('test_data/AKTA.xlsx'), data_fit=True, log_scale=False,
+			output=tmp_path, plotting=True, advanced_option_box=False)
+		pdict = set_param_dict()
+		main_func(args, pdict)
 		# then open the output files and assert they are correct
-		assert 1 == 1
+		files = set([x.name for x in tmp_path.glob("*")])
+		assert {"AKTA.tsv", "AKTA.svg", "AKTA.html"} == files
+		assert len(pd.read_csv(tmp_path / "AKTA.tsv", sep='\t')) == 14530
