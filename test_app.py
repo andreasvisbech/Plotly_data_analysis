@@ -1,5 +1,5 @@
 import pandas as pd
-from plot_it import color_selector, color_list_global, main_func, set_param_dict
+from plot_it import color_selector, main_func, set_param_dict
 from argparse import Namespace
 from pathlib import Path
 
@@ -11,7 +11,8 @@ class TestAktaData:
 		assert len(self.some_shared_data_eg_an_excel_file.columns) == 14
 
 	def test_color_selector(self):
-		assert color_selector(3, color_list_global) == 4
+		color_list = ['#1F77B4', '#FF7F0E', '#2CA02C', '#9467BD', '#FECB52']
+		assert color_selector(3, color_list) == 4
 
 	def test_entire_script_in_one_go(self, tmp_path):
 		args = Namespace(

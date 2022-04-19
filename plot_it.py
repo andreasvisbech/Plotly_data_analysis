@@ -400,7 +400,7 @@ def color_selector(color_count, color_list):
 	"""
 
 	if color_count < len(color_list) - 1:
-		color_count = color_count + 1
+		color_count += 1
 	else:
 		color_count = 0
 
