@@ -318,7 +318,7 @@ def fida_text2floats(x_id, y_id, df):
 
     # Slice the dataframe to only include the rows that contain a concentration
     data_slice = df[df[x_id].str.contains('nM]', na=False)]  
-    xdata_list = data_slice[x_id].tolist()
+    xdata_list = data_slice[x_id].astype(str).str.replace(",", ".").tolist()
     ydata_list = pd.to_numeric(data_slice[y_id].astype(str).str.replace(",", ".")).tolist()
     for m in range(len(xdata_list)):
         conc = xdata_list[m][xdata_list[m].index('[') + 1: xdata_list[m].index(' nM]')]
