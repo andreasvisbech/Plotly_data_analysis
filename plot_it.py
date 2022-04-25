@@ -1169,7 +1169,7 @@ def main_func(args, param_dict):
 				xsys_baseline_slice = xsys_baseline[(xsys_baseline[x_id] >= fraction[0]) & (xsys_baseline[x_id] <= fraction[1])]
 
 				# The retention time/volume is defined as the x value where the y value hits max
-				Retention_frac = float(xsys_slice[x_id][xsys_slice[y_id] == max(xsys[y_id])])
+				Retention_frac = float(xsys_slice[x_id][xsys_slice[y_id] == max(xsys_slice[y_id])])
 				fraction_retentions.append("{:.3f}".format(Retention_frac))
 
 				AUC_frac = auc(xsys_slice[x_id], xsys_slice[y_id])
