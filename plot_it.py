@@ -543,7 +543,7 @@ def plot_func(figure, graph_name, x_val, y_val, marker, x_title, y_title, subplo
 
 	elif comment == 'AKTA_baseline':
 		figure.add_trace(
-			go.Scatter(name=graph_name, x=x_val, y=y_val, mode='lines', legendgroup=graph_name, showlegend=legend_show, line=dict(width=param_dict['graph width'], color='rgb(255,0,0)')),
+			go.Scatter(name=graph_name, x=x_val, y=y_val, mode='lines', legendgroup=graph_name, showlegend=legend_show, line=dict(width=param_dict['Baseline graph width'], color='rgb(255,0,0)')),
 			row=subplot_row, col=subplot_col
 		)
 
