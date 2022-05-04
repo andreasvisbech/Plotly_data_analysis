@@ -1,11 +1,11 @@
 import pandas as pd
-from plot_it import color_selector, main_func, set_param_dict
+from plot_it.plot_it import color_selector, main_func, set_param_dict
 from argparse import Namespace
 from pathlib import Path
 
 
 class TestAktaData:
-	some_shared_data_eg_an_excel_file = pd.read_excel('Plotly_excel_template.xlsx')
+	some_shared_data_eg_an_excel_file = pd.read_excel('tests/test_data/Plotly_excel_template.xlsx')
 
 	def test_excel_can_load(self):
 		assert len(self.some_shared_data_eg_an_excel_file.columns) == 14
@@ -16,7 +16,7 @@ class TestAktaData:
 
 	def test_entire_script_in_one_go(self, tmp_path):
 		args = Namespace(
-			plot_type='akta', input_file=Path('test_data/AKTA.xlsx'), data_fit=True, log_scale=False,
+			plot_type='akta', input_file=Path('tests/test_data/AKTA.xlsx'), data_fit=True, log_scale=False,
 			output=tmp_path, plotting=True, advanced_option_box=False)
 		pdict = set_param_dict()
 		main_func(args, pdict)

@@ -1592,10 +1592,14 @@ def main_func(args, param_dict):
 		plot_fig.write_image(args.output.joinpath(args.input_file.stem + '.svg'), width=1000, height=650)
 
 
-if __name__ == "__main__":
+def entry_point():
 	args = parse_args()
 	if args.advanced_option_box:
 		pdict = advanced_box()
 	else:
 		pdict = set_param_dict()
 	main_func(args, pdict)
+
+
+if __name__ == "__main__":
+	entry_point()
