@@ -213,8 +213,9 @@ elif args.plot_type in ['FIDA', 'fida', 'Fida']:
     # Adding interactive buttons to the plotly plot
     plotly_buttons(plot_dict)
         
-elif args.plot_type in ['Bar', 'BAR', 'bar']:         
-    
+elif args.plot_type in ['Bar', 'BAR', 'bar']:
+
+    from plot_it_scripts.bar_module import *
     from plot_it_scripts.bar_module import *
     
     for i in range(len(ID_list)):

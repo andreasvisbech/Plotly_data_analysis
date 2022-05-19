@@ -2,7 +2,8 @@
 # import relevant modules
 
 # Import functions from other scripts
-from plotting_script import *
+from plot_it_scripts.plotting_script import *
+#from plotting_script import *
 
 def bar_main(df, x_id, y_id, error_id, sample_idx, plot_dict, user_input_dict, param_dict):
     
