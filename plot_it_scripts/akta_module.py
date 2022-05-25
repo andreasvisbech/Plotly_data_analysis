@@ -3,7 +3,8 @@ from sklearn.metrics import auc
 import pandas as pd
 
 # Import functions from other scripts
-from plotting_script import *
+#from plotting_script import *
+from plot_it_scripts.plotting_script import *
 
 def akta_data_slice(x_id, y_id, sample_idx, xs, ys, user_input_dict):
         

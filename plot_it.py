@@ -235,7 +235,20 @@ elif args.plot_type in ['Bar', 'BAR', 'bar']:
         #plot_dict['color_count'] = plot_dict['color_count'] + 1
 
 elif args.plot_type in ['panta', 'Panta', 'PANTA']:
-    None
+
+    from plot_it_scripts.panta_module import *
+
+    # Go over each sample in the excel sheet
+    for i in range(len(ID_list)):
+        print('Analysing data: ' + str(ID_list[i]))
+
+        plot_dict['graph_names'].append(ID_list[i])
+
+        x_id = 'x' + str(i + 1)
+        y_id = 'y' + str(i + 1)
+        graph_name = ID_list[i]
+
+        panta_main(df, x_id, y_id, i, plot_dict, user_input_dict, param_dict)
     
         
  
