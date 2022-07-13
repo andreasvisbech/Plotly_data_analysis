@@ -2,6 +2,7 @@
 import statistics
 from scipy.optimize import curve_fit
 from sklearn.metrics import r2_score
+from scipy.stats import chisquare
 
 # Import functions from other scripts
 from plot_it_scripts.plotting_script import *
@@ -82,15 +83,19 @@ def scatter_plot_with_fit(sample_idx, user_input_dict, plot_dict, param_dict, ma
 	if fit_modes[sample_idx] == 'Local':
 		y_mean, std_dev = replicate_mean_error(unique_x, xs, ys)
 		plot_func(figure, graph_name, unique_x, y_mean, std_dev, plot_marker, x_title, y_title, subplot_row,
-				  subplot_col, 'Scatter_error', sample_idx, param_dict, color_list, color_count, user_input_dict)
+				  subplot_col, 'Scatter_error', sample_idx, param_dict, color_list, color_count,
+				  user_input_dict, master_dict)
 		plot_func(plot_figure, graph_name, unique_x, y_mean, std_dev, plot_marker, x_title, y_title, subplot_row,
-				  subplot_col, 'Scatter_error', sample_idx, param_dict, color_list, color_count, user_input_dict)
+				  subplot_col, 'Scatter_error', sample_idx, param_dict, color_list, color_count,
+				  user_input_dict, master_dict)
 
 	else:
 		plot_func(figure, graph_name, xs, ys, np.zeros(len(xs)), plot_marker, x_title, y_title, subplot_row,
-				  subplot_col, 'Scatter_error', sample_idx, param_dict, color_list, color_count, user_input_dict)
+				  subplot_col, 'Scatter_error', sample_idx, param_dict, color_list, color_count,
+				  user_input_dict, master_dict)
 		plot_func(plot_figure, graph_name, xs, ys, np.zeros(len(xs)), plot_marker, x_title, y_title, subplot_row,
-				  subplot_col, 'Scatter_error', sample_idx, param_dict, color_list, color_count, user_input_dict)
+				  subplot_col, 'Scatter_error', sample_idx, param_dict, color_list, color_count,
+				  user_input_dict, master_dict)
 
 	# Extract boundaries for the fit from the excel sheet and turn to list of floats. If no interval is supplied code will automaticallt assign 0;0.
 	fitting_interval = fit_intervals[sample_idx].split(';')
@@ -142,9 +147,9 @@ def scatter_plot_without_fit(master_dict, sample_idx, user_input_dict, plot_dict
 	color_count = plot_dict['color_count']
 
 	plot_func(figure, graph_name, xs, ys, 'None', plot_marker, x_title, y_title, subplot_row, subplot_col, 'None',
-			  sample_idx, param_dict, color_list, color_count, user_input_dict)
+			  sample_idx, param_dict, color_list, color_count, user_input_dict, master_dict)
 	plot_func(plot_figure, graph_name, xs, ys, 'None', plot_marker, x_title, y_title, subplot_row, subplot_col, 'None',
-			  sample_idx, param_dict, color_list, color_count, user_input_dict)
+			  sample_idx, param_dict, color_list, color_count, user_input_dict, master_dict)
 
 
 def replicate_mean_error(unique_x, redundant_x, y_val):
@@ -292,7 +297,7 @@ def scatter_fit(model_function, model_name, x_val, y_val, fitting_mode, fitting_
 			y_fit = hill_equation(x_fit, parameters[0], parameters[1], parameters[2], parameters[3])
 			plot_func(figure, graph_name + '_fit' + str(c + 1), x_fit, y_fit, 'None', 'line', x_title, y_title,
 					  subplot_row, subplot_col, 'None', sample_idx, param_dict, color_list, color_count,
-					  user_input_dict)
+					  user_input_dict, master_dict)
 
 			# Calcularing R squared value
 			y_fit_small = hill_equation(x_val_list[c], parameters[0], parameters[1], parameters[2], parameters[3])
@@ -304,7 +309,7 @@ def scatter_fit(model_function, model_name, x_val, y_val, fitting_mode, fitting_
 			y_fit = hill_simple(x_fit, parameters[0], parameters[1], parameters[2])
 			plot_func(figure, graph_name + '_fit' + str(c + 1), x_fit, y_fit, 'None', 'line', x_title, y_title,
 					  subplot_row, subplot_col, 'None', sample_idx, param_dict, color_list, color_count,
-					  user_input_dict)
+					  user_input_dict, master_dict)
 
 			# Calcularing R squared value
 			y_fit_small = hill_simple(np.asarray(x_val_list[c]), parameters[0], parameters[1], parameters[2])
@@ -326,7 +331,7 @@ def scatter_fit(model_function, model_name, x_val, y_val, fitting_mode, fitting_
 			y_fit = fit_4pl(x_fit, parameters[0], parameters[1], parameters[2], parameters[3])
 			plot_func(figure, graph_name + '_fit' + str(c + 1), x_fit, y_fit, 'None', 'line', x_title, y_title,
 					  subplot_row, subplot_col, 'None', sample_idx, param_dict, color_list, color_count,
-					  user_input_dict)
+					  user_input_dict, master_dict)
 
 			# Calcularing R squared value
 			y_fit_small = fit_4pl(x_val_list[c], parameters[0], parameters[1], parameters[2], parameters[3])
@@ -338,7 +343,7 @@ def scatter_fit(model_function, model_name, x_val, y_val, fitting_mode, fitting_
 			y_fit = model_fida_1to1(x_fit, parameters[0], parameters[1], parameters[2])
 			plot_func(figure, graph_name + '_fit' + str(c + 1), x_fit, y_fit, 'None', 'line', x_title, y_title,
 					  subplot_row, subplot_col, 'None', sample_idx, param_dict, color_list, color_count,
-					  user_input_dict)
+					  user_input_dict, master_dict)
 
 			# Calcularing R squared value
 			y_fit_small = model_fida_1to1(np.asarray(x_val_list[c]), parameters[0], parameters[1], parameters[2])
@@ -361,8 +366,7 @@ def scatter_fit(model_function, model_name, x_val, y_val, fitting_mode, fitting_
 			y_fit = model_fida_excess(x_fit, parameters[0], parameters[1], parameters[2], parameters[3])
 			plot_func(figure, graph_name + '_fit' + str(c + 1), x_fit, y_fit, 'None', 'line', x_title, y_title,
 					  subplot_row, subplot_col, 'None', sample_idx, param_dict, color_list, color_count,
-					  user_input_dict)
-			# plot_func(fig, graph_name + '_fit' + str(c + 1), x_fit, y_fit, 'line', x_titles[i], y_titles[i], subplot_row[i], subplot_col[i], 'None', i, param_dict, color_list)
+					  user_input_dict, master_dict)
 
 			# Calcularing R squared value
 			y_fit_small = model_fida_excess(np.asarray(x_val_list[c]), parameters[0], parameters[1], parameters[2],
@@ -392,6 +396,7 @@ def scatter_fit(model_function, model_name, x_val, y_val, fitting_mode, fitting_
 		global_R2 = statistics.stdev(func_KD_list)
 		master_dict['KD_fit'].append(
 			"{:.3f}".format(global_KD) + ' ' + u"\u00B1" + ' ' + str("{:.3f}".format(global_R2)))
+
 		master_dict['R_square'].append(' ')
 
 
