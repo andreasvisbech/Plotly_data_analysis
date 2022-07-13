@@ -36,7 +36,7 @@ def plot_func(figure, graph_name, x_val, y_val, std_dev, marker, x_title, y_titl
 	# global used_graph_names, color_count_global
 
 	# Define template for hover label
-	my_hover_template = graph_name + '<extra></extra>' + '<br>x: %{x}' + '<br>y: %{y}<br>' + '<br>Note: ' + \
+	my_hover_template = graph_name + '<extra></extra>' + '<br>x: %{x}' + '<br>y: %{y}<br>' + 'Note: ' + \
 						master_dict['notes_list'][i]
 
 	used_graph_names.append(graph_name)
