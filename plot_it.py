@@ -83,7 +83,7 @@ if args.plot_type in ['Scatter', 'scatter']:
 			scatter_plot_without_fit(master_dict, i, user_input_dict, plot_dict, xs, ys, param_dict)
 
 		# Updating the color counter to ensure the graphs are different colors.
-		plot_dict['color_count'] = plot_dict['color_count'] + 1
+		plot_dict['color_count'] = color_selector(plot_dict['color_count'], plot_dict['color_list'])
 
 	# Adding table to the interactive plot
 	table_plot(plot_dict, ['Samples',
@@ -133,7 +133,7 @@ elif args.plot_type in ['AKTA', 'akta', 'Akta']:
 		akta_main_func(df, xs, ys, i, x_id, y_id, param_dict, master_dict, user_input_dict, plot_dict)
 
 		# Updating the color counter to ensure the graphs are different colors.
-		plot_dict['color_count'] = plot_dict['color_count'] + 1
+		plot_dict['color_count'] = color_selector(plot_dict['color_count'], plot_dict['color_list'])
 
 	# Adding table to the interactive plot
 	table_plot(plot_dict, ['Sample ID',
