@@ -7,6 +7,9 @@ from scipy.stats import chisquare
 # Import functions from other scripts
 from plot_it_scripts.plotting_script import *
 
+def linear_model(x, a, b):
+    y = x * a + b
+    return y
 
 def hill_equation(x, bmin, bmax, kd, k_coop):
 	y = bmin + ((x ** k_coop) * (bmax - bmin)) / ((kd ** k_coop) + (x ** k_coop))

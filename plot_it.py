@@ -71,6 +71,7 @@ if args.plot_type in ['Scatter', 'scatter']:
 
 		x_id = 'x' + str(i + 1)
 		y_id = 'y' + str(i + 1)
+		graph_name = ID_list[i]
 
 		# Getting x values, y values and a non-redundant list of x values
 		xs, ys, unique_x = scatter_data_slice(df, i, x_id, y_id, user_input_dict)
@@ -83,7 +84,7 @@ if args.plot_type in ['Scatter', 'scatter']:
 			scatter_plot_without_fit(master_dict, i, user_input_dict, plot_dict, xs, ys, param_dict)
 
 		# Updating the color counter to ensure the graphs are different colors.
-		plot_dict['color_count'] = color_selector(plot_dict['color_count'], plot_dict['color_list'])
+		plot_dict['color_count'] = color_selector(plot_dict, graph_name, used_graph_names)
 
 	# Adding table to the interactive plot
 	table_plot(plot_dict, ['Samples',
@@ -118,6 +119,10 @@ elif args.plot_type in ['AKTA', 'akta', 'Akta']:
 
 		x_id = 'x' + str(i + 1)
 		y_id = 'y' + str(i + 1)
+		graph_name = ID_list[i]
+
+		# Updating the color counter to ensure the graphs are different colors.
+		plot_dict['color_count'] = color_selector(plot_dict, graph_name, used_graph_names)
 
 		# Extracting the raw x and y values from the excel sheet
 		xs = df[x_id][pd.to_numeric(df[x_id], errors='coerce').notnull()]
@@ -131,9 +136,6 @@ elif args.plot_type in ['AKTA', 'akta', 'Akta']:
 			ys[ys < 0] = 0
 
 		akta_main_func(df, xs, ys, i, x_id, y_id, param_dict, master_dict, user_input_dict, plot_dict)
-
-		# Updating the color counter to ensure the graphs are different colors.
-		plot_dict['color_count'] = color_selector(plot_dict['color_count'], plot_dict['color_list'])
 
 	# Adding table to the interactive plot
 	table_plot(plot_dict, ['Sample ID',
@@ -173,9 +175,14 @@ elif args.plot_type in ['FIDA', 'fida', 'Fida']:
 		print('Analysing data: ' + str(ID_list[i]))
 
 		plot_dict['graph_names'].append(ID_list[i])
+		master_dict['notes_list'].append(user_input_dict['sample_notes'][i])
 
 		x_id = 'x' + str(i + 1)
 		y_id = 'y' + str(i + 1)
+		graph_name = ID_list[i]
+
+		# Updating the color counter to ensure the graphs are different colors.
+		plot_dict['color_count'] = color_selector(plot_dict, graph_name, used_graph_names)
 
 		# Extract concentration float values and float apparent Rh values from the text FIDA output into lists and make into dataframe
 		xs, ys = fida_text2floats(x_id, y_id, df)
@@ -191,9 +198,6 @@ elif args.plot_type in ['FIDA', 'fida', 'Fida']:
 
 		else:
 			scatter_plot_without_fit(master_dict, i, user_input_dict, plot_dict, xs, ys, param_dict)
-
-		# Updating the color counter to ensure the graphs are different colors.
-		plot_dict['color_count'] = color_selector(plot_dict['color_count'], plot_dict['color_list'])
 
 	# Adding table to the interactive plot
 	table_plot(plot_dict, ['Samples',
@@ -223,16 +227,17 @@ elif args.plot_type in ['Bar', 'BAR', 'bar']:
 		print('Analysing data: ' + str(ID_list[i]))
 
 		plot_dict['graph_names'].append(ID_list[i])
+		master_dict['notes_list'].append(user_input_dict['sample_notes'][i])
 
 		x_id = 'x' + str(i + 1)
 		y_id = 'y' + str(i + 1)
 		error_id = 'error' + str(i + 1)
-
-		bar_main(df, x_id, y_id, error_id, i, plot_dict, user_input_dict, param_dict)
+		graph_name = ID_list[i]
 
 		# Updating the color counter to ensure the graphs are different colors.
-		plot_dict['color_count'] = color_selector(plot_dict['color_count'], plot_dict['color_list'])
-		# plot_dict['color_count'] = plot_dict['color_count'] + 1
+		plot_dict['color_count'] = color_selector(plot_dict, graph_name, used_graph_names)
+
+		bar_main(df, x_id, y_id, error_id, i, plot_dict, user_input_dict, param_dict)
 
 elif args.plot_type in ['panta', 'Panta', 'PANTA']:
 
@@ -243,12 +248,31 @@ elif args.plot_type in ['panta', 'Panta', 'PANTA']:
 		print('Analysing data: ' + str(ID_list[i]))
 
 		plot_dict['graph_names'].append(ID_list[i])
+		master_dict['notes_list'].append(user_input_dict['sample_notes'][i])
 
 		x_id = 'x' + str(i + 1)
 		y_id = 'y' + str(i + 1)
 		graph_name = ID_list[i]
 
-		panta_main(df, x_id, y_id, i, plot_dict, user_input_dict, param_dict)
+		# Updating the color counter to ensure the graphs are different colors.
+		plot_dict['color_count'] = color_selector(plot_dict, graph_name, used_graph_names)
+
+		panta_main(df, x_id, y_id, i, plot_dict, user_input_dict, param_dict, master_dict)
+
+	# Adding table to the interactive plot
+	table_plot(plot_dict, ['Samples',
+						   'Sample notes',
+						   'Onset (beta)',
+						   'Inflection point (beta)',
+						   'Data vertex points (beta)'],
+			   [user_input_dict['ID_list'],
+				master_dict['notes_list'],
+				master_dict['peak_onset'],
+				master_dict['inflection_points'],
+				master_dict['vertex_max']], user_input_dict)
+
+	# Adding interactive buttons to the plotly plot
+	plotly_buttons(plot_dict)
 
 # TODO: figure out how to re-establish this...?        
 # os.makedirs(args.output, exist_ok=True)

@@ -23,9 +23,11 @@ def data_clean(data):
 
 	# Check for duplicate columns
 	for col in data.columns:
-		col_count = data.columns.tolist().count(col)
-		if col_count > 1:
-			print('The column name ' + str(col) + ' appears more than once')
+		for a in range(20):
+			col_check = str(col + '.' + str(int(a)))
+			#print(data.columns.tolist().count(col_check))
+			if data.columns.tolist().count(col_check) > 0:
+				raise ValueError('Column ' + str(col) + ' appears more than once!')
 
 	return data
 
@@ -76,7 +78,7 @@ def load_user_input(df):
 	out_dict['plot_markers'] = plot_markers
 
 	sample_notes = df['Notes'].fillna('None').tolist()
-	out_dict['sample_notes']
+	out_dict['sample_notes'] = sample_notes
 
 	fit_models = df['Fit_model'].fillna('None').tolist()
 	out_dict['fit_models'] = fit_models
@@ -136,6 +138,9 @@ def define_master_dict():
 	master_dict['fraction_concentrations'] = []
 	master_dict['fraction_yield'] = []
 	master_dict['culture_yield'] = []
+	master_dict['peak_onset'] = []
+	master_dict['inflection_points'] = []
+	master_dict['vertex_max'] = []
 
 	return master_dict
 
@@ -146,7 +151,7 @@ def define_plot_dict():
 	plot_dict['figure'] = ''
 	plot_dict['plot_figure'] = ''
 	plot_dict['graph_names'] = []
-	plot_dict['color_count'] = 0
+	plot_dict['color_count'] = -1
 
 	return plot_dict
 
@@ -163,20 +168,26 @@ def define_color_list(user_input_dict):
 	return color_list
 
 
-def color_selector(color_count, color_list):
+def color_selector(plot_dict, graph_name, used_graph_names):
 	"""
 	The function is used to set the color-determining index used in the plotting function.
 	If more graphs are plotted than there are colors in the color_list then the counting will start over.
 
-	:param color_count:
-	:param color_list:
+	:param plot_dict:
 	:return:
 	"""
 
-	if color_count < len(color_list) - 1:
-		color_count += 1
-	else:
-		color_count = 0
+	color_count = plot_dict['color_count']
+	color_list = plot_dict['color_list']
+
+	#if used_graph_names.count(graph_name) > 1:
+	#	None
+	#else:
+	if used_graph_names.count(graph_name) < 1:
+		if color_count < len(color_list) - 1:
+			color_count += 1
+		else:
+			color_count = 0
 
 	return color_count
 
@@ -201,5 +212,3 @@ def write_output_table(name_list, data_list):
 
 	return pd_out
 
-
-None

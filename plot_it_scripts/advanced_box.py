@@ -31,7 +31,7 @@ def create_advanced_box():
 		param_dict['error_marker'] = str(var5.get())
 		param_dict['Baseline graph width'] = float(e19.get())
 		param_dict['marker_size'] = float(e20.get())
-		param_dict['vertex_point_window'] = int(e21.get())
+		param_dict['min_peak_prominence'] = float(e21.get())
 		param_dict['peak_onset_var_deg'] = float(e22.get())
 		param_dict['panta_intermediate_plot'] = str(var4.get())
 		param_dict['Bmin_min'] = float(e24.get())
@@ -67,7 +67,7 @@ def create_advanced_box():
 	ttk.Label(master, text="Baseline deg [AKTA]").grid(row=5, column=0)
 	ttk.Label(master, text="Replace negative values with zero? [AKTA]").grid(row=6, column=0)
 	ttk.Label(master, text="Path length in cm [AKTA]").grid(row=7, column=0)
-	ttk.Label(master, text="Vertex point window [Panta]").grid(row=8, column=0)
+	ttk.Label(master, text="Vertex point minimum prominence [Panta]").grid(row=8, column=0)
 	ttk.Label(master, text="Degree variation for onset (%) [Panta]").grid(row=9, column=0)
 	ttk.Label(master, text="Plot intermediate data? [Panta]").grid(row=10, column=0)
 	ttk.Label(master, text="Bmin min [scatter fit (Hill)]").grid(row=11, column=0)
@@ -149,7 +149,7 @@ def create_advanced_box():
 	e17.insert(10, "12")
 	e19.insert(10, "2")
 	e20.insert(10, "10")
-	e21.insert(10, "100")
+	e21.insert(10, "0")
 	e22.insert(10, "0.5")
 	e24.insert(10, "0")
 	e25.insert(10, np.inf)
@@ -223,7 +223,7 @@ def default_param_dict():
 		'error_marker': 'Error bands',
 		'Baseline graph width': 2,
 		'marker_size': 10,
-		'vertex_point_window': 100,
+		'min_peak_prominence': 0,
 		'peak_onset_var_deg': 0.5,
 		'panta_intermediate_plot': 'no',
 		'Bmin_min': 0,

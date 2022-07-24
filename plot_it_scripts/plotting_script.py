@@ -7,6 +7,9 @@ import numpy as np
 global used_graph_names
 used_graph_names = []
 
+global used_color_IDs
+used_colors = []
+
 
 # color_count_global = 0
 
@@ -39,8 +42,10 @@ def plot_func(figure, graph_name, x_val, y_val, std_dev, marker, x_title, y_titl
 	my_hover_template = graph_name + '<extra></extra>' + '<br>x: %{x}' + '<br>y: %{y}<br>' + 'Note: ' + \
 						master_dict['notes_list'][i]
 
+
 	used_graph_names.append(graph_name)
-	if used_graph_names.count(graph_name) > 1 and figure != 'plot_fig':
+
+	if used_graph_names.count(graph_name) > 1 and figure != 'plot_figure':
 		legend_show = False
 	else:
 		legend_show = True
