@@ -1,5 +1,4 @@
 # Import modules
-import pandas as pd
 from scipy.stats import binned_statistic
 from scipy.interpolate import interp1d
 from scipy.signal import savgol_filter
@@ -42,8 +41,11 @@ def panta_main(df, x_id, y_id, sample_idx, plot_dict, user_input_dict, param_dic
 	# Setting the bin width as 1% of the data size.
 	bin_width = len(xs)/100
 
-	# Setting the Savgol filter window
-	savgol_length = int(len(xs)/10)
+	# Setting the Savgol filter window to one tenth of the data length.
+	# If the number is even we add 1 to make it odd as this is required to Savgol.
+	savgol_length = int(len(xs) / 10)
+	if (savgol_length % 2 == 0):
+		savgol_length = savgol_length + 1
 
 	# Smoothing data and getting first and second derivative of the data. The last argument enables plotting of bin data,
 	# interpolated data, first derivative and second derivative ('yes')
