@@ -40,7 +40,7 @@ def plot_func(figure, graph_name, x_val, y_val, std_dev, marker, x_title, y_titl
 
 	# Define template for hover label
 	my_hover_template = graph_name + '<extra></extra>' + '<br>x: %{x}' + '<br>y: %{y}<br>' + 'Note: ' + \
-						master_dict['notes_list'][i]
+						user_input_dict['sample_notes'][i]
 
 
 	used_graph_names.append(graph_name)
@@ -235,7 +235,6 @@ def plot_func(figure, graph_name, x_val, y_val, std_dev, marker, x_title, y_titl
 	if user_input_dict['python_misc'][i] != 'None':
 		plot_customize(figure, user_input_dict['python_misc'][i], ax_id)
 
-
 def plot_customize(figure, flags, ax_id):
 	in_list = flags.split(';')
 
@@ -335,3 +334,5 @@ def table_plot(plot_dict, col_names_list, col_values_list, user_input_dict):
 				header=dict(values=list(df_func.columns), align='left'),
 				cells=dict(values=df_func.transpose().values.tolist(), align='left', height=50))
 		)
+
+

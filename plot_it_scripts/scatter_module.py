@@ -2,14 +2,16 @@
 import statistics
 from scipy.optimize import curve_fit
 from sklearn.metrics import r2_score
-from scipy.stats import chisquare
+import scipy.stats
 
 # Import functions from other scripts
 from plot_it_scripts.plotting_script import *
 
+
 def linear_model(x, a, b):
-    y = x * a + b
-    return y
+	y = x * a + b
+	return y
+
 
 def hill_equation(x, bmin, bmax, kd, k_coop):
 	y = bmin + ((x ** k_coop) * (bmax - bmin)) / ((kd ** k_coop) + (x ** k_coop))
@@ -38,6 +40,7 @@ def model_fida_excess(x, ri, ria, kd, ci):
 
 
 def scatter_data_slice(df, sample_idx, x_id, y_id, user_input_dict):
+
 	data_interval = user_input_dict['data_interval']
 
 	# Extracting the raw x and y values from the excel sheet.
@@ -46,8 +49,9 @@ def scatter_data_slice(df, sample_idx, x_id, y_id, user_input_dict):
 	ys = df[y_id][pd.to_numeric(df[y_id], errors='coerce').notnull()]
 	xs = pd.to_numeric(xs.astype(str).str.replace(",", "."))
 	ys = pd.to_numeric(ys.astype(str).str.replace(",", "."))
-	unique_x = list(dict.fromkeys(
-		xs))  # Create a list with unique concentration values. These should include ALL relevant x values.
+
+	# Create a list with unique concentration values. These should include ALL relevant x values.
+	unique_x = list(dict.fromkeys(xs))
 
 	# Slicing the data so only data within the specified data interval is included.
 	if data_interval[sample_idx] != 0:
@@ -67,8 +71,8 @@ def scatter_plot_with_fit(sample_idx, user_input_dict, plot_dict, param_dict, ma
 	fit_modes = user_input_dict['fit_modes']
 
 	# Loading local variables for analysis
-	ID_list = user_input_dict['ID_list']
-	sample_notes = user_input_dict['sample_notes']
+	# ID_list = user_input_dict['ID_list']
+	# sample_notes = user_input_dict['sample_notes']
 
 	# Loading local variables for plotting
 	figure = plot_dict['figure']
@@ -82,25 +86,32 @@ def scatter_plot_with_fit(sample_idx, user_input_dict, plot_dict, param_dict, ma
 	color_list = plot_dict['color_list']
 	color_count = plot_dict['color_count']
 
-	# If local fitting approach the data will be averaged and plotted with error bars. Else the full data set will be plotted.
+	# If local fitting approach the data will be averaged and plotted with error bars.
+	# Else the full data set will be plotted.
 	if fit_modes[sample_idx] == 'Local':
 		y_mean, std_dev = replicate_mean_error(unique_x, xs, ys)
-		plot_func(figure, graph_name, unique_x, y_mean, std_dev, plot_marker, x_title, y_title, subplot_row,
-				  subplot_col, 'Scatter_error', sample_idx, param_dict, color_list, color_count,
-				  user_input_dict, master_dict)
-		plot_func(plot_figure, graph_name, unique_x, y_mean, std_dev, plot_marker, x_title, y_title, subplot_row,
-				  subplot_col, 'Scatter_error', sample_idx, param_dict, color_list, color_count,
-				  user_input_dict, master_dict)
+
+		plot_func(
+			figure, graph_name, unique_x, y_mean, std_dev, plot_marker, x_title, y_title, subplot_row,
+			subplot_col, 'Scatter_error', sample_idx, param_dict, color_list, color_count,
+			user_input_dict, master_dict)
+		plot_func(
+			plot_figure, graph_name, unique_x, y_mean, std_dev, plot_marker, x_title, y_title, subplot_row,
+			subplot_col, 'Scatter_error', sample_idx, param_dict, color_list, color_count,
+			user_input_dict, master_dict)
 
 	else:
-		plot_func(figure, graph_name, xs, ys, np.zeros(len(xs)), plot_marker, x_title, y_title, subplot_row,
-				  subplot_col, 'Scatter_error', sample_idx, param_dict, color_list, color_count,
-				  user_input_dict, master_dict)
-		plot_func(plot_figure, graph_name, xs, ys, np.zeros(len(xs)), plot_marker, x_title, y_title, subplot_row,
-				  subplot_col, 'Scatter_error', sample_idx, param_dict, color_list, color_count,
-				  user_input_dict, master_dict)
+		plot_func(
+			figure, graph_name, xs, ys, np.zeros(len(xs)), plot_marker, x_title, y_title, subplot_row,
+			subplot_col, 'Scatter_error', sample_idx, param_dict, color_list, color_count,
+			user_input_dict, master_dict)
+		plot_func(
+			plot_figure, graph_name, xs, ys, np.zeros(len(xs)), plot_marker, x_title, y_title, subplot_row,
+			subplot_col, 'Scatter_error', sample_idx, param_dict, color_list, color_count,
+			user_input_dict, master_dict)
 
-	# Extract boundaries for the fit from the excel sheet and turn to list of floats. If no interval is supplied code will automaticallt assign 0;0.
+	# Extract boundaries for the fit from the excel sheet and turn to list of floats.
+	# If no interval is supplied code will automaticallt assign 0;0.
 	fitting_interval = fit_intervals[sample_idx].split(';')
 	for j in range(0, len(fitting_interval)):
 		fitting_interval[j] = float(
@@ -108,24 +119,29 @@ def scatter_plot_with_fit(sample_idx, user_input_dict, plot_dict, param_dict, ma
 
 	# Running fitting function and extracting parameters.
 	if fit_models[sample_idx] == 'Hill':
-		scatter_fit(hill_equation, 'Hill', xs, ys, fit_modes[sample_idx], fitting_interval[0], fitting_interval[1],
-					sample_idx, param_dict, color_list, master_dict, user_input_dict, plot_dict)
+		scatter_fit(
+			hill_equation, 'Hill', xs, ys, fit_modes[sample_idx], fitting_interval[0], fitting_interval[1],
+			sample_idx, param_dict, master_dict, user_input_dict, plot_dict)
 
 	elif fit_models[sample_idx].lower() == 'hill_simple':
-		scatter_fit(hill_simple, 'Hill_simple', xs, ys, fit_modes[sample_idx], fitting_interval[0], fitting_interval[1],
-					sample_idx, param_dict, color_list, master_dict, user_input_dict, plot_dict)
+		scatter_fit(
+			hill_simple, 'Hill_simple', xs, ys, fit_modes[sample_idx], fitting_interval[0], fitting_interval[1],
+			sample_idx, param_dict, master_dict, user_input_dict, plot_dict)
 
 	elif fit_models[sample_idx].lower() == '4pl':
-		scatter_fit(fit_4pl, '4PL', xs, ys, fit_modes[sample_idx], fitting_interval[0], fitting_interval[1], sample_idx,
-					param_dict, color_list, master_dict, user_input_dict, plot_dict)
+		scatter_fit(
+			fit_4pl, '4PL', xs, ys, fit_modes[sample_idx], fitting_interval[0], fitting_interval[1], sample_idx,
+			param_dict, master_dict, user_input_dict, plot_dict)
 
 	elif fit_models[sample_idx].lower() in ['fida_1to1', '1to1', 'one2one']:
-		scatter_fit(model_fida_1to1, 'FIDA_1to1', xs, ys, fit_modes[sample_idx], fitting_interval[0],
-					fitting_interval[1], sample_idx, param_dict, color_list, master_dict, user_input_dict, plot_dict)
+		scatter_fit(
+			model_fida_1to1, 'FIDA_1to1', xs, ys, fit_modes[sample_idx], fitting_interval[0],
+			fitting_interval[1], sample_idx, param_dict, master_dict, user_input_dict, plot_dict)
 
 	elif fit_models[sample_idx].lower() in ['fida_excess', 'excess']:
-		scatter_fit(model_fida_excess, 'FIDA_excess', xs, ys, fit_modes[sample_idx], fitting_interval[0],
-					fitting_interval[1], sample_idx, param_dict, color_list, master_dict, user_input_dict, plot_dict)
+		scatter_fit(
+			model_fida_excess, 'FIDA_excess', xs, ys, fit_modes[sample_idx], fitting_interval[0],
+			fitting_interval[1], sample_idx, param_dict, master_dict, user_input_dict, plot_dict)
 
 
 def scatter_plot_without_fit(master_dict, sample_idx, user_input_dict, plot_dict, xs, ys, param_dict):
@@ -149,19 +165,23 @@ def scatter_plot_without_fit(master_dict, sample_idx, user_input_dict, plot_dict
 	color_list = plot_dict['color_list']
 	color_count = plot_dict['color_count']
 
-	plot_func(figure, graph_name, xs, ys, 'None', plot_marker, x_title, y_title, subplot_row, subplot_col, 'None',
-			  sample_idx, param_dict, color_list, color_count, user_input_dict, master_dict)
-	plot_func(plot_figure, graph_name, xs, ys, 'None', plot_marker, x_title, y_title, subplot_row, subplot_col, 'None',
-			  sample_idx, param_dict, color_list, color_count, user_input_dict, master_dict)
+	plot_func(
+		figure, graph_name, xs, ys, 'None', plot_marker, x_title, y_title, subplot_row, subplot_col, 'None',
+		sample_idx, param_dict, color_list, color_count, user_input_dict, master_dict)
+	plot_func(
+		plot_figure, graph_name, xs, ys, 'None', plot_marker, x_title, y_title, subplot_row, subplot_col, 'None',
+		sample_idx, param_dict, color_list, color_count, user_input_dict, master_dict)
 
 
 def replicate_mean_error(unique_x, redundant_x, y_val):
 	"""
-	The function takes a list of unique concentrations, the redundant concentration list and a list of y values corresponding to the redundant concentration list.
-	The function then calculates appropriate mean values and the standard deviation on the values used for the mean calculation.
+	The function takes a list of unique concentrations, the redundant concentration list and a list of y values
+	corresponding to the redundant concentration list.
+	The function then calculates appropriate mean values and the standard deviation on the values used for the
+	mean calculation.
 
-	:param unique_conc:
-	:param redundant_conc:
+	:param unique_x:
+	:param redundant_x:
 	:param y_val:
 	:return:
 	"""
@@ -189,13 +209,13 @@ def replicate_mean_error(unique_x, redundant_x, y_val):
 	return func_mean, func_std
 
 
-def scatter_fit(model_function, model_name, x_val, y_val, fitting_mode, fitting_min, fitting_max, sample_idx,
-				param_dict, color_list, master_dict, user_input_dict, plot_dict):
+def scatter_fit(
+		model_function, model_name, x_val, y_val, fitting_mode, fitting_min, fitting_max, sample_idx,
+		param_dict, master_dict, user_input_dict, plot_dict):
+
 	# Loading local variables for plotting
 	figure = plot_dict['figure']
-	plot_figure = plot_dict['plot_figure']
 	graph_name = plot_dict['graph_names'][sample_idx]
-	plot_marker = user_input_dict['plot_markers'][sample_idx]
 	x_title = user_input_dict['x_titles'][sample_idx]
 	y_title = user_input_dict['y_titles'][sample_idx]
 	subplot_row = user_input_dict['subplot_row'][sample_idx]
@@ -214,6 +234,8 @@ def scatter_fit(model_function, model_name, x_val, y_val, fitting_mode, fitting_
 	y_val_list = []
 
 	unique_x = list(dict.fromkeys(x_val))
+
+	alpha_level = 0.05
 
 	# Setting fitting boundaries depending on which model is used
 	if model_name == 'Hill':
@@ -245,6 +267,10 @@ def scatter_fit(model_function, model_name, x_val, y_val, fitting_mode, fitting_
 			(param_dict['RI max'], param_dict['RIA max'], param_dict['KD max'], param_dict['CI max'])
 		)
 
+	else:
+		bound_param = ()
+		ValueError('Model is not known!?')
+
 	if fitting_mode == 'Local':
 
 		# In local fitting mode the list of unique x values is the only x list needed.
@@ -253,7 +279,7 @@ def scatter_fit(model_function, model_name, x_val, y_val, fitting_mode, fitting_
 		# Calculate mean and std error on replicate values in the data
 		y_mean = replicate_mean_error(unique_x, x_val, y_val)[0]
 		y_val_list.append(y_mean)
-		y_mean_err = replicate_mean_error(unique_x, x_val, y_val)[1]
+		std_dev_list = replicate_mean_error(unique_x, x_val, y_val)[1]
 		out_dict['y_mean'] = y_mean
 
 	elif fitting_mode == 'Global':
@@ -270,8 +296,8 @@ def scatter_fit(model_function, model_name, x_val, y_val, fitting_mode, fitting_
 
 		# Sort the data values into the appropriate lists
 		for j in unique_x:
-			conc_indices = [k for k, x in enumerate(list(x_val)) if
-							x == j]  # Getting indices of the specific concentration
+			# Getting indices of the specific concentration
+			conc_indices = [k for k, x in enumerate(list(x_val)) if x == j]
 			for k in range(len(conc_indices)):
 				x_val_list[k].append(list(x_val)[conc_indices[k]])
 				y_val_list[k].append(list(y_val)[conc_indices[k]])
@@ -279,9 +305,11 @@ def scatter_fit(model_function, model_name, x_val, y_val, fitting_mode, fitting_
 	func_KD_list = []
 	func_R2_list = []
 
+
 	for c in range(len(x_val_list)):
-		parameters, covariance = curve_fit(model_function, list(x_val_list[c]), list(y_val_list[c]), bounds=bound_param,
-										   method='trf', maxfev=10000)
+		parameters, covariance = curve_fit(
+											model_function, list(x_val_list[c]), list(y_val_list[c]),
+											bounds=bound_param, method='trf', maxfev=10000)
 
 		if len(x_val_list) == 1:
 			master_dict['ID_list_new'].append(str(ID_list[sample_idx]))
@@ -298,12 +326,14 @@ def scatter_fit(model_function, model_name, x_val, y_val, fitting_mode, fitting_
 			# Generating a fitting curve with many points for the plot
 			x_fit = interval_generator(fitting_min, fitting_max)
 			y_fit = hill_equation(x_fit, parameters[0], parameters[1], parameters[2], parameters[3])
-			plot_func(figure, graph_name + '_fit' + str(c + 1), x_fit, y_fit, 'None', 'line', x_title, y_title,
-					  subplot_row, subplot_col, 'None', sample_idx, param_dict, color_list, color_count,
-					  user_input_dict, master_dict)
+
+			plot_func(
+				figure, graph_name + '_fit' + str(c + 1), x_fit, y_fit, 'None', 'line', x_title, y_title,
+				subplot_row, subplot_col, 'None', sample_idx, param_dict, color_list, color_count,
+				user_input_dict, master_dict)
 
 			# Calcularing R squared value
-			y_fit_small = hill_equation(x_val_list[c], parameters[0], parameters[1], parameters[2], parameters[3])
+			y_fit_small = hill_equation(np.asarray(x_val_list[c]), parameters[0], parameters[1], parameters[2], parameters[3])
 			method_name(c, func_KD_list, func_R2_list, parameters, y_fit_small, y_val_list, master_dict)
 
 		elif model_name == 'Hill_simple':
@@ -337,7 +367,7 @@ def scatter_fit(model_function, model_name, x_val, y_val, fitting_mode, fitting_
 					  user_input_dict, master_dict)
 
 			# Calcularing R squared value
-			y_fit_small = fit_4pl(x_val_list[c], parameters[0], parameters[1], parameters[2], parameters[3])
+			y_fit_small = fit_4pl(np.asarray(x_val_list[c]), parameters[0], parameters[1], parameters[2], parameters[3])
 			method_name(c, func_KD_list, func_R2_list, parameters, y_fit_small, y_val_list, master_dict)
 
 		elif model_name == 'FIDA_1to1':
@@ -354,9 +384,19 @@ def scatter_fit(model_function, model_name, x_val, y_val, fitting_mode, fitting_
 			master_dict['R_square'].append("{:.3f}".format(r_square))
 			func_R2_list.append(r_square)
 
-			func_RI = "{:.3f}".format(parameters[0])
-			func_RIA = "{:.3f}".format(parameters[1])
-			func_KD = "{:.3f}".format(parameters[2])
+			# Calculating Chi square values
+			chi2, DF = chi_square_function(y_val_list[c], y_fit_small)
+			chi2 = "{:.3f}".format(chi2)
+			tail_right = scipy.stats.chi2.ppf(1-alpha_level, df=DF)
+			tail_right = "{:.2f}".format(tail_right)
+			tail_left = scipy.stats.chi2.ppf(alpha_level, df=DF)
+			tail_left = "{:.2f}".format(tail_left)
+			master_dict['chi_square'].append('\u03A7<sup>2</sup>=' + str(chi2) + ', DF=' + str(DF)  + \
+											 '<br>' + 'Critical values=' + str(tail_left) + ';' + str(tail_right))
+
+			func_RI = "{:.2f}".format(parameters[0])
+			func_RIA = "{:.2f}".format(parameters[1])
+			func_KD = "{:.2f}".format(parameters[2])
 			func_KD_list.append(parameters[2])
 
 			master_dict['KD_fit'].append(func_KD)
@@ -378,9 +418,19 @@ def scatter_fit(model_function, model_name, x_val, y_val, fitting_mode, fitting_
 			master_dict['R_square'].append("{:.3f}".format(r_square))
 			func_R2_list.append(r_square)
 
-			func_RI = "{:.3f}".format(parameters[0])
-			func_RIA = "{:.3f}".format(parameters[1])
-			func_KD = "{:.3f}".format(parameters[2])
+			# Calculating Chi square values
+			chi2, DF = chi_square_function(y_val_list[c], y_fit_small)
+			chi2 = "{:.3f}".format(chi2)
+			tail_right = scipy.stats.chi2.ppf(1 - 0.01, df=DF)
+			tail_right = "{:.2f}".format(tail_right)
+			tail_left = scipy.stats.chi2.ppf(0.01, df=DF)
+			tail_left = "{:.2f}".format(tail_left)
+			master_dict['chi_square'].append('\u03A7<sup>2</sup>=' + str(chi2) + ', DF=' + str(DF) + \
+											 '<br>' + 'Critical values=' + str(tail_left) + ';' + str(tail_right))
+
+			func_RI = "{:.2f}".format(parameters[0])
+			func_RIA = "{:.2f}".format(parameters[1])
+			func_KD = "{:.2f}".format(parameters[2])
 			func_KD_list.append(parameters[2])
 			func_CI = "{:.3f}".format(parameters[3])
 
@@ -401,6 +451,7 @@ def scatter_fit(model_function, model_name, x_val, y_val, fitting_mode, fitting_
 			"{:.3f}".format(global_KD) + ' ' + u"\u00B1" + ' ' + str("{:.3f}".format(global_R2)))
 
 		master_dict['R_square'].append(' ')
+		master_dict['chi_square'].append(' ')
 
 
 def interval_generator(start, end):
@@ -452,4 +503,20 @@ def fida_text2floats(x_id, y_id, df):
 	return func_list, ydata_list
 
 
-None
+def chi_square_function(y_obs, y_pred):
+
+	# Check that observed values and predicted values have same length
+	if len(y_obs) != len(y_pred):
+		raise ValueError('Number of observed and predicted values in Chi square test are not the same!')
+
+	else:
+		chi2 = 0
+		DF = len(y_obs) -1
+
+		for a in range(len(y_obs)):
+			obs = y_obs[a]
+			pred = y_pred[a]
+
+			chi2 = chi2 + abs(obs-pred)**2/pred
+
+	return chi2, DF
