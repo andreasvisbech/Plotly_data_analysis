@@ -381,7 +381,9 @@ def scatter_fit(
 			# Calcularing R squared value
 			y_fit_small = model_fida_1to1(np.asarray(x_val_list[c]), parameters[0], parameters[1], parameters[2])
 			r_square = r2_score(y_val_list[c], y_fit_small)
-			master_dict['R_square'].append("{:.3f}".format(r_square))
+			r_square_adj = r_square_adjusted(y_val_list[c] , r_square , parameters)
+			master_dict['R_square'].append('R<sup>2</sup>=' + "{:.3f}".format(r_square) + '<br>' +
+										   'R<sup>2</sup><sub>adj</sub>=' + "{:.3f}".format(r_square_adj))
 			func_R2_list.append(r_square)
 
 			# Calculating Chi square values
@@ -391,8 +393,10 @@ def scatter_fit(
 			tail_right = "{:.2f}".format(tail_right)
 			tail_left = scipy.stats.chi2.ppf(alpha_level, df=DF)
 			tail_left = "{:.2f}".format(tail_left)
-			master_dict['chi_square'].append('\u03A7<sup>2</sup>=' + str(chi2) + ', DF=' + str(DF)  + \
-											 '<br>' + 'Critical values=' + str(tail_left) + ';' + str(tail_right))
+			master_dict['chi_square'].append('\u03A7<sup>2</sup>=' + str(chi2) + ', DoF=' + str(DF)  + \
+											 '<br>' + 'Critical values=' + str(tail_left) + ';' + str(tail_right) + \
+											 '<br>' + 'alpha=' + str(alpha_level))
+
 
 			func_RI = "{:.2f}".format(parameters[0])
 			func_RIA = "{:.2f}".format(parameters[1])
@@ -415,18 +419,21 @@ def scatter_fit(
 			y_fit_small = model_fida_excess(np.asarray(x_val_list[c]), parameters[0], parameters[1], parameters[2],
 											parameters[3])
 			r_square = r2_score(y_val_list[c], y_fit_small)
-			master_dict['R_square'].append("{:.3f}".format(r_square))
+			r_square_adj = r_square_adjusted(y_val_list[c], r_square, parameters)
+			master_dict['R_square'].append('R<sup>2</sup>=' + "{:.3f}".format(r_square) + '<br>' +
+										   'R<sup>2</sup><sub>adj</sub>=' + "{:.3f}".format(r_square_adj))
 			func_R2_list.append(r_square)
 
 			# Calculating Chi square values
 			chi2, DF = chi_square_function(y_val_list[c], y_fit_small)
 			chi2 = "{:.3f}".format(chi2)
-			tail_right = scipy.stats.chi2.ppf(1 - 0.01, df=DF)
+			tail_right = scipy.stats.chi2.ppf(1 - alpha_level, df=DF)
 			tail_right = "{:.2f}".format(tail_right)
-			tail_left = scipy.stats.chi2.ppf(0.01, df=DF)
+			tail_left = scipy.stats.chi2.ppf(alpha_level, df=DF)
 			tail_left = "{:.2f}".format(tail_left)
-			master_dict['chi_square'].append('\u03A7<sup>2</sup>=' + str(chi2) + ', DF=' + str(DF) + \
-											 '<br>' + 'Critical values=' + str(tail_left) + ';' + str(tail_right))
+			master_dict['chi_square'].append('\u03A7<sup>2</sup>=' + str(chi2) + ', DoF=' + str(DF) + \
+											 '<br>' + 'Critical values=' + str(tail_left) + ';' + str(tail_right) + \
+											 '<br>' + 'alpha=' + str(alpha_level))
 
 			func_RI = "{:.2f}".format(parameters[0])
 			func_RIA = "{:.2f}".format(parameters[1])
@@ -520,3 +527,17 @@ def chi_square_function(y_obs, y_pred):
 			chi2 = chi2 + abs(obs-pred)**2/pred
 
 	return chi2, DF
+
+
+def r_square_adjusted(y_val, r_square, fit_parameters):
+
+	n = len(y_val)
+	p = len(fit_parameters)
+
+	term1 = 1 - r_square
+	term2 = n - 1
+	term3 = n - p - 1
+
+	r_square_adj = 1 - (term1 * term2) / (term3)
+
+	return r_square_adj

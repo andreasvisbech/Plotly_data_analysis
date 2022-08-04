@@ -128,6 +128,7 @@ def define_master_dict():
 	master_dict['fit_parameters'] = []
 	master_dict['R_square'] = []
 	master_dict['chi_square'] = []
+	master_dict['Fisher_test'] = []
 	master_dict['KD_fit'] = []
 	master_dict['sample_areas_tot'] = []
 	master_dict['baseline_area_tot'] = []

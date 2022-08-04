@@ -33,8 +33,9 @@ else:
 global used_graph_names
 
 # Load data from excel sheet and prep it for analysis
-print('Loading and cleaning your data')
+print('Loading the data')
 df = pd.concat(pd.read_excel(args.input_file, sheet_name=None), ignore_index=True)
+print('Cleaning the data')
 df = data_clean(df)
 
 # Getting user inputs from excel sheet and separating it into appropriate variables
@@ -159,6 +160,8 @@ elif args.plot_type in ['AKTA', 'akta', 'Akta']:
 		[
 			user_input_dict['ID_list'],
 			master_dict['notes_list'],
+			master_dict['sample_areas_tot'],
+			master_dict['baseline_area_tot'],
 			master_dict['fraction_retentions'],
 			master_dict['fraction_areas'],
 			master_dict['fraction_baseline'],
@@ -220,7 +223,7 @@ elif args.plot_type in ['FIDA', 'fida', 'Fida']:
 		'Model list',
 		'Fitted KD/EC50',
 		'Goodness of fit (R<sup>2</sup>)',
-		'Goodness of fit (\u03A7<sup>2</sup>)',
+		'Goodness of fit (\u03A7<sup>2</sup>) BETA',
 		'Fit parameters'],	[
 		master_dict['ID_list_new'],
 		master_dict['notes_list'],
