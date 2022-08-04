@@ -255,7 +255,7 @@ elif args.plot_type in ['Bar', 'BAR', 'bar']:
 		# Updating the color counter to ensure the graphs are different colors.
 		plot_dict['color_count'] = color_selector(plot_dict, graph_name, used_graph_names)
 
-		bar_main(df, x_id, y_id, error_id, i, plot_dict, user_input_dict, param_dict)
+		bar_main(df, x_id, y_id, error_id, i, plot_dict, user_input_dict, param_dict, master_dict)
 
 elif args.plot_type in ['panta', 'Panta', 'PANTA']:
 
