@@ -150,12 +150,24 @@ def plot_func(figure, graph_name, x_val, y_val, std_dev, marker, x_title, y_titl
 				figure.add_trace(
 					go.Scatter(
 						name=graph_name, x=x_val, y=y_val, mode='markers', legendgroup=graph_name,
+						meta='scatter',
 						showlegend=legend_show,
 						hovertemplate=my_hover_template,
 						error_y=dict(type='data', array=std_dev, visible=True),
 						marker=dict(size=param_dict['marker_size'], color=color_list[color_count])),
 					row=subplot_row, col=subplot_col
 				)
+
+	elif comment == 'scatter_residuals':
+
+		figure.add_trace(
+			go.Scatter(
+				name=graph_name, x=x_val, y=y_val, mode='markers', marker_symbol='x',
+				legendgroup=graph_name, showlegend=legend_show,
+				hovertemplate=my_hover_template,
+				marker=dict(size=param_dict['marker_size'], color=color_list[color_count])),
+			row=subplot_row, col=subplot_col
+		)
 
 	elif comment == 'Bar':
 		figure.add_trace(
@@ -214,8 +226,10 @@ def plot_func(figure, graph_name, x_val, y_val, std_dev, marker, x_title, y_titl
 	figure['layout']['xaxis' + ax_id]['title'] = x_title
 	figure['layout']['yaxis' + ax_id]['title'] = y_title
 
-	figure.for_each_xaxis(lambda axis: axis.title.update(font=dict(size=param_dict['xaxis_title_font_size'])))
-	figure.for_each_yaxis(lambda axis: axis.title.update(font=dict(size=param_dict['yaxis_title_font_size'])))
+	#figure.for_each_xaxis(lambda axis: axis.title.update(font=dict(size=param_dict['xaxis_title_font_size'])))
+	#figure.for_each_yaxis(lambda axis: axis.title.update(font=dict(size=param_dict['yaxis_title_font_size'])))
+
+	#print(figure)
 
 	figure.update_layout(
 		template=param_dict['plot_template'],
@@ -252,15 +266,23 @@ def plotly_buttons(plot_dict):
 	# Getting figure from plotting dictionary
 	figure = plot_dict['figure']
 
+	#figure.update_layout(
+	#	updatemenus=[
+	#		dict(
+	#			type="buttons",
+	#			direction="left",
+	#			buttons=list([dict(args=["type", "scatter"], label="Graphs", method="restyle"),
+	#						  dict(args=["type", "table"], label="Stats", method="restyle")]),
+	#			pad={"r": 10, "t": 10}, showactive=True, x=0.11, xanchor="left", y=1.1, yanchor="top"), ])
+
 	figure.update_layout(
 		updatemenus=[
 			dict(
 				type="buttons",
 				direction="left",
-				buttons=list([dict(args=["type", "scatter"], label="Graphs", method="restyle"),
+				buttons=list([dict(args=["type","scatter"], label="Graphs", method="restyle"),
 							  dict(args=["type", "table"], label="Stats", method="restyle")]),
 				pad={"r": 10, "t": 10}, showactive=True, x=0.11, xanchor="left", y=1.1, yanchor="top"), ])
-
 
 def table_plot(plot_dict, col_names_list, col_values_list, user_input_dict):
 	"""
@@ -325,14 +347,16 @@ def table_plot(plot_dict, col_names_list, col_values_list, user_input_dict):
 		figure.add_trace(
 			go.Table(
 				header=dict(values=list(df_func2.columns), align='left'),
-				cells=dict(values=df_func2.transpose().values.tolist(), align='left', height=50))
+				cells=dict(values=df_func2.transpose().values.tolist(), align='left', height=50),
+				meta='table')
 		)
 
 	else:
 		figure.add_trace(
 			go.Table(
 				header=dict(values=list(df_func.columns), align='left'),
-				cells=dict(values=df_func.transpose().values.tolist(), align='left', height=50))
+				cells=dict(values=df_func.transpose().values.tolist(), align='left', height=50),
+				meta='table')
 		)
 
 

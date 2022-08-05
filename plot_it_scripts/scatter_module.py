@@ -1,5 +1,7 @@
 # Import relevant modules
 import statistics
+
+#import pandas as pd
 from scipy.optimize import curve_fit
 from sklearn.metrics import r2_score
 import scipy.stats
@@ -445,6 +447,7 @@ def scatter_fit(
 			master_dict['fit_parameters'].append(
 				'RI=' + str(func_RI) + ', RIA=' + str(func_RIA) + ', CI=' + str(func_CI))
 
+
 	# If global fitting (i.e. more than one KD and R^2 has been calculated for the data) add final result to table
 	if fitting_mode == 'Global':
 		master_dict['ID_list_new'].append(str(ID_list[sample_idx]))
@@ -459,6 +462,16 @@ def scatter_fit(
 
 		master_dict['R_square'].append(' ')
 		master_dict['chi_square'].append(' ')
+
+	# If specified by user calculate the residuals on the full data set and include in the plot.
+	if param_dict['scatter_residuals'] == 'yes':
+
+		residuals = calculate_and_plot_residuals(x_val, y_val, parameters, model_name,)
+
+		plot_func(figure, graph_name + '_residuals' , x_val, residuals, 'None', 'dots', x_title, y_title,
+				  subplot_row, subplot_col, 'scatter_residuals', sample_idx, param_dict, color_list, color_count,
+				  user_input_dict, master_dict)
+
 
 
 def interval_generator(start, end):
@@ -541,3 +554,27 @@ def r_square_adjusted(y_val, r_square, fit_parameters):
 	r_square_adj = 1 - (term1 * term2) / (term3)
 
 	return r_square_adj
+
+
+def calculate_and_plot_residuals(x_val, y_val, parameters, model_name):
+
+	df = pd.DataFrame()
+	df['xs'] = x_val
+	df['ys'] = y_val
+
+	if model_name == 'FIDA_1to1':
+
+		y_pred = model_fida_1to1(df['xs'], parameters[0], parameters[1], parameters[2])
+		df['y_pred'] = y_pred
+
+	elif model_name == 'FIDA_excess':
+
+		y_pred = model_fida_excess(df['xs'], parameters[0], parameters[1], parameters[2], parameters[3])
+		df['y_pred'] = y_pred
+
+	residuals = df['ys'] - df['y_pred']
+
+	return residuals
+
+
+

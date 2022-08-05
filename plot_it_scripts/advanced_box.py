@@ -42,6 +42,7 @@ def create_advanced_box():
 		param_dict['KD_fit_max'] = float(e29.get())
 		param_dict['k_coop_min'] = float(e30.get())
 		param_dict['k_coop_max'] = float(e31.get())
+		param_dict['scatter_residuals'] = str(var6.get())
 
 	master = tk.Tk()
 	ttk.Label(master, text="RI min [FIDA]").grid(row=0)
@@ -70,14 +71,15 @@ def create_advanced_box():
 	ttk.Label(master, text="Vertex point minimum prominence [Panta]").grid(row=8, column=0)
 	ttk.Label(master, text="Degree variation for onset (%) [Panta]").grid(row=9, column=0)
 	ttk.Label(master, text="Plot intermediate data? [Panta]").grid(row=10, column=0)
-	ttk.Label(master, text="Bmin min [scatter fit (Hill)]").grid(row=11, column=0)
-	ttk.Label(master, text="Bmin max [scatter fit (Hill)]").grid(row=11, column=3)
-	ttk.Label(master, text="Bmax min [scatter fit (Hill)]").grid(row=12, column=0)
-	ttk.Label(master, text="Bmax max [scatter fit (Hill)]").grid(row=12, column=3)
-	ttk.Label(master, text="KD min [scatter fit (Hill)]").grid(row=13, column=0)
-	ttk.Label(master, text="KD max [scatter fit (Hill)]").grid(row=13, column=3)
-	ttk.Label(master, text="k_coop min [scatter fit (Hill)]").grid(row=14, column=0)
-	ttk.Label(master, text="k_coop max [scatter fit (Hill)]").grid(row=14, column=3)
+	ttk.Label(master, text="Bmin min [scatter fit]").grid(row=11, column=0)
+	ttk.Label(master, text="Bmin max [scatter fit]").grid(row=11, column=3)
+	ttk.Label(master, text="Bmax min [scatter fit]").grid(row=12, column=0)
+	ttk.Label(master, text="Bmax max [scatter fit]").grid(row=12, column=3)
+	ttk.Label(master, text="KD min [scatter fit]").grid(row=13, column=0)
+	ttk.Label(master, text="KD max [scatter fit]").grid(row=13, column=3)
+	ttk.Label(master, text="k_coop min [scatter fit]").grid(row=14, column=0)
+	ttk.Label(master, text="k_coop max [scatter fit]").grid(row=14, column=3)
+	ttk.Label(master, text="Plot residuals [scatter fit/FIDA]").grid(row=15, column=0)
 
 	e1 = ttk.Entry(master)
 	e2 = ttk.Entry(master)
@@ -132,6 +134,10 @@ def create_advanced_box():
 	var5 = tk.StringVar(master)
 	var5.set('Error bands')
 	e32 = ttk.OptionMenu(master, var5, 'Error bands', 'Error bands', 'Error bars')
+
+	var6 = tk.StringVar(master)
+	var6.set('no')
+	e33 = ttk.OptionMenu(master, var6, 'no', 'no', 'yes')
 
 	e1.insert(10, "0")
 	e2.insert(10, np.inf)
@@ -192,6 +198,7 @@ def create_advanced_box():
 	e30.grid(row=14, column=1)
 	e31.grid(row=14, column=4)
 	e32.grid(row=6, column=7)
+	e33.grid(row=15, column=1)
 
 	ttk.Button(master, text='Run', command=master.quit).grid(row=20, column=1, sticky=tk.W, pady=4)
 	ttk.Button(master, text='Register', command=show_entry_fields).grid(row=20, column=0, sticky=tk.W, pady=4)
@@ -233,5 +240,6 @@ def default_param_dict():
 		'KD_fit_min': 0,
 		'KD_fit_max': np.inf,
 		'k_coop_min': -np.inf,
-		'k_coop_max': np.inf
+		'k_coop_max': np.inf,
+		'scatter_residuals': 'no'
 	}
