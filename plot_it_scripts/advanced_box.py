@@ -43,6 +43,7 @@ def create_advanced_box():
 		param_dict['k_coop_min'] = float(e30.get())
 		param_dict['k_coop_max'] = float(e31.get())
 		param_dict['scatter_residuals'] = str(var6.get())
+		param_dict['alpha_level'] = float(e34.get())
 
 	master = tk.Tk()
 	ttk.Label(master, text="RI min [FIDA]").grid(row=0)
@@ -80,6 +81,7 @@ def create_advanced_box():
 	ttk.Label(master, text="k_coop min [scatter fit]").grid(row=14, column=0)
 	ttk.Label(master, text="k_coop max [scatter fit]").grid(row=14, column=3)
 	ttk.Label(master, text="Plot residuals [scatter fit/FIDA]").grid(row=15, column=0)
+	ttk.Label(master, text="Alpha level [statistics]").grid(row=16, column=0)
 
 	e1 = ttk.Entry(master)
 	e2 = ttk.Entry(master)
@@ -139,6 +141,8 @@ def create_advanced_box():
 	var6.set('no')
 	e33 = ttk.OptionMenu(master, var6, 'no', 'no', 'yes')
 
+	e34 = ttk.Entry(master)
+
 	e1.insert(10, "0")
 	e2.insert(10, np.inf)
 	e3.insert(10, "0")
@@ -165,6 +169,7 @@ def create_advanced_box():
 	e29.insert(10, np.inf)
 	e30.insert(10, -np.inf)
 	e31.insert(10, np.inf)
+	e34.insert(10, 0.05)
 
 	e1.grid(row=0, column=1)
 	e2.grid(row=0, column=4)
@@ -199,6 +204,7 @@ def create_advanced_box():
 	e31.grid(row=14, column=4)
 	e32.grid(row=6, column=7)
 	e33.grid(row=15, column=1)
+	e34.grid(row=16, column=1)
 
 	ttk.Button(master, text='Run', command=master.quit).grid(row=20, column=1, sticky=tk.W, pady=4)
 	ttk.Button(master, text='Register', command=show_entry_fields).grid(row=20, column=0, sticky=tk.W, pady=4)
@@ -241,5 +247,6 @@ def default_param_dict():
 		'KD_fit_max': np.inf,
 		'k_coop_min': -np.inf,
 		'k_coop_max': np.inf,
-		'scatter_residuals': 'no'
+		'scatter_residuals': 'no',
+		'alpha_level': 0.05
 	}

@@ -127,6 +127,7 @@ def define_master_dict():
 	master_dict['model_list'] = []
 	master_dict['fit_parameters'] = []
 	master_dict['R_square'] = []
+	master_dict['RMSE'] = []
 	master_dict['chi_square'] = []
 	master_dict['Fisher_test'] = []
 	master_dict['KD_fit'] = []

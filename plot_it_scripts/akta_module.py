@@ -1,6 +1,7 @@
 # Import modules
 from sklearn.metrics import auc
-import pandas as pd
+import peakutils
+#import pandas as pd
 
 # Import functions from other scripts
 # from plotting_script import *
@@ -41,7 +42,8 @@ def akta_main_func(df, xs, ys, sample_idx, x_id, y_id, param_dict, master_dict, 
 	ext_coeff = user_input_dict['ext_coeff']
 	volume_load = user_input_dict['akta volume loaded']
 
-	# Check the user input for the baseline. Single number input will give flat baseline. Two number input will be used as boundaries for baseline
+	# Check the user input for the baseline. Single number input will give flat baseline.
+	# Two number input will be used as boundaries for baseline
 	if str(df['AKTA_baseline'][sample_idx]).count(';') == 0:
 		baseline_coord = [float(str(df['AKTA_baseline'][sample_idx]).replace(',', '.'))]
 	elif df['AKTA_baseline'][sample_idx].count(';') > 0:
@@ -217,5 +219,3 @@ def linear_model(x, a, b):
 	y = x * a + b
 	return y
 
-
-None

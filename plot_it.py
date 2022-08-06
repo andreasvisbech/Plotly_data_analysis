@@ -223,6 +223,7 @@ elif args.plot_type in ['FIDA', 'fida', 'Fida']:
 		'Model list',
 		'Fitted KD/EC50',
 		'Goodness of fit (R<sup>2</sup>)',
+		'RMSE value (beta)',
 		'Goodness of fit (\u03A7<sup>2</sup>) BETA',
 		'Fit parameters'],	[
 		master_dict['ID_list_new'],
@@ -230,6 +231,7 @@ elif args.plot_type in ['FIDA', 'fida', 'Fida']:
 		master_dict['model_list'],
 		master_dict['KD_fit'],
 		master_dict['R_square'],
+		master_dict['RMSE'],
 		master_dict['chi_square'],
 		master_dict['fit_parameters']], user_input_dict)
 
