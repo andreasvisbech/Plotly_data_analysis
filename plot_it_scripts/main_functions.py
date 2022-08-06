@@ -1,5 +1,6 @@
 # Import modules
 import pandas as pd
+import matplotlib.colors
 
 
 # Define functions
@@ -131,6 +132,7 @@ def define_master_dict():
 	master_dict['chi_square'] = []
 	master_dict['Fisher_test'] = []
 	master_dict['KD_fit'] = []
+	master_dict['peak_id'] = []
 	master_dict['sample_areas_tot'] = []
 	master_dict['baseline_area_tot'] = []
 	master_dict['fraction_retentions'] = []
@@ -154,6 +156,7 @@ def define_plot_dict():
 	plot_dict['plot_figure'] = ''
 	plot_dict['graph_names'] = []
 	plot_dict['color_count'] = -1
+	plot_dict['table_color_list'] = []
 
 	return plot_dict
 
@@ -214,3 +217,15 @@ def write_output_table(name_list, data_list):
 
 	return pd_out
 
+
+def table_color_list_manager(color,list):
+	# Add the appropriate color to the table coloring list
+
+	rgb_color = matplotlib.colors.to_rgb(color)
+
+	rgb_color = 'rgba(' + \
+				str(rgb_color[0] * 255) + ',' + \
+				str(rgb_color[1] * 255) + ',' + \
+				str(rgb_color[2] * 255) + ', 0.15)'
+
+	list.append(rgb_color)

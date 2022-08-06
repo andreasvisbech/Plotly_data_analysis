@@ -122,7 +122,8 @@ elif args.plot_type in ['AKTA', 'akta', 'Akta']:
 		print('Analysing data: ' + str(ID_list[i]))
 
 		plot_dict['graph_names'].append(ID_list[i])
-		master_dict['notes_list'].append(user_input_dict['sample_notes'][i])
+		#master_dict['ID_list_new'].append(ID_list[i])
+		#master_dict['notes_list'].append(user_input_dict['sample_notes'][i])
 
 		x_id = 'x' + str(i + 1)
 		y_id = 'y' + str(i + 1)
@@ -149,17 +150,19 @@ elif args.plot_type in ['AKTA', 'akta', 'Akta']:
 	table_plot(plot_dict, [
 		'Sample ID',
 		'Sample notes',
+		'Peak ID',
 		'Total sample area',
 		'Total baseline area',
 		'Retention time/volume (beta)',
 		'Area of fraction',
-		'Baseline area (fraction)',
+		'Baseline area (peak)',
 		'Area used for calculation',
 		'Fraction yield [mg]',
 		'Culture yield [ug/mL]'],
 		[
-			user_input_dict['ID_list'],
+			master_dict['ID_list_new'],
 			master_dict['notes_list'],
+			master_dict['peak_id'],
 			master_dict['sample_areas_tot'],
 			master_dict['baseline_area_tot'],
 			master_dict['fraction_retentions'],

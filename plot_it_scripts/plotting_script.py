@@ -266,15 +266,6 @@ def plotly_buttons(plot_dict):
 	# Getting figure from plotting dictionary
 	figure = plot_dict['figure']
 
-	#figure.update_layout(
-	#	updatemenus=[
-	#		dict(
-	#			type="buttons",
-	#			direction="left",
-	#			buttons=list([dict(args=["type", "scatter"], label="Graphs", method="restyle"),
-	#						  dict(args=["type", "table"], label="Stats", method="restyle")]),
-	#			pad={"r": 10, "t": 10}, showactive=True, x=0.11, xanchor="left", y=1.1, yanchor="top"), ])
-
 	figure.update_layout(
 		updatemenus=[
 			dict(
@@ -302,6 +293,8 @@ def table_plot(plot_dict, col_names_list, col_values_list, user_input_dict):
 	figure = plot_dict['figure']
 	ID_list = user_input_dict['ID_list']
 	python_misc = user_input_dict['python_misc']
+
+	fill_color_list = plot_dict['table_color_list']
 
 	table_pos_list = []
 
@@ -344,19 +337,40 @@ def table_plot(plot_dict, col_names_list, col_values_list, user_input_dict):
 		df_func2 = df_func.sort_values(by='table_coords', ascending=True)
 		del df_func2['table_coords']
 
-		figure.add_trace(
-			go.Table(
-				header=dict(values=list(df_func2.columns), align='left'),
-				cells=dict(values=df_func2.transpose().values.tolist(), align='left', height=50),
-				meta='table')
-		)
+		if len(fill_color_list) > 0:
+
+			figure.add_trace(
+				go.Table(
+					header=dict(values=list(df_func2.columns), align='left'),
+					cells=dict(values=df_func2.transpose().values.tolist(), align='left',
+							   height=50, fill_color=[fill_color_list]*len(col_names_list)))
+			)
+
+		else:
+
+			figure.add_trace(
+				go.Table(
+					header=dict(values=list(df_func2.columns), align='left'),
+					cells=dict(values=df_func2.transpose().values.tolist(), align='left', height=50),
+					meta='table')
+			)
 
 	else:
-		figure.add_trace(
-			go.Table(
-				header=dict(values=list(df_func.columns), align='left'),
-				cells=dict(values=df_func.transpose().values.tolist(), align='left', height=50),
-				meta='table')
-		)
 
+		if len(fill_color_list) > 0:
+
+			figure.add_trace(
+				go.Table(
+					header=dict(values=list(df_func.columns), align='left'),
+					cells=dict(values=df_func.transpose().values.tolist(), align='left',
+							   height=50, fill_color=[fill_color_list]*len(col_names_list)))
+			)
+
+		else:
+
+			figure.add_trace(
+				go.Table(
+					header=dict(values=list(df_func.columns), align='left'),
+					cells=dict(values=df_func.transpose().values.tolist(), align='left', height=50))
+			)
 
