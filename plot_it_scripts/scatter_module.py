@@ -1,7 +1,7 @@
 # Import relevant modules
 import statistics
 
-#import pandas as pd
+# import pandas as pd
 from scipy.optimize import curve_fit
 from sklearn.metrics import r2_score
 import scipy.stats
@@ -43,7 +43,6 @@ def model_fida_excess(x, ri, ria, kd, ci):
 
 
 def scatter_data_slice(df, sample_idx, x_id, y_id, user_input_dict):
-
 	data_interval = user_input_dict['data_interval']
 
 	# Extracting the raw x and y values from the excel sheet.
@@ -217,7 +216,6 @@ def replicate_mean_error(unique_x, redundant_x, y_val):
 def scatter_fit(
 		model_function, model_name, x_val, y_val, fitting_mode, fitting_min, fitting_max, sample_idx,
 		param_dict, master_dict, user_input_dict, plot_dict):
-
 	# Loading local variables for plotting
 	figure = plot_dict['figure']
 	graph_name = plot_dict['graph_names'][sample_idx]
@@ -232,8 +230,6 @@ def scatter_fit(
 	ID_list = user_input_dict['ID_list']
 	sample_notes = user_input_dict['sample_notes']
 	fit_models = user_input_dict['fit_models']
-
-	#out_dict = {}
 
 	x_val_list = []
 	y_val_list = []
@@ -286,10 +282,6 @@ def scatter_fit(
 		y_mean = replicate_mean_error(unique_x, x_val, y_val)[0]
 		y_val_list.append(y_mean)
 
-		sigma = replicate_mean_error(unique_x, x_val, y_val)[1]
-		sigma = np.array(sigma)
-		sigma[sigma==0] = 1
-
 	elif fitting_mode == 'Global':
 
 		# Get the max number of times a concentration value occurs in raw data. This is the number of graphs to calculate.
@@ -310,6 +302,13 @@ def scatter_fit(
 				x_val_list[k].append(list(x_val)[conc_indices[k]])
 				y_val_list[k].append(list(y_val)[conc_indices[k]])
 
+	# Define a list with sigma values in case the user wants to weight the curve fit based on errors.
+	sigma_list = sigma_list_for_scatter_fit(unique_x, x_val, y_val, x_val_list, fitting_mode)
+
+	# Emptying the lists before running the fitting
+	master_dict['func_KD_list'] = []
+	master_dict['func_R2_list'] = []
+
 	func_KD_list = []
 	func_R2_list = []
 
@@ -318,13 +317,13 @@ def scatter_fit(
 		if param_dict['scatter_fit_error_weighing'] == 'yes, as relative sigma':
 			parameters, covariance = curve_fit(
 				model_function, list(x_val_list[c]), list(y_val_list[c]),
-				sigma=sigma, bounds=bound_param, method='trf',
+				sigma=sigma_list[c], bounds=bound_param, method='trf',
 				maxfev=10000)
 
 		elif param_dict['scatter_fit_error_weighing'] == 'yes, as absolute sigma':
 			parameters, covariance = curve_fit(
 				model_function, list(x_val_list[c]), list(y_val_list[c]),
-				sigma=sigma, absolute_sigma=True, bounds=bound_param, method='trf',
+				sigma=sigma_list[c], absolute_sigma=True, bounds=bound_param, method='trf',
 				maxfev=10000)
 
 		else:
@@ -332,7 +331,6 @@ def scatter_fit(
 				model_function, list(x_val_list[c]), list(y_val_list[c]),
 				bounds=bound_param, method='trf',
 				maxfev=10000)
-
 
 		if len(x_val_list) == 1:
 			master_dict['ID_list_new'].append(str(ID_list[sample_idx]))
@@ -355,9 +353,16 @@ def scatter_fit(
 				subplot_row, subplot_col, 'None', sample_idx, param_dict, color_list, color_count,
 				user_input_dict, master_dict)
 
+			# Calculate statistics and apply to master dict
+			scatter_statistics(x_val_list[c], y_val_list[c], parameters, model_name, alpha_level, master_dict)
+
+			# Write parameters from fit to the master dict
+			write_fit_params_to_master_dict(model_name, parameters, master_dict, func_KD_list)
+
 			# Calcularing R squared value
-			y_fit_small = hill_equation(np.asarray(x_val_list[c]), parameters[0], parameters[1], parameters[2], parameters[3])
-			method_name(c, func_KD_list, func_R2_list, parameters, y_fit_small, y_val_list, master_dict)
+			#y_fit_small = hill_equation(np.asarray(x_val_list[c]), parameters[0], parameters[1], parameters[2],
+			#							parameters[3])
+			#method_name(c, func_KD_list, func_R2_list, parameters, y_fit_small, y_val_list, master_dict)
 
 		elif model_name == 'Hill_simple':
 			# Generating a fitting curve with many points for the plot
@@ -367,19 +372,25 @@ def scatter_fit(
 					  subplot_row, subplot_col, 'None', sample_idx, param_dict, color_list, color_count,
 					  user_input_dict, master_dict)
 
+			# Calculate statistics and apply to master dict
+			scatter_statistics(x_val_list[c], y_val_list[c], parameters, model_name, alpha_level, master_dict)
+
+			# Write parameters from fit to the master dict
+			write_fit_params_to_master_dict(model_name, parameters, master_dict, func_KD_list)
+
 			# Calcularing R squared value
-			y_fit_small = hill_simple(np.asarray(x_val_list[c]), parameters[0], parameters[1], parameters[2])
-			r_square = r2_score(y_val_list[c], y_fit_small)
-			master_dict['R_square'].append("{:.3f}".format(r_square))
-			func_R2_list.append(r_square)
+			#y_fit_small = hill_simple(np.asarray(x_val_list[c]), parameters[0], parameters[1], parameters[2])
+			#r_square = r2_score(y_val_list[c], y_fit_small)
+			#master_dict['R_square'].append("{:.3f}".format(r_square))
+			#func_R2_list.append(r_square)
 
-			func_Bmin = "{:.3f}".format(parameters[0])
-			func_Bmax = "{:.3f}".format(parameters[1])
-			func_KD = "{:.3f}".format(parameters[2])
-			func_KD_list.append(parameters[2])
+			#func_Bmin = "{:.3f}".format(parameters[0])
+			#func_Bmax = "{:.3f}".format(parameters[1])
+			#func_KD = "{:.3f}".format(parameters[2])
+			#func_KD_list.append(parameters[2])
 
-			master_dict['KD_fit'].append(func_KD)
-			master_dict['fit_parameters'].append('Bmin=' + str(func_Bmin) + ', Bmax=' + str(func_Bmax))
+			#master_dict['KD_fit'].append(func_KD)
+			#master_dict['fit_parameters'].append('Bmin=' + str(func_Bmin) + ', Bmax=' + str(func_Bmax))
 
 		elif model_name == '4PL':
 			# Generating a fitting curve with many points for the plot
@@ -389,9 +400,11 @@ def scatter_fit(
 					  subplot_row, subplot_col, 'None', sample_idx, param_dict, color_list, color_count,
 					  user_input_dict, master_dict)
 
-			# Calcularing R squared value
-			y_fit_small = fit_4pl(np.asarray(x_val_list[c]), parameters[0], parameters[1], parameters[2], parameters[3])
-			method_name(c, func_KD_list, func_R2_list, parameters, y_fit_small, y_val_list, master_dict)
+			# Calculate statistics and apply to master dict
+			scatter_statistics(x_val_list[c], y_val_list[c], parameters, model_name, alpha_level, master_dict)
+
+			# Write parameters from fit to the master dict
+			write_fit_params_to_master_dict(model_name, parameters, master_dict, func_KD_list)
 
 		elif model_name == 'FIDA_1to1':
 			# Generating a fitting curve with many points for the plot
@@ -401,51 +414,37 @@ def scatter_fit(
 					  subplot_row, subplot_col, 'None', sample_idx, param_dict, color_list, color_count,
 					  user_input_dict, master_dict)
 
-			# Calcularing R squared value
-			#y_fit_small = model_fida_1to1(np.asarray(x_val_list[c]), parameters[0], parameters[1], parameters[2])
-			#r_square = r2_score(y_val_list[c], y_fit_small)
-			#r_square_adj = r_square_adjusted(y_val_list[c] , r_square , parameters)
-			#master_dict['R_square'].append('R<sup>2</sup>=' + "{:.3f}".format(r_square) + '<br>' +
+			# Calculate statistics and apply to master dict
+			scatter_statistics(x_val_list[c], y_val_list[c], parameters, model_name, alpha_level, master_dict)
+
+			# Write parameters from fit to the master dict
+			write_fit_params_to_master_dict(model_name, parameters, master_dict, func_KD_list)
+
+			# r_square, r_square_adj = r_square_function(x_val_list[c], y_val_list[c], parameters, model_name)
+
+			# master_dict['R_square'].append('R<sup>2</sup>=' + "{:.3f}".format(r_square) + '<br>' +
 			#							   'R<sup>2</sup><sub>adj</sub>=' + "{:.3f}".format(r_square_adj))
-			#func_R2_list.append(r_square)
-
-			r_square, r_square_adj = r_square_function(x_val_list[c], y_val_list[c], parameters, model_name)
-
-			master_dict['R_square'].append('R<sup>2</sup>=' + "{:.3f}".format(r_square) + '<br>' +
-										   'R<sup>2</sup><sub>adj</sub>=' + "{:.3f}".format(r_square_adj))
-			func_R2_list.append(r_square)
+			# func_R2_list.append(r_square)
 
 			# Calculate chi square stats
-			chi2, DoF, tail_left, tail_right, p_val = chi_square_function(
-				x_val_list[c],
-				y_val_list[c],
-				parameters,
-				model_name,
-				alpha_level)
+			# chi2, DoF, tail_left, tail_right, p_val = chi_square_function(
+			#	x_val_list[c],
+			#	y_val_list[c],
+			#	parameters,
+			#	model_name,
+			#	alpha_level)
 
-			master_dict['chi_square'].append('\u03A7<sup>2</sup>=' + str(chi2) + ', DoF=' + str(DoF) + \
-											 '<br>' + 'Tails=' + str(tail_left) + ';' + str(tail_right) + \
-											 '<br>' + 'p-value' + str(p_val) + '<br>alpha=' + str(alpha_level))
+			# master_dict['chi_square'].append('\u03A7<sup>2</sup>=' + str(chi2) + ', DoF=' + str(DoF) + \
+			#								 '<br>' + 'Tails=' + str(tail_left) + ';' + str(tail_right) + \
+			#								 '<br>' + 'p-value' + str(p_val) + '<br>alpha=' + str(alpha_level))
 
-			# Calculating Chi square values
-			#chi2, DF = chi_square_function(y_val_list[c], y_fit_small)
-			#chi2 = "{:.3f}".format(chi2)
-			#tail_right = scipy.stats.chi2.ppf(1-alpha_level, df=DF)
-			#tail_right = "{:.2f}".format(tail_right)
-			#tail_left = scipy.stats.chi2.ppf(alpha_level, df=DF)
-			#tail_left = "{:.2f}".format(tail_left)
-			#master_dict['chi_square'].append('\u03A7<sup>2</sup>=' + str(chi2) + ', DoF=' + str(DF)  + \
-			#								 '<br>' + 'Critical values=' + str(tail_left) + ';' + str(tail_right) + \
-			#								 '<br>' + 'alpha=' + str(alpha_level))
+			#func_RI = "{:.2f}".format(parameters[0])
+			#func_RIA = "{:.2f}".format(parameters[1])
+			#func_KD = "{:.2f}".format(parameters[2])
+			#func_KD_list.append(parameters[2])
 
-
-			func_RI = "{:.2f}".format(parameters[0])
-			func_RIA = "{:.2f}".format(parameters[1])
-			func_KD = "{:.2f}".format(parameters[2])
-			func_KD_list.append(parameters[2])
-
-			master_dict['KD_fit'].append(func_KD)
-			master_dict['fit_parameters'].append('RI=' + str(func_RI) + ', RIA=' + str(func_RIA))
+			#master_dict['KD_fit'].append(func_KD)
+			#master_dict['fit_parameters'].append('RI=' + str(func_RI) + ', RIA=' + str(func_RIA))
 
 		elif model_name == 'FIDA_excess':
 
@@ -456,50 +455,40 @@ def scatter_fit(
 					  subplot_row, subplot_col, 'None', sample_idx, param_dict, color_list, color_count,
 					  user_input_dict, master_dict)
 
+			# Calculate statistics and apply to master dict
+			scatter_statistics(x_val_list[c], y_val_list[c], parameters, model_name, alpha_level, master_dict)
+
+			# Write parameters from fit to the master dict
+			write_fit_params_to_master_dict(model_name, parameters, master_dict, func_KD_list)
+
 			# Calcularing R squared value
-			r_square, r_square_adj = r_square_function(x_val_list[c], y_val_list[c], parameters, model_name)
+			# r_square, r_square_adj = r_square_function(x_val_list[c], y_val_list[c], parameters, model_name)
 
-			master_dict['R_square'].append('R<sup>2</sup>=' + "{:.3f}".format(r_square) + '<br>' +
-										   'R<sup>2</sup><sub>adj</sub>=' + "{:.3f}".format(r_square_adj))
-			func_R2_list.append(r_square)
-
-			#y_fit_small = model_fida_excess(np.asarray(x_val_list[c]), parameters[0], parameters[1], parameters[2],
-			#								parameters[3])
-			#r_square = r2_score(y_val_list[c], y_fit_small)
-			#r_square_adj = r_square_adjusted(y_val_list[c], r_square, parameters)
-			#master_dict['R_square'].append('R<sup>2</sup>=' + "{:.3f}".format(r_square) + '<br>' +
+			# master_dict['R_square'].append('R<sup>2</sup>=' + "{:.3f}".format(r_square) + '<br>' +
 			#							   'R<sup>2</sup><sub>adj</sub>=' + "{:.3f}".format(r_square_adj))
-			#func_R2_list.append(r_square)
-
-			# Calculating Chi square values
-			#chi2, DF = chi_square_function(y_val_list[c], y_fit_small)
-			#chi2 = "{:.3f}".format(chi2)
-			#tail_right = scipy.stats.chi2.ppf(1 - alpha_level, df=DF)
-			#tail_right = "{:.2f}".format(tail_right)
-			#tail_left = scipy.stats.chi2.ppf(alpha_level, df=DF)
-			#tail_left = "{:.2f}".format(tail_left)
+			# func_R2_list.append(r_square)
 
 			# Calculate chi square stats
-			chi2, DoF, tail_left, tail_right, p_val = chi_square_function(
-				x_val_list[c],
-				y_val_list[c],
-				parameters,
-				model_name,
-				alpha_level)
+			# chi2, DoF, tail_left, tail_right, p_val = chi_square_function(
+			#	x_val_list[c],
+			#	y_val_list[c],
+			#	parameters,
+			#	model_name,
+			#	alpha_level)
 
-			master_dict['chi_square'].append('\u03A7<sup>2</sup>=' + str(chi2) + ', DoF=' + str(DoF) + \
-											 '<br>' + 'Tails=' + str(tail_left) + ';' + str(tail_right) + \
-											 '<br>' + 'p-value' + str(p_val) + '<br>alpha=' + str(alpha_level))
+			# master_dict['chi_square'].append('\u03A7<sup>2</sup>=' + str(chi2) + ', DoF=' + str(DoF) + \
+			#								 '<br>' + 'Tails=' + str(tail_left) + ';' + str(tail_right) + \
+			#								 '<br>' + 'p-value' + str(p_val) + '<br>alpha=' + str(alpha_level))
 
-			func_RI = "{:.2f}".format(parameters[0])
-			func_RIA = "{:.2f}".format(parameters[1])
-			func_KD = "{:.2f}".format(parameters[2])
-			func_KD_list.append(parameters[2])
-			func_CI = "{:.3f}".format(parameters[3])
+			#func_RI = "{:.2f}".format(parameters[0])
+			#func_RIA = "{:.2f}".format(parameters[1])
+			#func_KD = "{:.2f}".format(parameters[2])
+			#func_KD_list.append(parameters[2])
+			#func_CI = "{:.3f}".format(parameters[3])
 
-			master_dict['KD_fit'].append(func_KD)
-			master_dict['fit_parameters'].append(
-				'RI=' + str(func_RI) + ', RIA=' + str(func_RIA) + ', CI=' + str(func_CI))
+			#master_dict['KD_fit'].append(func_KD)
+			#master_dict['fit_parameters'].append(
+			#	'RI=' + str(func_RI) + ', RIA=' + str(func_RIA) + ', CI=' + str(func_CI))
 
 		if fitting_mode == 'Local':
 
@@ -523,8 +512,8 @@ def scatter_fit(
 		master_dict['model_list'].append(fit_models[sample_idx] + ', ' + fitting_mode)
 		master_dict['fit_parameters'].append(' ')
 
-		global_KD = statistics.mean(func_KD_list)
-		global_R2 = statistics.stdev(func_KD_list)
+		global_KD = statistics.mean(master_dict['func_KD_list'])
+		global_R2 = statistics.stdev(master_dict['func_KD_list'])
 		master_dict['KD_fit'].append(
 			"{:.3f}".format(global_KD) + ' ' + u"\u00B1" + ' ' + str("{:.3f}".format(global_R2)))
 
@@ -536,16 +525,13 @@ def scatter_fit(
 		# Add the appropriate color to the table coloring list
 		table_color_list_manager(color_list[color_count], plot_dict['table_color_list'])
 
-
 	# If specified by user calculate the residuals on the full data set and include in the plot.
 	if param_dict['scatter_residuals'] == 'yes':
+		residuals = calculate_and_plot_residuals(x_val, y_val, parameters, model_name, )
 
-		residuals = calculate_and_plot_residuals(x_val, y_val, parameters, model_name,)
-
-		plot_func(figure, graph_name + '_residuals' , x_val, residuals, 'None', 'dots', x_title, y_title,
+		plot_func(figure, graph_name + '_residuals', x_val, residuals, 'None', 'dots', x_title, y_title,
 				  subplot_row, subplot_col, 'scatter_residuals', sample_idx, param_dict, color_list, color_count,
 				  user_input_dict, master_dict)
-
 
 
 def interval_generator(start, end):
@@ -566,18 +552,18 @@ def interval_generator(start, end):
 	return np.array(interval)
 
 
-def method_name(c, func_KD_list, func_R2_list, parameters, y_fit_small, y_val_list, master_dict):
-	r_square = r2_score(y_val_list[c], y_fit_small)
-	master_dict['R_square'].append("{:.3f}".format(r_square))
-	func_R2_list.append(r_square)
-	func_Bmin = "{:.3f}".format(parameters[0])
-	func_Bmax = "{:.3f}".format(parameters[1])
-	func_KD = "{:.3f}".format(parameters[2])
-	func_KD_list.append(parameters[2])
-	func_k_coop = "{:.3f}".format(parameters[3])
-	master_dict['KD_fit'].append(func_KD)
-	master_dict['fit_parameters'].append(
-		'Bmin=' + str(func_Bmin) + ', Bmax=' + str(func_Bmax) + ', k_coop=' + str(func_k_coop))
+#def method_name(c, func_KD_list, func_R2_list, parameters, y_fit_small, y_val_list, master_dict):
+#	r_square = r2_score(y_val_list[c], y_fit_small)
+#	master_dict['R_square'].append("{:.3f}".format(r_square))
+#	func_R2_list.append(r_square)
+#	func_Bmin = "{:.3f}".format(parameters[0])
+#	func_Bmax = "{:.3f}".format(parameters[1])
+#	func_KD = "{:.3f}".format(parameters[2])
+#	func_KD_list.append(parameters[2])
+#	func_k_coop = "{:.3f}".format(parameters[3])
+#	master_dict['KD_fit'].append(func_KD)
+#	master_dict['fit_parameters'].append(
+#		'Bmin=' + str(func_Bmin) + ', Bmax=' + str(func_Bmax) + ', k_coop=' + str(func_k_coop))
 
 
 def fida_text2floats(x_id, y_id, df):
@@ -597,8 +583,74 @@ def fida_text2floats(x_id, y_id, df):
 	return func_list, ydata_list
 
 
-def r_square_function(x_val, y_val, parameters, model_name):
+def scatter_statistics(x_val, y_val, parameters, model_name, alpha_level, master_dict):
 
+	# Calculate r square and adjusted r square and put to master dict
+	r_square, r_square_adj = r_square_function(x_val, y_val, parameters, model_name)
+
+	master_dict['R_square'].append('R<sup>2</sup>=' + "{:.3f}".format(r_square) + '<br>' +
+								   'R<sup>2</sup><sub>adj</sub>=' + "{:.3f}".format(r_square_adj))
+
+	# Calculate chi square stats and put to master dict
+	chi2, DoF, tail_left, tail_right, p_val = chi_square_function(x_val, y_val, parameters, model_name, alpha_level)
+
+	master_dict['chi_square'].append('\u03A7<sup>2</sup>=' + str(chi2) + ', DoF=' + str(DoF) + \
+									 '<br>' + 'Tails=' + str(tail_left) + ';' + str(tail_right) + \
+									 '<br>' + 'p-value' + str(p_val) + '<br>alpha=' + str(alpha_level))
+
+
+def write_fit_params_to_master_dict(model_name, parameters, master_dict, func_KD_list):
+
+	if model_name == 'FIDA_1to1':
+		func_RI = "{:.2f}".format(parameters[0])
+		func_RIA = "{:.2f}".format(parameters[1])
+		func_KD = "{:.2f}".format(parameters[2])
+		master_dict['func_KD_list'].append(parameters[2])
+
+		master_dict['KD_fit'].append(func_KD)
+		master_dict['fit_parameters'].append('RI=' + str(func_RI) + ', RIA=' + str(func_RIA))
+
+	elif model_name == 'FIDA_excess':
+		func_RI = "{:.2f}".format(parameters[0])
+		func_RIA = "{:.2f}".format(parameters[1])
+		func_KD = "{:.2f}".format(parameters[2])
+		master_dict['func_KD_list'].append(parameters[2])
+		func_CI = "{:.3f}".format(parameters[3])
+
+		master_dict['KD_fit'].append(func_KD)
+		master_dict['fit_parameters'].append('RI=' + str(func_RI) + ', RIA=' + str(func_RIA) + ', CI=' + str(func_CI))
+
+	elif model_name == 'Hill_simple':
+		Bmin = "{:.2f}".format(parameters[0])
+		Bmax = "{:.2f}".format(parameters[1])
+		func_KD = "{:.2f}".format(parameters[2])
+		master_dict['func_KD_list'].append(parameters[2])
+
+		master_dict['KD_fit'].append(func_KD)
+		master_dict['fit_parameters'].append('Bmin=' + str(Bmin) + ', Bmax=' + str(Bmax))
+
+	if model_name == 'Hill':
+		Bmin = "{:.2f}".format(parameters[0])
+		Bmax = "{:.2f}".format(parameters[1])
+		func_KD = "{:.2f}".format(parameters[2])
+		master_dict['func_KD_list'].append(parameters[2])
+		k_coop = "{:.3f}".format(parameters[3])
+
+		master_dict['KD_fit'].append(func_KD)
+		master_dict['fit_parameters'].append('Bmin=' + str(Bmin) + ', Bmax=' + str(Bmax) + ', k_coop=' + str(k_coop))
+
+	elif model_name == '4PL':
+		Bmin = "{:.2f}".format(parameters[0])
+		Bmax = "{:.2f}".format(parameters[1])
+		func_KD = "{:.2f}".format(parameters[2])
+		master_dict['func_KD_list'].append(parameters[2])
+		k_coop = "{:.3f}".format(parameters[3])
+
+		master_dict['KD_fit'].append(func_KD)
+		master_dict['fit_parameters'].append('Bmin=' + str(Bmin) + ', Bmax=' + str(Bmax) + ', k_coop=' + str(k_coop))
+
+
+def r_square_function(x_val, y_val, parameters, model_name):
 	# Converting values to arrays
 	x_val = np.asarray(x_val)
 	y_val = np.asarray(y_val)
@@ -607,12 +659,19 @@ def r_square_function(x_val, y_val, parameters, model_name):
 	p = len(parameters)
 
 	if model_name == 'FIDA_1to1':
-
 		y_fit = model_fida_1to1(x_val, parameters[0], parameters[1], parameters[2])
 
 	elif model_name == 'FIDA_excess':
-
 		y_fit = model_fida_excess(x_val, parameters[0], parameters[1], parameters[2], parameters[3])
+
+	elif model_name == 'Hill_simple':
+		y_fit = hill_simple(x_val, parameters[0], parameters[1], parameters[2])
+
+	elif model_name == 'Hill':
+		y_fit = hill_equation(x_val, parameters[0], parameters[1], parameters[2], parameters[3])
+
+	elif model_name == '4PL':
+		y_fit = fit_4pl(x_val, parameters[0], parameters[1], parameters[2], parameters[3])
 
 	else:
 		raise TypeError('Fitting model not recognized!')
@@ -630,30 +689,36 @@ def r_square_function(x_val, y_val, parameters, model_name):
 
 
 def chi_square_function(x_val, y_val, parameters, model_name, alpha_level):
-
 	# Converting values to arrays
 	x_val = np.asarray(x_val)
 	y_val = np.asarray(y_val)
 
 	if model_name == 'FIDA_1to1':
-
 		y_fit = model_fida_1to1(x_val, parameters[0], parameters[1], parameters[2])
 
 	elif model_name == 'FIDA_excess':
-
 		y_fit = model_fida_excess(x_val, parameters[0], parameters[1], parameters[2], parameters[3])
+
+	elif model_name == 'Hill_simple':
+		y_fit = hill_simple(x_val, parameters[0], parameters[1], parameters[2])
+
+	elif model_name == 'Hill':
+		y_fit = hill_equation(x_val, parameters[0], parameters[1], parameters[2], parameters[3])
+
+	elif model_name == '4PL':
+		y_fit = fit_4pl(x_val, parameters[0], parameters[1], parameters[2], parameters[3])
 
 	else:
 		raise TypeError('Fitting model not recognized!')
 
 	chi2 = 0
-	DoF = len(y_val) -1
+	DoF = len(y_val) - 1
 
 	# Calculating the chi square critical value
 	for a in range(len(y_val)):
 		obs = y_val[a]
 		pred = y_fit[a]
-		chi2 = chi2 + (obs-pred)**2/pred
+		chi2 = chi2 + (obs - pred) ** 2 / pred
 
 	# Calculating the tail values for the given alpha level
 	tail_right = scipy.stats.chi2.ppf(1 - alpha_level, df=DoF)
@@ -683,28 +748,36 @@ def chi_square_function(x_val, y_val, parameters, model_name, alpha_level):
 
 
 def calculate_and_plot_residuals(x_val, y_val, parameters, model_name):
-
 	df = pd.DataFrame()
 	df['xs'] = x_val
 	df['ys'] = y_val
 
 	if model_name == 'FIDA_1to1':
-
-		y_pred = model_fida_1to1(df['xs'], parameters[0], parameters[1], parameters[2])
-		df['y_pred'] = y_pred
+		y_fit = model_fida_1to1(df['xs'], parameters[0], parameters[1], parameters[2])
+		df['y_fit'] = y_fit
 
 	elif model_name == 'FIDA_excess':
+		y_fit = model_fida_excess(df['xs'], parameters[0], parameters[1], parameters[2], parameters[3])
+		df['y_fit'] = y_fit
 
-		y_pred = model_fida_excess(df['xs'], parameters[0], parameters[1], parameters[2], parameters[3])
-		df['y_pred'] = y_pred
+	elif model_name == 'Hill_simple':
+		y_fit = hill_simple(x_val, parameters[0], parameters[1], parameters[2])
+		df['y_fit'] = y_fit
 
-	residuals = df['ys'] - df['y_pred']
+	elif model_name == 'Hill':
+		y_fit = hill_equation(x_val, parameters[0], parameters[1], parameters[2], parameters[3])
+		df['y_fit'] = y_fit
+
+	elif model_name == '4PL':
+		y_fit = fit_4pl(x_val, parameters[0], parameters[1], parameters[2], parameters[3])
+		df['y_fit'] = y_fit
+
+	residuals = df['ys'] - df['y_fit']
 
 	return residuals
 
 
 def rmse_calculation(x_val, y_val, parameters, model_name):
-
 	import math
 
 	df = pd.DataFrame()
@@ -712,14 +785,21 @@ def rmse_calculation(x_val, y_val, parameters, model_name):
 	df['ys'] = y_val
 
 	if model_name == 'FIDA_1to1':
-
-		y_pred = model_fida_1to1(df['xs'], parameters[0], parameters[1], parameters[2])
+		y_fit = model_fida_1to1(df['xs'], parameters[0], parameters[1], parameters[2])
 
 	elif model_name == 'FIDA_excess':
+		y_fit = model_fida_excess(df['xs'], parameters[0], parameters[1], parameters[2], parameters[3])
 
-		y_pred = model_fida_excess(df['xs'], parameters[0], parameters[1], parameters[2], parameters[3])
+	elif model_name == 'Hill_simple':
+		y_fit = hill_simple(x_val, parameters[0], parameters[1], parameters[2])
 
-	MSE = np.square(np.subtract(y_val, y_pred)).mean()
+	elif model_name == 'Hill':
+		y_fit = hill_equation(x_val, parameters[0], parameters[1], parameters[2], parameters[3])
+
+	elif model_name == '4PL':
+		y_fit = fit_4pl(x_val, parameters[0], parameters[1], parameters[2], parameters[3])
+
+	MSE = np.square(np.subtract(y_val, y_fit)).mean()
 
 	RMSE = math.sqrt(MSE)
 
@@ -728,3 +808,22 @@ def rmse_calculation(x_val, y_val, parameters, model_name):
 	return RMSE
 
 
+def sigma_list_for_scatter_fit(unique_x, x_val, y_val, x_val_list, fitting_mode):
+	sigma_list = []
+
+	# If fitting mode is local then use the standard errors as sigma values.
+	if fitting_mode == 'Local':
+		sigma = replicate_mean_error(unique_x, x_val, y_val)[1]
+		sigma = np.array(sigma)
+		sigma[sigma == 0] = 1
+		sigma_list.append(sigma)
+
+	# If fitting mode is global then we just fill arrays with ones since all data points
+	# will be weighted equal.
+	else:
+		for a in x_val_list:
+			list_length = len(a)
+			sigma = np.ones(list_length)
+			sigma_list.append(sigma)
+
+	return sigma_list
