@@ -105,7 +105,7 @@ if args.plot_type in ['Scatter', 'scatter']:
 			master_dict['KD_fit'],
 			master_dict['R_square'],
 			master_dict['fit_parameters']
-			], user_input_dict)
+			], user_input_dict, param_dict)
 
 	# Adding interactive buttons to the plotly plot
 	plotly_buttons(plot_dict)
@@ -170,7 +170,7 @@ elif args.plot_type in ['AKTA', 'akta', 'Akta']:
 			master_dict['fraction_baseline'],
 			master_dict['fraction_calculation'],
 			master_dict['fraction_yield'],
-			master_dict['culture_yield']], user_input_dict)
+			master_dict['culture_yield']], user_input_dict, param_dict)
 
 	# Adding interactive buttons to the plotly plot
 	plotly_buttons(plot_dict)
@@ -236,7 +236,7 @@ elif args.plot_type in ['FIDA', 'fida', 'Fida']:
 		master_dict['R_square'],
 		master_dict['RMSE'],
 		master_dict['chi_square'],
-		master_dict['fit_parameters']], user_input_dict)
+		master_dict['fit_parameters']], user_input_dict, param_dict)
 
 	# Adding interactive buttons to the plotly plot
 	plotly_buttons(plot_dict)
@@ -292,7 +292,7 @@ elif args.plot_type in ['panta', 'Panta', 'PANTA']:
 				master_dict['notes_list'],
 				master_dict['peak_onset'],
 				master_dict['inflection_points'],
-				master_dict['vertex_max']], user_input_dict)
+				master_dict['vertex_max']], user_input_dict, param_dict)
 
 	# Adding interactive buttons to the plotly plot
 	plotly_buttons(plot_dict)

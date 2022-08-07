@@ -275,7 +275,7 @@ def plotly_buttons(plot_dict):
 							  dict(args=["type", "table"], label="Stats", method="restyle")]),
 				pad={"r": 10, "t": 10}, showactive=True, x=0.11, xanchor="left", y=1.1, yanchor="top"), ])
 
-def table_plot(plot_dict, col_names_list, col_values_list, user_input_dict):
+def table_plot(plot_dict, col_names_list, col_values_list, user_input_dict, param_dict):
 	"""
     The function is intended for making the table going into the html output.
     Variable "figure" specifies the figure that the table are added to.
@@ -337,7 +337,7 @@ def table_plot(plot_dict, col_names_list, col_values_list, user_input_dict):
 		df_func2 = df_func.sort_values(by='table_coords', ascending=True)
 		del df_func2['table_coords']
 
-		if len(fill_color_list) > 0:
+		if param_dict['table_coloring'] == 'yes':
 
 			figure.add_trace(
 				go.Table(
@@ -357,7 +357,7 @@ def table_plot(plot_dict, col_names_list, col_values_list, user_input_dict):
 
 	else:
 
-		if len(fill_color_list) > 0:
+		if param_dict['table_coloring'] == 'yes':
 
 			figure.add_trace(
 				go.Table(

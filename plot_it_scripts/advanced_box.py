@@ -29,6 +29,7 @@ def create_advanced_box():
 		param_dict['yaxis_ticks_font_size'] = float(e17.get())
 		param_dict['plot_template'] = str(var3.get())
 		param_dict['error_marker'] = str(var5.get())
+		param_dict['table_coloring'] = str(var7.get())
 		param_dict['Baseline graph width'] = float(e19.get())
 		param_dict['marker_size'] = float(e20.get())
 		param_dict['min_peak_prominence'] = float(e21.get())
@@ -64,6 +65,7 @@ def create_advanced_box():
 	ttk.Label(master, text="Baseline mode [AKTA]").grid(row=4, column=0)
 	ttk.Label(master, text="Plotting theme [layout]").grid(row=5, column=6)
 	ttk.Label(master, text="Error markers [layout]").grid(row=6, column=6)
+	ttk.Label(master, text="Table coloring [layout]").grid(row=7, column=6)
 	ttk.Label(master, text='X axis tick font size').grid(row=4, column=6)
 	ttk.Label(master, text='Y axis tick font size').grid(row=4, column=9)
 	ttk.Label(master, text="Baseline deg [AKTA]").grid(row=5, column=0)
@@ -143,6 +145,10 @@ def create_advanced_box():
 
 	e34 = ttk.Entry(master)
 
+	var7 = tk.StringVar(master)
+	var7.set('yes')
+	e35 = ttk.OptionMenu(master, var7, 'yes', 'yes', 'no')
+
 	e1.insert(10, "0")
 	e2.insert(10, np.inf)
 	e3.insert(10, "0")
@@ -205,6 +211,7 @@ def create_advanced_box():
 	e32.grid(row=6, column=7)
 	e33.grid(row=15, column=1)
 	e34.grid(row=16, column=1)
+	e35.grid(row=7, column=7)
 
 	ttk.Button(master, text='Run', command=master.quit).grid(row=20, column=1, sticky=tk.W, pady=4)
 	ttk.Button(master, text='Register', command=show_entry_fields).grid(row=20, column=0, sticky=tk.W, pady=4)
@@ -234,6 +241,7 @@ def default_param_dict():
 		'yaxis_ticks_font_size': 12,
 		'plot_template': 'plotly',
 		'error_marker': 'Error bands',
+		'table_coloring': 'yes',
 		'Baseline graph width': 2,
 		'marker_size': 10,
 		'min_peak_prominence': 0,
