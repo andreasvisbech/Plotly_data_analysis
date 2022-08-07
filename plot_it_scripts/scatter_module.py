@@ -8,6 +8,7 @@ import scipy.stats
 
 # Import functions from other scripts
 from plot_it_scripts.plotting_script import *
+from plot_it_scripts.main_functions import *
 
 
 def linear_model(x, a, b):
@@ -177,27 +178,6 @@ def scatter_plot_without_fit(master_dict, sample_idx, user_input_dict, plot_dict
 		sample_idx, param_dict, color_list, color_count, user_input_dict, master_dict)
 
 
-def scatter_text(master_dict, sample_idx, user_input_dict, plot_dict, xs, ys, param_dict):
-
-	# Loading local variables for plotting
-	figure = plot_dict['figure']
-	plot_figure = plot_dict['plot_figure']
-	graph_name = plot_dict['graph_names'][sample_idx]
-	plot_marker = user_input_dict['plot_markers'][sample_idx]
-	x_title = user_input_dict['x_titles'][sample_idx]
-	y_title = user_input_dict['y_titles'][sample_idx]
-	subplot_row = user_input_dict['subplot_row'][sample_idx]
-	subplot_col = user_input_dict['subplot_col'][sample_idx]
-	color_list = plot_dict['color_list']
-	color_count = plot_dict['color_count']
-
-	plot_func(
-		figure, graph_name, xs, ys, 'None', plot_marker, x_title, y_title, subplot_row, subplot_col, 'scatter_text',
-		sample_idx, param_dict, color_list, color_count, user_input_dict, master_dict)
-	plot_func(
-		plot_figure, graph_name, xs, ys, 'None', plot_marker, x_title, y_title, subplot_row, subplot_col, 'scatter_text',
-		sample_idx, param_dict, color_list, color_count, user_input_dict, master_dict)
-
 def replicate_mean_error(unique_x, redundant_x, y_val):
 	"""
 	The function takes a list of unique concentrations, the redundant concentration list and a list of y values
@@ -335,10 +315,24 @@ def scatter_fit(
 
 	for c in range(len(x_val_list)):
 
-		parameters, covariance = curve_fit(
-											model_function, list(x_val_list[c]), list(y_val_list[c]),
-											bounds=bound_param, method='trf',
-											maxfev=10000)
+		if param_dict['scatter_fit_error_weighing'] == 'yes, as relative sigma':
+			parameters, covariance = curve_fit(
+				model_function, list(x_val_list[c]), list(y_val_list[c]),
+				sigma=sigma, bounds=bound_param, method='trf',
+				maxfev=10000)
+
+		elif param_dict['scatter_fit_error_weighing'] == 'yes, as absolute sigma':
+			parameters, covariance = curve_fit(
+				model_function, list(x_val_list[c]), list(y_val_list[c]),
+				sigma=sigma, absolute_sigma=True, bounds=bound_param, method='trf',
+				maxfev=10000)
+
+		else:
+			parameters, covariance = curve_fit(
+				model_function, list(x_val_list[c]), list(y_val_list[c]),
+				bounds=bound_param, method='trf',
+				maxfev=10000)
+
 
 		if len(x_val_list) == 1:
 			master_dict['ID_list_new'].append(str(ID_list[sample_idx]))
@@ -519,6 +513,9 @@ def scatter_fit(
 			rmse = rmse_calculation(x_val_list[c], y_val_list[c], parameters, model_name)
 			master_dict['RMSE'].append(rmse)
 
+		# Add the appropriate color to the table coloring list
+		table_color_list_manager(color_list[color_count], plot_dict['table_color_list'])
+
 	# If global fitting (i.e. more than one KD and R^2 has been calculated for the data) add final result to table
 	if fitting_mode == 'Global':
 		master_dict['ID_list_new'].append(str(ID_list[sample_idx]))
@@ -536,7 +533,8 @@ def scatter_fit(
 
 		master_dict['RMSE'].append(' ')
 
-
+		# Add the appropriate color to the table coloring list
+		table_color_list_manager(color_list[color_count], plot_dict['table_color_list'])
 
 
 	# If specified by user calculate the residuals on the full data set and include in the plot.
