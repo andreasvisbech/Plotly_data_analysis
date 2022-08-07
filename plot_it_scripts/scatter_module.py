@@ -314,18 +314,18 @@ def scatter_fit(
 
 	for c in range(len(x_val_list)):
 
+		# The fitting process is based on whether or not the user has requested weighting of the fit
+		# using sigma values.
 		if param_dict['scatter_fit_error_weighing'] == 'yes, as relative sigma':
 			parameters, covariance = curve_fit(
 				model_function, list(x_val_list[c]), list(y_val_list[c]),
 				sigma=sigma_list[c], bounds=bound_param, method='trf',
 				maxfev=10000)
-
 		elif param_dict['scatter_fit_error_weighing'] == 'yes, as absolute sigma':
 			parameters, covariance = curve_fit(
 				model_function, list(x_val_list[c]), list(y_val_list[c]),
 				sigma=sigma_list[c], absolute_sigma=True, bounds=bound_param, method='trf',
 				maxfev=10000)
-
 		else:
 			parameters, covariance = curve_fit(
 				model_function, list(x_val_list[c]), list(y_val_list[c]),
@@ -359,11 +359,6 @@ def scatter_fit(
 			# Write parameters from fit to the master dict
 			write_fit_params_to_master_dict(model_name, parameters, master_dict, func_KD_list)
 
-			# Calcularing R squared value
-			#y_fit_small = hill_equation(np.asarray(x_val_list[c]), parameters[0], parameters[1], parameters[2],
-			#							parameters[3])
-			#method_name(c, func_KD_list, func_R2_list, parameters, y_fit_small, y_val_list, master_dict)
-
 		elif model_name == 'Hill_simple':
 			# Generating a fitting curve with many points for the plot
 			x_fit = interval_generator(fitting_min, fitting_max)
@@ -377,20 +372,6 @@ def scatter_fit(
 
 			# Write parameters from fit to the master dict
 			write_fit_params_to_master_dict(model_name, parameters, master_dict, func_KD_list)
-
-			# Calcularing R squared value
-			#y_fit_small = hill_simple(np.asarray(x_val_list[c]), parameters[0], parameters[1], parameters[2])
-			#r_square = r2_score(y_val_list[c], y_fit_small)
-			#master_dict['R_square'].append("{:.3f}".format(r_square))
-			#func_R2_list.append(r_square)
-
-			#func_Bmin = "{:.3f}".format(parameters[0])
-			#func_Bmax = "{:.3f}".format(parameters[1])
-			#func_KD = "{:.3f}".format(parameters[2])
-			#func_KD_list.append(parameters[2])
-
-			#master_dict['KD_fit'].append(func_KD)
-			#master_dict['fit_parameters'].append('Bmin=' + str(func_Bmin) + ', Bmax=' + str(func_Bmax))
 
 		elif model_name == '4PL':
 			# Generating a fitting curve with many points for the plot
@@ -420,32 +401,6 @@ def scatter_fit(
 			# Write parameters from fit to the master dict
 			write_fit_params_to_master_dict(model_name, parameters, master_dict, func_KD_list)
 
-			# r_square, r_square_adj = r_square_function(x_val_list[c], y_val_list[c], parameters, model_name)
-
-			# master_dict['R_square'].append('R<sup>2</sup>=' + "{:.3f}".format(r_square) + '<br>' +
-			#							   'R<sup>2</sup><sub>adj</sub>=' + "{:.3f}".format(r_square_adj))
-			# func_R2_list.append(r_square)
-
-			# Calculate chi square stats
-			# chi2, DoF, tail_left, tail_right, p_val = chi_square_function(
-			#	x_val_list[c],
-			#	y_val_list[c],
-			#	parameters,
-			#	model_name,
-			#	alpha_level)
-
-			# master_dict['chi_square'].append('\u03A7<sup>2</sup>=' + str(chi2) + ', DoF=' + str(DoF) + \
-			#								 '<br>' + 'Tails=' + str(tail_left) + ';' + str(tail_right) + \
-			#								 '<br>' + 'p-value' + str(p_val) + '<br>alpha=' + str(alpha_level))
-
-			#func_RI = "{:.2f}".format(parameters[0])
-			#func_RIA = "{:.2f}".format(parameters[1])
-			#func_KD = "{:.2f}".format(parameters[2])
-			#func_KD_list.append(parameters[2])
-
-			#master_dict['KD_fit'].append(func_KD)
-			#master_dict['fit_parameters'].append('RI=' + str(func_RI) + ', RIA=' + str(func_RIA))
-
 		elif model_name == 'FIDA_excess':
 
 			# Generating a fitting curve with many points for the plot
@@ -460,35 +415,6 @@ def scatter_fit(
 
 			# Write parameters from fit to the master dict
 			write_fit_params_to_master_dict(model_name, parameters, master_dict, func_KD_list)
-
-			# Calcularing R squared value
-			# r_square, r_square_adj = r_square_function(x_val_list[c], y_val_list[c], parameters, model_name)
-
-			# master_dict['R_square'].append('R<sup>2</sup>=' + "{:.3f}".format(r_square) + '<br>' +
-			#							   'R<sup>2</sup><sub>adj</sub>=' + "{:.3f}".format(r_square_adj))
-			# func_R2_list.append(r_square)
-
-			# Calculate chi square stats
-			# chi2, DoF, tail_left, tail_right, p_val = chi_square_function(
-			#	x_val_list[c],
-			#	y_val_list[c],
-			#	parameters,
-			#	model_name,
-			#	alpha_level)
-
-			# master_dict['chi_square'].append('\u03A7<sup>2</sup>=' + str(chi2) + ', DoF=' + str(DoF) + \
-			#								 '<br>' + 'Tails=' + str(tail_left) + ';' + str(tail_right) + \
-			#								 '<br>' + 'p-value' + str(p_val) + '<br>alpha=' + str(alpha_level))
-
-			#func_RI = "{:.2f}".format(parameters[0])
-			#func_RIA = "{:.2f}".format(parameters[1])
-			#func_KD = "{:.2f}".format(parameters[2])
-			#func_KD_list.append(parameters[2])
-			#func_CI = "{:.3f}".format(parameters[3])
-
-			#master_dict['KD_fit'].append(func_KD)
-			#master_dict['fit_parameters'].append(
-			#	'RI=' + str(func_RI) + ', RIA=' + str(func_RIA) + ', CI=' + str(func_CI))
 
 		if fitting_mode == 'Local':
 
@@ -550,20 +476,6 @@ def interval_generator(start, end):
 		interval.append(counter)
 
 	return np.array(interval)
-
-
-#def method_name(c, func_KD_list, func_R2_list, parameters, y_fit_small, y_val_list, master_dict):
-#	r_square = r2_score(y_val_list[c], y_fit_small)
-#	master_dict['R_square'].append("{:.3f}".format(r_square))
-#	func_R2_list.append(r_square)
-#	func_Bmin = "{:.3f}".format(parameters[0])
-#	func_Bmax = "{:.3f}".format(parameters[1])
-#	func_KD = "{:.3f}".format(parameters[2])
-#	func_KD_list.append(parameters[2])
-#	func_k_coop = "{:.3f}".format(parameters[3])
-#	master_dict['KD_fit'].append(func_KD)
-#	master_dict['fit_parameters'].append(
-#		'Bmin=' + str(func_Bmin) + ', Bmax=' + str(func_Bmax) + ', k_coop=' + str(func_k_coop))
 
 
 def fida_text2floats(x_id, y_id, df):
