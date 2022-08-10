@@ -21,8 +21,7 @@ Columns for specifying how the analysis should be done:
   and column number, of the subplot to put the data into.
 - "Data_interval": takes to numbers separated by ";". Allows user to slice data on x value to only include part of the
   data in the analysis without manually changing the data in the excel file.
-- "AKTA_fraction": Specific to AKTA analysis. Two numbers separated by ";". Specifies which part of the data is the
-  elution fraction i.e. which part of the data to use for yield calculations.
+- "AKTA_fraction": Specific to AKTA analysis. Two numbers separated by ";". Specifies which part of the data is considered to be the peak i.e. which part of the data to use for yield calculations. Multiple peaks can be specified using "|". 
 - "AKTA_baseline": Specific to AKTA analysis. Two numbers separated by ";". Specifies the outer bounds for creating a
   linear baseline. The baseline can also be set in a different automatic manner under advanced analysis option.
 - "AKTA_extinc_coeff": Specific to AKTA analysis. Takes a protein-specific extinction coefficient for yield calculation.
