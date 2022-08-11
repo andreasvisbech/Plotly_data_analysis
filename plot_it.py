@@ -6,7 +6,6 @@ __version__ = "3.1.0"
 
 # Load modules
 import argparse
-from plotly.subplots import make_subplots
 import sys
 
 # Load functions from related scripts
@@ -46,12 +45,8 @@ ID_list = user_input_dict['ID_list']
 master_dict = define_master_dict()
 
 # Defining figure for making the plots in. 
-fig = make_subplots(
-					rows=user_input_dict['subplot_row_count'], cols=user_input_dict['subplot_col_count'],
-					vertical_spacing=0.07, horizontal_spacing=0.07)
-plot_fig = make_subplots(
-						rows=user_input_dict['subplot_row_count'], cols=user_input_dict['subplot_col_count'],
-						vertical_spacing=0.07, horizontal_spacing=0.07)
+fig = create_subplot_function(ID_list, user_input_dict)
+plot_fig = create_subplot_function(ID_list, user_input_dict)
 
 # Define color list for coloring graphs
 color_list = define_color_list(user_input_dict)

@@ -1,6 +1,7 @@
 # Import modules
 import pandas as pd
 import matplotlib.colors
+from plotly.subplots import make_subplots
 
 
 # Define functions
@@ -231,3 +232,37 @@ def table_color_list_manager(color,list):
 				str(rgb_color[2] * 255) + ', 0.15)'
 
 	list.append(rgb_color)
+
+
+def create_subplot_function(ID_list, user_input_dict):
+
+	# Define total number of subplots from the count of rows and columns from user.
+	# Then make a list for storing subplot titles in.
+	subplot_row_count = user_input_dict['subplot_row_count']
+	subplot_col_count = user_input_dict['subplot_col_count']
+	subplot_tot = subplot_row_count * subplot_col_count
+
+	title_list = [''] * subplot_tot
+
+	for a in range(len(ID_list)):
+
+		subplot_row_idx = user_input_dict['subplot_row'][a]
+		subplot_col_idx = user_input_dict['subplot_col'][a]
+
+		subplot_id = ((subplot_row_idx - 1) * user_input_dict['subplot_col_count']) + subplot_col_idx - 1
+		print(subplot_id)
+
+		user_flags = user_input_dict['python_misc'][a].split(';')
+		for b in user_flags:
+			if 'subplot_title' in b:
+				title = b.split('=')[1]
+				title_list[subplot_id] = title
+
+	figure = make_subplots(
+		rows=user_input_dict['subplot_row_count'],
+		cols=user_input_dict['subplot_col_count'],
+		vertical_spacing=0.07,
+		horizontal_spacing=0.07,
+		subplot_titles=title_list)
+
+	return figure
