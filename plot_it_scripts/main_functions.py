@@ -238,31 +238,41 @@ def create_subplot_function(ID_list, user_input_dict):
 
 	# Define total number of subplots from the count of rows and columns from user.
 	# Then make a list for storing subplot titles in.
-	subplot_row_count = user_input_dict['subplot_row_count']
-	subplot_col_count = user_input_dict['subplot_col_count']
-	subplot_tot = subplot_row_count * subplot_col_count
+	#subplot_row_count = user_input_dict['subplot_row_count']
+	#subplot_col_count = user_input_dict['subplot_col_count']
+	#subplot_tot = subplot_row_count * subplot_col_count
 
-	title_list = [''] * subplot_tot
+	#title_list = [''] * subplot_tot
 
-	for a in range(len(ID_list)):
+	#for a in range(len(ID_list)):
 
-		subplot_row_idx = user_input_dict['subplot_row'][a]
-		subplot_col_idx = user_input_dict['subplot_col'][a]
+	#	subplot_row_idx = user_input_dict['subplot_row'][a]
+	#	subplot_col_idx = user_input_dict['subplot_col'][a]
 
-		subplot_id = ((subplot_row_idx - 1) * user_input_dict['subplot_col_count']) + subplot_col_idx - 1
-		print(subplot_id)
+	#	subplot_id = ((subplot_row_idx - 1) * user_input_dict['subplot_col_count']) + subplot_col_idx - 1
 
-		user_flags = user_input_dict['python_misc'][a].split(';')
-		for b in user_flags:
-			if 'subplot_title' in b:
-				title = b.split('=')[1]
-				title_list[subplot_id] = title
+	#	if subplot_id == 1:
+	#		ax_id = ''
+	#	else:
+	#		ax_id = str(subplot_id+1)
+
+	#	user_flags = user_input_dict['python_misc'][a].split(';')
+	#	for b in user_flags:
+	#		if 'subplot_title' in b:
+	#			title = b.split('=')[1]
+	#			title_list[subplot_id] = title
 
 	figure = make_subplots(
 		rows=user_input_dict['subplot_row_count'],
 		cols=user_input_dict['subplot_col_count'],
 		vertical_spacing=0.07,
-		horizontal_spacing=0.07,
-		subplot_titles=title_list)
+		horizontal_spacing=0.07)
+
+	# Positioning the subplot titles
+	#for c in figure['layout']['annotations']:
+	#	c['xref'] = 'x' + str(ax_id)
+	#	c['x'] = 0.1
+		#c['yref'] = 'y' + str(ax_id)
+		#c['y'] = 0.1
 
 	return figure

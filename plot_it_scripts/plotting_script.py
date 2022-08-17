@@ -273,7 +273,7 @@ def plotly_buttons(plot_dict):
 				direction="left",
 				buttons=list([dict(args=["type","scatter"], label="Graphs", method="restyle"),
 							  dict(args=["type", "table"], label="Stats", method="restyle")]),
-				pad={"r": 10, "t": 10}, showactive=True, x=0.11, xanchor="left", y=1.1, yanchor="top"), ])
+				pad={"r": 10, "t": 10}, showactive=True, x=0.9, xanchor="left", y=1.1, yanchor="top"), ])
 
 
 def table_plot(plot_dict, col_names_list, col_values_list, user_input_dict, param_dict):

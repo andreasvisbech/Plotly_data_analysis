@@ -1,11 +1,12 @@
 # Import modules
 from sklearn.metrics import auc
 import peakutils
-#import pandas as pd
 
 # Import functions from other scripts
 from plot_it_scripts.plotting_script import *
 from plot_it_scripts.main_functions import *
+from plot_it_scripts.data_manipulation import *
+
 
 
 def akta_data_slice(x_id, y_id, sample_idx, xs, ys, user_input_dict):
@@ -26,6 +27,7 @@ def akta_data_slice(x_id, y_id, sample_idx, xs, ys, user_input_dict):
 
 
 def akta_main_func(df, xs, ys, sample_idx, x_id, y_id, param_dict, master_dict, user_input_dict, plot_dict):
+
 	# Creating local variables for plotting
 	figure = plot_dict['figure']
 	plot_figure = plot_dict['plot_figure']
@@ -66,6 +68,9 @@ def akta_main_func(df, xs, ys, sample_idx, x_id, y_id, param_dict, master_dict, 
 			  'None', sample_idx, param_dict, color_list, color_count, user_input_dict, master_dict)
 	plot_func(plot_figure, graph_name, xs, ys, 'None', plot_marker, x_title, y_title, subplot_row, subplot_col,
 			  'None', sample_idx, param_dict, color_list, color_count, user_input_dict, master_dict)
+
+	# Run 1st derivative function. The derivative can maybe help resolve peak borders.
+	savgol_1st_deriv(xs, ys, sample_idx, param_dict, master_dict, user_input_dict, plot_dict)
 
 	# Plotting the baseline values into interactive plot and the stativ "plotting plot"
 	plot_func(figure, graph_name + '_baseline', baseline_values[0], baseline_values[1], 'None', 'lines',

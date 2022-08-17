@@ -46,6 +46,8 @@ def create_advanced_box():
 		param_dict['scatter_residuals'] = str(var6.get())
 		param_dict['scatter_fit_error_weighing'] = str(var8.get())
 		param_dict['alpha_level'] = float(e34.get())
+		param_dict['savgol_1st_deriv_window'] = str(e37.get())
+		param_dict['savgol_1st_deriv_pol'] = str(e38.get())
 
 	master = tk.Tk()
 	ttk.Label(master, text="RI min [FIDA]").grid(row=0)
@@ -86,6 +88,8 @@ def create_advanced_box():
 	ttk.Label(master, text="Plot residuals [scatter fit/FIDA]").grid(row=15, column=0)
 	ttk.Label(master, text="Use errors as weights (sigma) for fit? [scatter fit/FIDA]").grid(row=16, column=0)
 	ttk.Label(master, text="Alpha level [statistics]").grid(row=17, column=0)
+	ttk.Label(master, text="Savgol 1st derivative window [data]").grid(row=18, column=0)
+	ttk.Label(master, text="Savgol 1st derivative polynomium [data]").grid(row=18, column=3)
 
 	e1 = ttk.Entry(master)
 	e2 = ttk.Entry(master)
@@ -155,6 +159,9 @@ def create_advanced_box():
 	var8.set('no')
 	e36 = ttk.OptionMenu(master, var8, 'no', 'no', 'yes, as relative sigma', 'yes, as absolute sigma')
 
+	e37 = ttk.Entry(master)
+	e38 = ttk.Entry(master)
+
 	e1.insert(10, "0")
 	e2.insert(10, np.inf)
 	e3.insert(10, "0")
@@ -182,6 +189,9 @@ def create_advanced_box():
 	e30.insert(10, -np.inf)
 	e31.insert(10, np.inf)
 	e34.insert(10, 0.05)
+	e37.insert(10, 'N/A')
+	e38.insert(10, 'N/A')
+
 
 	e1.grid(row=0, column=1)
 	e2.grid(row=0, column=4)
@@ -219,6 +229,8 @@ def create_advanced_box():
 	e34.grid(row=17, column=1)
 	e35.grid(row=7, column=7)
 	e36.grid(row=16, column=1)
+	e37.grid(row=18, column=1)
+	e38.grid(row=18, column=4)
 
 	ttk.Button(master, text='Run', command=master.quit).grid(row=20, column=1, sticky=tk.W, pady=4)
 	ttk.Button(master, text='Register', command=show_entry_fields).grid(row=20, column=0, sticky=tk.W, pady=4)
@@ -264,5 +276,7 @@ def default_param_dict():
 		'k_coop_max': np.inf,
 		'scatter_residuals': 'no',
 		'scatter_fit_error_weighing': 'no',
-		'alpha_level': 0.05
+		'alpha_level': 0.05,
+		'savgol_1st_deriv_window': 'N/A',
+		'savgol_1st_deriv_pol': 'N/A'
 	}
