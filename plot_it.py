@@ -19,6 +19,7 @@ parser.add_argument("-i", "--input_file", help="Excel file", required=True)
 parser.add_argument("-out", "--output", help="y/n to output", action='store_true')
 parser.add_argument('-v', '--version', action='version', version=__version__)
 parser.add_argument("-plot", "--plotting", help="y/n to output", action='store_true')
+parser.add_argument("-log_out", "--log_output", help="y/n to log file output", action='store_true')
 parser.add_argument("-advanced", "--advanced_option_box", help="y/n to advanced option box", action='store_true')
 args = parser.parse_args()
 
@@ -295,6 +296,10 @@ elif args.plot_type in ['panta', 'Panta', 'PANTA']:
 # TODO: figure out how to re-establish this...?        
 # os.makedirs(args.output, exist_ok=True)
 # pd_out.to_csv(args.output.joinpath(args.input_file.stem + '.tsv'), sep='\t')
+
+if args.log_output == True:
+	output_file_name = str(args.input_file[:len(args.input_file) - 5])
+	log_file_out(param_dict, output_file_name)
 
 # If specified by user output the plotting figure as an svg file    
 if args.plotting == True:

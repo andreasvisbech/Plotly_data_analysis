@@ -276,3 +276,10 @@ def create_subplot_function(ID_list, user_input_dict):
 		#c['y'] = 0.1
 
 	return figure
+
+
+def log_file_out(param_dict, file_name):
+
+	log_pd = pd.DataFrame.from_dict(param_dict, orient = 'index')
+
+	log_pd.to_csv(file_name + '_log.txt', sep=',')
