@@ -2,6 +2,7 @@
 import pandas as pd
 import matplotlib.colors
 from plotly.subplots import make_subplots
+import random
 
 
 # Define functions
@@ -283,3 +284,15 @@ def log_file_out(param_dict, file_name):
 	log_pd = pd.DataFrame.from_dict(param_dict, orient = 'index')
 
 	log_pd.to_csv(file_name + '_log.txt', sep=',')
+
+def quote(file):
+	df = pd.read_csv(file)
+
+	author_list = df['Author'].tolist()
+	quote_list = df['Quote'].tolist()
+
+	number = random. randint(0, len(author_list))
+
+	print(' ')
+	print('Thank you for using the script! And remember: "' + str(quote_list[number]) + '"' + ' - ' + str(author_list[number]))
+	print(' ')

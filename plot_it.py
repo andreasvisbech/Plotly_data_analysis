@@ -309,3 +309,5 @@ if args.plotting == True:
 # Writing output file
 output_file_name = str(args.input_file[:len(args.input_file) - 5]) + '_Output.html'
 html_plot_out(fig, output_file_name)
+
+quote("quotes.csv")
