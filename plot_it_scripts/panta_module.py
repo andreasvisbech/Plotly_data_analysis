@@ -7,9 +7,9 @@ from scipy.signal import find_peaks
 
 # Import functions from other scripts
 # from plotting_script import *
+from plot_it_scripts.main_functions import *
 from plot_it_scripts.plotting_script import *
 from plot_it_scripts.scatter_module import linear_model
-#from scatter_module import linear_model
 
 
 def panta_main(df, x_id, y_id, sample_idx, plot_dict, user_input_dict, param_dict, master_dict):
@@ -73,6 +73,9 @@ def panta_main(df, x_id, y_id, sample_idx, plot_dict, user_input_dict, param_dic
 	vertex_max = vertex_detect(np.asarray(xs), np.asarray(ys), param_dict['min_peak_prominence'])
 	vertex_max = ["{:.1f}".format(a) for a in vertex_max]
 	master_dict['vertex_max'].append(vertex_max)
+
+	# Add the appropriate color to the table coloring list
+	table_color_list_manager(color_list[color_count], plot_dict['table_color_list'])
 
 def panta_data_slice(x_id, y_id, sample_idx, xs, ys, user_input_dict):
 

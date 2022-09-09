@@ -29,7 +29,7 @@ def data_clean(data):
 		for a in range(20):
 			col_check = str(col + '.' + str(int(a)))
 			#print(data.columns.tolist().count(col_check))
-			if data.columns.tolist().count(col_check) > 0:
+			if data.columns.tolist().count(col_check) > 0 and ('x' or 'y') in col_check:
 				raise ValueError('Column ' + str(col) + ' appears more than once!')
 
 	return data
