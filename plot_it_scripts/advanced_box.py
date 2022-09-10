@@ -48,6 +48,7 @@ def create_advanced_box():
 		param_dict['alpha_level'] = float(e34.get())
 		param_dict['savgol_1st_deriv_window'] = str(e37.get())
 		param_dict['savgol_1st_deriv_pol'] = str(e38.get())
+		param_dict['color_palette'] = str(var9.get())
 
 	master = tk.Tk()
 	ttk.Label(master, text="RI min [FIDA]").grid(row=0)
@@ -69,6 +70,7 @@ def create_advanced_box():
 	ttk.Label(master, text="Plotting theme [layout]").grid(row=5, column=6)
 	ttk.Label(master, text="Error markers [layout]").grid(row=6, column=6)
 	ttk.Label(master, text="Table coloring [layout]").grid(row=7, column=6)
+	ttk.Label(master, text="Coloring palette [layout]").grid(row=8, column=6)
 	ttk.Label(master, text='X axis tick font size').grid(row=4, column=6)
 	ttk.Label(master, text='Y axis tick font size').grid(row=4, column=9)
 	ttk.Label(master, text="Baseline deg [AKTA]").grid(row=5, column=0)
@@ -162,6 +164,10 @@ def create_advanced_box():
 	e37 = ttk.Entry(master)
 	e38 = ttk.Entry(master)
 
+	var9 = tk.StringVar(master)
+	var9.set('Default (10 color)')
+	e39 = ttk.OptionMenu(master, var9, 'Default (10 color)', 'Default (10 color)', '18 color')
+
 	e1.insert(10, "0")
 	e2.insert(10, np.inf)
 	e3.insert(10, "0")
@@ -231,6 +237,7 @@ def create_advanced_box():
 	e36.grid(row=16, column=1)
 	e37.grid(row=18, column=1)
 	e38.grid(row=18, column=4)
+	e39.grid(row=8, column=7)
 
 	ttk.Button(master, text='Run', command=master.quit).grid(row=20, column=1, sticky=tk.W, pady=4)
 	ttk.Button(master, text='Register', command=show_entry_fields).grid(row=20, column=0, sticky=tk.W, pady=4)
@@ -261,6 +268,7 @@ def default_param_dict():
 		'plot_template': 'plotly',
 		'error_marker': 'Error bands',
 		'table_coloring': 'yes',
+		'color_palette': 'Default (10 color)',
 		'Baseline graph width': 2,
 		'marker_size': 10,
 		'min_peak_prominence': 0,

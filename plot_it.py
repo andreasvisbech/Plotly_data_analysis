@@ -50,7 +50,7 @@ fig = create_subplot_function(ID_list, user_input_dict)
 plot_fig = create_subplot_function(ID_list, user_input_dict)
 
 # Define color list for coloring graphs
-color_list = define_color_list(user_input_dict)
+color_list = define_color_list(user_input_dict, param_dict)
 
 # Defining plotting dict
 plot_dict = define_plot_dict()

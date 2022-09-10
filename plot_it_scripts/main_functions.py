@@ -165,10 +165,20 @@ def define_plot_dict():
 	return plot_dict
 
 
-def define_color_list(user_input_dict):
-	# Loading a list with colors for plotting. The colors come from https://plotly.com/python/discrete-color/.
-	color_list = ['#1F77B4', '#FF7F0E', '#2CA02C', '#9467BD', '#FECB52', '#8C564B', '#E377C2', '#7F7F7F', '#BCBD22',
-				  '#17BECF']
+def define_color_list(user_input_dict, param_dict):
+
+	color_scheme = param_dict['color_palette']
+
+	if color_scheme == 'Default (10 color)':
+		# Loading a list with colors for plotting. The colors come from https://plotly.com/python/discrete-color/.
+		color_list = ['#1F77B4', '#FF7F0E', '#2CA02C', '#9467BD', '#FECB52', '#8C564B', '#E377C2', '#7F7F7F', '#BCBD22',
+					  '#17BECF']
+
+	elif color_scheme == '18 color':
+		color_list =['#9352a8', '#f7760b', '#d51c3c', '#c8b18b', '#23eaa5', '#f483cd', '#276cbd', '#f59080',
+					 '#61419c', '#b83773', '#ebdd21', '#8b1c0e', '#a7dc26', '#673f0b', '#e83b1b', '#495b22',
+					 '#8a8489', '#99c6f9']
+
 	# If the number of samples equals the length of the color list the script will append one extra color to avoid the same
 	# color comparisons in subplots.
 	if len(user_input_dict['ID_list']) % len(color_list) == 0:
