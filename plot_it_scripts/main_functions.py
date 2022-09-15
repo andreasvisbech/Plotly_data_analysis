@@ -174,6 +174,11 @@ def define_color_list(user_input_dict, param_dict):
 		color_list = ['#1F77B4', '#FF7F0E', '#2CA02C', '#9467BD', '#FECB52', '#8C564B', '#E377C2', '#7F7F7F', '#BCBD22',
 					  '#17BECF']
 
+	elif color_scheme == '15 color':
+		color_list = ['#9352a8', '#f7760b', '#d51c3c', '#c8b18b', '#23eaa5', '#f483cd', '#276cbd',
+					  '#2ca02c', '#ebdd21', '#8b1c0e', '#a7dc26', '#673f0b', '#00FFFF',
+					 '#8a8489', '#20B2AA']
+
 	elif color_scheme == '18 color':
 		color_list =['#9352a8', '#f7760b', '#d51c3c', '#c8b18b', '#23eaa5', '#f483cd', '#276cbd', '#f59080',
 					 '#61419c', '#b83773', '#ebdd21', '#8b1c0e', '#a7dc26', '#673f0b', '#e83b1b', '#495b22',

@@ -166,7 +166,7 @@ def create_advanced_box():
 
 	var9 = tk.StringVar(master)
 	var9.set('Default (10 color)')
-	e39 = ttk.OptionMenu(master, var9, 'Default (10 color)', 'Default (10 color)', '18 color')
+	e39 = ttk.OptionMenu(master, var9, 'Default (10 color)', 'Default (10 color)', '15 color', '18 color')
 
 	e1.insert(10, "0")
 	e2.insert(10, np.inf)
