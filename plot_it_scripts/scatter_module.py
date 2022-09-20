@@ -218,6 +218,7 @@ def scatter_fit(
 		param_dict, master_dict, user_input_dict, plot_dict):
 	# Loading local variables for plotting
 	figure = plot_dict['figure']
+	plot_figure = plot_dict['plot_figure']
 	graph_name = plot_dict['graph_names'][sample_idx]
 	x_title = user_input_dict['x_titles'][sample_idx]
 	y_title = user_input_dict['y_titles'][sample_idx]
@@ -352,6 +353,9 @@ def scatter_fit(
 				figure, graph_name + '_fit' + str(c + 1), x_fit, y_fit, 'None', 'line', x_title, y_title,
 				subplot_row, subplot_col, 'None', sample_idx, param_dict, color_list, color_count,
 				user_input_dict, master_dict)
+			plot_func(plot_figure, graph_name + '_fit' + str(c + 1), x_fit, y_fit, 'None', 'line', x_title, y_title,
+					  subplot_row, subplot_col, 'None', sample_idx, param_dict, color_list, color_count,
+					  user_input_dict, master_dict)
 
 			# Calculate statistics and apply to master dict
 			scatter_statistics(x_val_list[c], y_val_list[c], parameters, model_name, alpha_level, master_dict)
@@ -364,6 +368,9 @@ def scatter_fit(
 			x_fit = interval_generator(fitting_min, fitting_max)
 			y_fit = hill_simple(x_fit, parameters[0], parameters[1], parameters[2])
 			plot_func(figure, graph_name + '_fit' + str(c + 1), x_fit, y_fit, 'None', 'line', x_title, y_title,
+					  subplot_row, subplot_col, 'None', sample_idx, param_dict, color_list, color_count,
+					  user_input_dict, master_dict)
+			plot_func(plot_figure, graph_name + '_fit' + str(c + 1), x_fit, y_fit, 'None', 'line', x_title, y_title,
 					  subplot_row, subplot_col, 'None', sample_idx, param_dict, color_list, color_count,
 					  user_input_dict, master_dict)
 
@@ -380,6 +387,9 @@ def scatter_fit(
 			plot_func(figure, graph_name + '_fit' + str(c + 1), x_fit, y_fit, 'None', 'line', x_title, y_title,
 					  subplot_row, subplot_col, 'None', sample_idx, param_dict, color_list, color_count,
 					  user_input_dict, master_dict)
+			plot_func(plot_figure, graph_name + '_fit' + str(c + 1), x_fit, y_fit, 'None', 'line', x_title, y_title,
+					  subplot_row, subplot_col, 'None', sample_idx, param_dict, color_list, color_count,
+					  user_input_dict, master_dict)
 
 			# Calculate statistics and apply to master dict
 			scatter_statistics(x_val_list[c], y_val_list[c], parameters, model_name, alpha_level, master_dict)
@@ -392,6 +402,9 @@ def scatter_fit(
 			x_fit = interval_generator(fitting_min, fitting_max)
 			y_fit = model_fida_1to1(x_fit, parameters[0], parameters[1], parameters[2])
 			plot_func(figure, graph_name + '_fit' + str(c + 1), x_fit, y_fit, 'None', 'line', x_title, y_title,
+					  subplot_row, subplot_col, 'None', sample_idx, param_dict, color_list, color_count,
+					  user_input_dict, master_dict)
+			plot_func(plot_figure, graph_name + '_fit' + str(c + 1), x_fit, y_fit, 'None', 'line', x_title, y_title,
 					  subplot_row, subplot_col, 'None', sample_idx, param_dict, color_list, color_count,
 					  user_input_dict, master_dict)
 
@@ -407,6 +420,9 @@ def scatter_fit(
 			x_fit = interval_generator(fitting_min, fitting_max)
 			y_fit = model_fida_excess(x_fit, parameters[0], parameters[1], parameters[2], parameters[3])
 			plot_func(figure, graph_name + '_fit' + str(c + 1), x_fit, y_fit, 'None', 'line', x_title, y_title,
+					  subplot_row, subplot_col, 'None', sample_idx, param_dict, color_list, color_count,
+					  user_input_dict, master_dict)
+			plot_func(plot_figure, graph_name + '_fit' + str(c + 1), x_fit, y_fit, 'None', 'line', x_title, y_title,
 					  subplot_row, subplot_col, 'None', sample_idx, param_dict, color_list, color_count,
 					  user_input_dict, master_dict)
 
