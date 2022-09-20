@@ -49,6 +49,8 @@ def create_advanced_box():
 		param_dict['savgol_1st_deriv_window'] = str(e37.get())
 		param_dict['savgol_1st_deriv_pol'] = str(e38.get())
 		param_dict['color_palette'] = str(var9.get())
+		param_dict['plot_fig_width'] = str(e40.get())
+		param_dict['plot_fig_height'] = str(e41.get())
 
 	master = tk.Tk()
 	ttk.Label(master, text="RI min [FIDA]").grid(row=0)
@@ -71,6 +73,8 @@ def create_advanced_box():
 	ttk.Label(master, text="Error markers [layout]").grid(row=6, column=6)
 	ttk.Label(master, text="Table coloring [layout]").grid(row=7, column=6)
 	ttk.Label(master, text="Coloring palette [layout]").grid(row=8, column=6)
+	ttk.Label(master, text="Plot figure width [layout]").grid(row=9, column=6)
+	ttk.Label(master, text="Plot figure height [layout]").grid(row=9, column=9)
 	ttk.Label(master, text='X axis tick font size').grid(row=4, column=6)
 	ttk.Label(master, text='Y axis tick font size').grid(row=4, column=9)
 	ttk.Label(master, text="Baseline deg [AKTA]").grid(row=5, column=0)
@@ -168,6 +172,9 @@ def create_advanced_box():
 	var9.set('Default (10 color)')
 	e39 = ttk.OptionMenu(master, var9, 'Default (10 color)', 'Default (10 color)', '15 color', '18 color')
 
+	e40 = ttk.Entry(master)
+	e41 = ttk.Entry(master)
+
 	e1.insert(10, "0")
 	e2.insert(10, np.inf)
 	e3.insert(10, "0")
@@ -197,7 +204,8 @@ def create_advanced_box():
 	e34.insert(10, 0.05)
 	e37.insert(10, 'N/A')
 	e38.insert(10, 'N/A')
-
+	e40.insert(10, 'N/A')
+	e41.insert(10, 'N/A')
 
 	e1.grid(row=0, column=1)
 	e2.grid(row=0, column=4)
@@ -238,6 +246,8 @@ def create_advanced_box():
 	e37.grid(row=18, column=1)
 	e38.grid(row=18, column=4)
 	e39.grid(row=8, column=7)
+	e40.grid(row=9, column=7)
+	e41.grid(row=9, column=10)
 
 	ttk.Button(master, text='Run', command=master.quit).grid(row=20, column=1, sticky=tk.W, pady=4)
 	ttk.Button(master, text='Register', command=show_entry_fields).grid(row=20, column=0, sticky=tk.W, pady=4)
@@ -286,5 +296,7 @@ def default_param_dict():
 		'scatter_fit_error_weighing': 'no',
 		'alpha_level': 0.05,
 		'savgol_1st_deriv_window': 'N/A',
-		'savgol_1st_deriv_pol': 'N/A'
+		'savgol_1st_deriv_pol': 'N/A',
+		'plot_fig_width': 'N/A',
+		'plot_fig_height': 'N/A'
 	}

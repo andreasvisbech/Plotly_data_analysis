@@ -311,3 +311,18 @@ def quote(file):
 	print(' ')
 	print('Thank you for using the script! And remember: "' + str(quote_list[number]) + '"' + ' - ' + str(author_list[number]))
 	print(' ')
+
+
+def write_plot_fig_out(name, plot_fig, param_dict):
+
+	if param_dict['plot_fig_width'] != 'N/A' and param_dict['plot_fig_height'] != 'N/A':
+
+		plot_fig_width = float(param_dict['plot_fig_width'])
+		plot_fig_height = float(param_dict['plot_fig_height'])
+
+		plot_fig.update_layout(
+			autosize=False,
+			width=plot_fig_width,
+			height=plot_fig_height)
+
+	plot_fig.write_image(name + '_Output.svg')

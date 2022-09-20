@@ -304,7 +304,8 @@ if args.log_output == True:
 # If specified by user output the plotting figure as an svg file    
 if args.plotting == True:
 	output_file_name = str(args.input_file[:len(args.input_file) - 5])
-	plot_fig.write_image(output_file_name + '_Output.svg')
+
+	write_plot_fig_out(output_file_name, plot_fig, param_dict)
 
 # Writing output file
 output_file_name = str(args.input_file[:len(args.input_file) - 5]) + '_Output.html'
