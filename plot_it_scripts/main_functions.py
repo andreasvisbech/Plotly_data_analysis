@@ -325,4 +325,20 @@ def write_plot_fig_out(name, plot_fig, param_dict):
 			width=plot_fig_width,
 			height=plot_fig_height)
 
+	# If specified by user manually set the x axis range,
+	if param_dict['plot_fig_xmin'] != 'N/A' and param_dict['plot_fig_xmax'] != 'N/A':
+
+		x_min = float(param_dict['plot_fig_xmin'])
+		x_max = float(param_dict['plot_fig_xmax'])
+
+		plot_fig.update_xaxes(range=[x_min, x_max])
+
+	# If specified by user manually set the y axis range.
+	if param_dict['plot_fig_ymin'] != 'N/A' and param_dict['plot_fig_ymax'] != 'N/A':
+
+		y_min = float(param_dict['plot_fig_ymin'])
+		y_max = float(param_dict['plot_fig_ymax'])
+
+		plot_fig.update_yaxes(range=[y_min, y_max])
+
 	plot_fig.write_image(name + '_Output.svg')

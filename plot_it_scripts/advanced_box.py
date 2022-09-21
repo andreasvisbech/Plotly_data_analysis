@@ -51,6 +51,10 @@ def create_advanced_box():
 		param_dict['color_palette'] = str(var9.get())
 		param_dict['plot_fig_width'] = str(e40.get())
 		param_dict['plot_fig_height'] = str(e41.get())
+		param_dict['plot_fig_xmin'] = str(e42.get())
+		param_dict['plot_fig_xmax'] = str(e43.get())
+		param_dict['plot_fig_ymin'] = str(e44.get())
+		param_dict['plot_fig_ymax'] = str(e45.get())
 
 	master = tk.Tk()
 	ttk.Label(master, text="RI min [FIDA]").grid(row=0)
@@ -75,6 +79,10 @@ def create_advanced_box():
 	ttk.Label(master, text="Coloring palette [layout]").grid(row=8, column=6)
 	ttk.Label(master, text="Plot figure width [layout]").grid(row=9, column=6)
 	ttk.Label(master, text="Plot figure height [layout]").grid(row=9, column=9)
+	ttk.Label(master, text="Plot figure x_min [layout]").grid(row=10, column=6)
+	ttk.Label(master, text="Plot figure x_max [layout]").grid(row=10, column=9)
+	ttk.Label(master, text="Plot figure y_min [layout]").grid(row=11, column=6)
+	ttk.Label(master, text="Plot figure y_max [layout]").grid(row=11, column=9)
 	ttk.Label(master, text='X axis tick font size').grid(row=4, column=6)
 	ttk.Label(master, text='Y axis tick font size').grid(row=4, column=9)
 	ttk.Label(master, text="Baseline deg [AKTA]").grid(row=5, column=0)
@@ -174,6 +182,10 @@ def create_advanced_box():
 
 	e40 = ttk.Entry(master)
 	e41 = ttk.Entry(master)
+	e42 = ttk.Entry(master)
+	e43 = ttk.Entry(master)
+	e44 = ttk.Entry(master)
+	e45 = ttk.Entry(master)
 
 	e1.insert(10, "0")
 	e2.insert(10, np.inf)
@@ -206,6 +218,10 @@ def create_advanced_box():
 	e38.insert(10, 'N/A')
 	e40.insert(10, 'N/A')
 	e41.insert(10, 'N/A')
+	e42.insert(10, 'N/A')
+	e43.insert(10, 'N/A')
+	e44.insert(10, 'N/A')
+	e45.insert(10, 'N/A')
 
 	e1.grid(row=0, column=1)
 	e2.grid(row=0, column=4)
@@ -248,6 +264,10 @@ def create_advanced_box():
 	e39.grid(row=8, column=7)
 	e40.grid(row=9, column=7)
 	e41.grid(row=9, column=10)
+	e42.grid(row=10, column=7)
+	e43.grid(row=10, column=10)
+	e44.grid(row=11, column=7)
+	e45.grid(row=11, column=10)
 
 	ttk.Button(master, text='Run', command=master.quit).grid(row=20, column=1, sticky=tk.W, pady=4)
 	ttk.Button(master, text='Register', command=show_entry_fields).grid(row=20, column=0, sticky=tk.W, pady=4)
@@ -298,5 +318,9 @@ def default_param_dict():
 		'savgol_1st_deriv_window': 'N/A',
 		'savgol_1st_deriv_pol': 'N/A',
 		'plot_fig_width': 'N/A',
-		'plot_fig_height': 'N/A'
+		'plot_fig_height': 'N/A',
+		'Plot figure x_min [layout]': 'N/A',
+		'Plot figure x_max [layout]': 'N/A',
+		'Plot figure y_min [layout]': 'N/A',
+		'Plot figure y_max [layout]': 'N/A'
 	}
