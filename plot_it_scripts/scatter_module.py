@@ -176,6 +176,9 @@ def scatter_plot_without_fit(master_dict, sample_idx, user_input_dict, plot_dict
 		plot_figure, graph_name, xs, ys, 'None', plot_marker, x_title, y_title, subplot_row, subplot_col, 'None',
 		sample_idx, param_dict, color_list, color_count, user_input_dict, master_dict)
 
+	# Add the appropriate color to the table coloring list
+	table_color_list_manager(color_list[color_count], plot_dict['table_color_list'])
+
 
 def replicate_mean_error(unique_x, redundant_x, y_val):
 	"""
@@ -438,14 +441,31 @@ def scatter_fit(
 			rmse = rmse_calculation(x_val, y_val, parameters, model_name)
 			master_dict['RMSE'].append(rmse)
 
+			residuals = calculate_and_plot_residuals(x_val, y_val, parameters, model_name)
+			if param_dict['scatter_residuals'] == 'yes':
+				plot_func(figure, graph_name + '_residuals', x_val, residuals, 'None', 'dots', x_title, y_title,
+						  subplot_row, subplot_col, 'scatter_residuals', sample_idx, param_dict, color_list,
+						  color_count,
+						  user_input_dict, master_dict)
+
+
 		elif fitting_mode == 'Global':
 
 			# Calculate RMSE for the "local" data i.e. meaning the data subset used in the specific fit
 			rmse = rmse_calculation(x_val_list[c], y_val_list[c], parameters, model_name)
 			master_dict['RMSE'].append(rmse)
 
+			residuals = calculate_and_plot_residuals(x_val_list[c], y_val_list[c], parameters, model_name)
+			if param_dict['scatter_residuals'] == 'yes':
+				plot_func(figure, graph_name + '_residuals' + str(c+1), x_val_list[c], residuals, 'None', 'dots', x_title, y_title,
+						  subplot_row, subplot_col, 'scatter_residuals', sample_idx, param_dict, color_list,
+						  color_count,
+						  user_input_dict, master_dict)
+
 		# Add the appropriate color to the table coloring list
 		table_color_list_manager(color_list[color_count], plot_dict['table_color_list'])
+
+
 
 	# If global fitting (i.e. more than one KD and R^2 has been calculated for the data) add final result to table
 	if fitting_mode == 'Global':
@@ -468,12 +488,12 @@ def scatter_fit(
 		table_color_list_manager(color_list[color_count], plot_dict['table_color_list'])
 
 	# If specified by user calculate the residuals on the full data set and include in the plot.
-	if param_dict['scatter_residuals'] == 'yes':
-		residuals = calculate_and_plot_residuals(x_val, y_val, parameters, model_name, )
+	#if param_dict['scatter_residuals'] == 'yes':
+	#	residuals = calculate_and_plot_residuals(x_val, y_val, parameters, model_name)
 
-		plot_func(figure, graph_name + '_residuals', x_val, residuals, 'None', 'dots', x_title, y_title,
-				  subplot_row, subplot_col, 'scatter_residuals', sample_idx, param_dict, color_list, color_count,
-				  user_input_dict, master_dict)
+	#	plot_func(figure, graph_name + '_residuals', x_val, residuals, 'None', 'dots', x_title, y_title,
+	#			  subplot_row, subplot_col, 'scatter_residuals', sample_idx, param_dict, color_list, color_count,
+	#			  user_input_dict, master_dict)
 
 
 def interval_generator(start, end):
