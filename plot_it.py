@@ -70,7 +70,15 @@ if args.plot_type in ['Scatter', 'scatter']:
 
 		x_id = 'x' + str(i + 1)
 		y_id = 'y' + str(i + 1)
+		ignore_id = 'ignore' + str(i + 1)
 		graph_name = ID_list[i]
+
+		# Updating the color counter to ensure the graphs are different colors.
+		plot_dict['color_count'] = color_selector(plot_dict, graph_name, used_graph_names)
+
+		# Check if the "ignore column" exists i.e. if user has specified dropping specific values of data.
+		if ignore_id in df.columns:
+			df = df[df[ignore_id].fillna(' ').str.isalpha() == False]
 
 		# Getting x values, y values and a non-redundant list of x values
 		xs, ys, unique_x = scatter_data_slice(df, i, x_id, y_id, user_input_dict)
