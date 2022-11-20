@@ -8,7 +8,7 @@ Excel file that contains certain columns specifying how the analysis should be p
 the file is specified by putting x1, x2, x3 etc. and y1, y2, y3 etc. above the data columns.
 
 Running the script:  
-python $SCRIPT.py -s $ANALYSIS_TYPE (AKTA, FIDA, Bar, Scatter, Panta, Boxplot) -i $EXCEL_FILE.xlsx -advanced (optional)
+python $SCRIPT.py -s $ANALYSIS_TYPE (AKTA, FIDA, Bar, Scatter, Panta, Octet, Boxplot) -i $EXCEL_FILE.xlsx -advanced (optional)
 
 Columns for specifying how the analysis should be done:
 
