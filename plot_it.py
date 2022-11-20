@@ -268,7 +268,7 @@ elif args.plot_type in ['Bar', 'BAR', 'bar']:
 
 elif args.plot_type in ['Octet', 'OCTET', 'octet']:
 
-	from plot_it_scripts.octet_module_v3 import *
+	from plot_it_scripts.octet_module import *
 
 	# Re-define a specific plot for the octet.
 	fig = create_subplot_octet()

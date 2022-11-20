@@ -154,6 +154,9 @@ def octet_main(sample_idx, user_input_dict, plot_dict, param_dict, master_dict, 
         ss_R2 = round(ss_R2, 3)
         [master_dict['octet_R2_SS'].append(ss_R2) for x in range(len(sensor_ids))]
 
+    else:
+        raise TypeError('I cannot handle this fitting')
+
 
 def octet_box(param_dict):
     def show_entry_fields():
