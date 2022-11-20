@@ -150,6 +150,17 @@ def define_master_dict():
 	master_dict['peak_onset'] = []
 	master_dict['inflection_points'] = []
 	master_dict['vertex_max'] = []
+	master_dict['octet_sensors'] = []
+	master_dict['octet_sensor_conc'] = []
+	master_dict['octet_ka'] = []
+	master_dict['octet_ka_err'] = []
+	master_dict['octet_kd'] = []
+	master_dict['octet_kd_err'] = []
+	master_dict['octet_kinetic_KD'] = []
+	master_dict['octet_kinetic_KD_err'] = []
+	master_dict['octet_R2_full'] = []
+	master_dict['octet_KD_SS'] = []
+	master_dict['octet_R2_SS'] = []
 
 	return master_dict
 
@@ -184,6 +195,9 @@ def define_color_list(user_input_dict, param_dict):
 		color_list =['#9352a8', '#f7760b', '#d51c3c', '#c8b18b', '#23eaa5', '#f483cd', '#276cbd', '#f59080',
 					 '#61419c', '#b83773', '#ebdd21', '#8b1c0e', '#a7dc26', '#673f0b', '#e83b1b', '#495b22',
 					 '#8a8489', '#99c6f9']
+
+	elif color_scheme == '4 color (color blind safe':
+		color_list = ['#D41159', '#40B0A6', '#D35FB7', '#52D1EA']
 
 	# If the number of samples equals the length of the color list the script will append one extra color to avoid the same
 	# color comparisons in subplots.
@@ -253,32 +267,6 @@ def table_color_list_manager(color,list):
 
 def create_subplot_function(ID_list, user_input_dict):
 
-	# Define total number of subplots from the count of rows and columns from user.
-	# Then make a list for storing subplot titles in.
-	#subplot_row_count = user_input_dict['subplot_row_count']
-	#subplot_col_count = user_input_dict['subplot_col_count']
-	#subplot_tot = subplot_row_count * subplot_col_count
-
-	#title_list = [''] * subplot_tot
-
-	#for a in range(len(ID_list)):
-
-	#	subplot_row_idx = user_input_dict['subplot_row'][a]
-	#	subplot_col_idx = user_input_dict['subplot_col'][a]
-
-	#	subplot_id = ((subplot_row_idx - 1) * user_input_dict['subplot_col_count']) + subplot_col_idx - 1
-
-	#	if subplot_id == 1:
-	#		ax_id = ''
-	#	else:
-	#		ax_id = str(subplot_id+1)
-
-	#	user_flags = user_input_dict['python_misc'][a].split(';')
-	#	for b in user_flags:
-	#		if 'subplot_title' in b:
-	#			title = b.split('=')[1]
-	#			title_list[subplot_id] = title
-
 	figure = make_subplots(
 		rows=user_input_dict['subplot_row_count'],
 		cols=user_input_dict['subplot_col_count'],
@@ -291,6 +279,19 @@ def create_subplot_function(ID_list, user_input_dict):
 	#	c['x'] = 0.1
 		#c['yref'] = 'y' + str(ax_id)
 		#c['y'] = 0.1
+
+	return figure
+
+def create_subplot_octet():
+
+	figure = make_subplots(rows=4,
+						   cols=4,
+						   vertical_spacing=0.1,
+						   horizontal_spacing=0.04,
+						   specs=[[{'rowspan': 2, 'colspan': 3}, None, None, {'rowspan': 2}],
+								  [{}, {}, {}, {}],
+								  [{'colspan': 2}, None, {'rowspan': 2}, {'rowspan': 2}],
+								  [{'colspan': 2}, None, None, None]])
 
 	return figure
 

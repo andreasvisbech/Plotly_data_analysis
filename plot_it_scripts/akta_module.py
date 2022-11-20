@@ -224,10 +224,10 @@ def akta_baseline(baseline, x_val, y_val, mode, param_dict):
 	elif len(baseline) == 2:
 
 		# Calculate flat baseline similar to Unicorn software
-		baseline_x1 = float(x_val.iloc[(x_val - baseline[0]).abs().argsort()[:1]])
-		baseline_y1 = float(y_val.iloc[(x_val - baseline[0]).abs().argsort()[:1]])
-		baseline_x2 = float(x_val.iloc[(x_val - baseline[1]).abs().argsort()[:1]])
-		baseline_y2 = float(y_val.iloc[(x_val - baseline[1]).abs().argsort()[:1]])
+		baseline_x1 = float(x_val.iloc[(x_val - baseline[0]).abs().argsort().iloc[:1]])
+		baseline_y1 = float(y_val.iloc[(x_val - baseline[0]).abs().argsort().iloc[:1]])
+		baseline_x2 = float(x_val.iloc[(x_val - baseline[1]).abs().argsort().iloc[:1]])
+		baseline_y2 = float(y_val.iloc[(x_val - baseline[1]).abs().argsort().iloc[:1]])
 
 		if mode == 'linear':
 			a = (baseline_y2 - baseline_y1) / (baseline_x2 - baseline_x1)  # Calculate slope of linar baseline curve

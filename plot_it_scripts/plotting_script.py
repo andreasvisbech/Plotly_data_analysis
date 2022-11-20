@@ -215,6 +215,34 @@ def plot_func(figure, graph_name, x_val, y_val, std_dev, marker, x_title, y_titl
 			row=subplot_row, col=subplot_col
 		)
 
+	elif comment == 'Octet':
+		# Re-define template for hover label
+		my_hover_template = graph_name + '<extra></extra>' + '<br>x: %{x}' + '<br>y: %{y}<br>' + 'Note: ' + \
+							user_input_dict['sensor']
+
+		figure.add_trace(
+			go.Scatter(
+				name=graph_name, x=x_val, y=y_val, mode='lines', legendgroup=graph_name, showlegend=legend_show,
+				hovertemplate=my_hover_template,
+				line=dict(width=param_dict['graph width'], color=color_list[color_count])),
+			row=subplot_row, col=subplot_col
+		)
+
+	elif comment == 'Octet_fit':
+		# Re-define template for hover label
+		my_hover_template = graph_name + '<extra></extra>' + '<br>x: %{x}' + '<br>y: %{y}<br>' + 'Note: ' + \
+							user_input_dict['sensor'] + '_fit'
+
+		figure.add_trace(
+			go.Scatter(
+				name=graph_name, x=x_val, y=y_val, mode='lines', legendgroup=graph_name, showlegend=legend_show,
+				hovertemplate=my_hover_template,
+				line=dict(width=param_dict['graph width'], color='rgb(255,0,0)')),
+			row=subplot_row, col=subplot_col
+		)
+
+
+
 	# Determining the "number id" for the individual subplot. This can be used for targeting customization
 	# such as axis labels to this subplot.
 	subplot_id = ((subplot_row - 1) * user_input_dict['subplot_col_count']) + subplot_col

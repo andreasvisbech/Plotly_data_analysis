@@ -178,7 +178,7 @@ def create_advanced_box():
 
 	var9 = tk.StringVar(master)
 	var9.set('Default (10 color)')
-	e39 = ttk.OptionMenu(master, var9, 'Default (10 color)', 'Default (10 color)', '15 color', '18 color')
+	e39 = ttk.OptionMenu(master, var9, 'Default (10 color)', 'Default (10 color)', '15 color', '18 color', '4 color (color blind safe')
 
 	e40 = ttk.Entry(master)
 	e41 = ttk.Entry(master)
@@ -319,8 +319,8 @@ def default_param_dict():
 		'savgol_1st_deriv_pol': 'N/A',
 		'plot_fig_width': 'N/A',
 		'plot_fig_height': 'N/A',
-		'Plot figure x_min [layout]': 'N/A',
-		'Plot figure x_max [layout]': 'N/A',
-		'Plot figure y_min [layout]': 'N/A',
-		'Plot figure y_max [layout]': 'N/A'
+		'plot_fig_xmin': 'N/A',
+		'plot_fig_xmax': 'N/A',
+		'plot_fig_ymin': 'N/A',
+		'plot_fig_xmax': 'N/A'
 	}

@@ -266,6 +266,61 @@ elif args.plot_type in ['Bar', 'BAR', 'bar']:
 
 		bar_main(df, x_id, y_id, error_id, i, plot_dict, user_input_dict, param_dict, master_dict)
 
+elif args.plot_type in ['Octet', 'OCTET', 'octet']:
+
+	from plot_it_scripts.octet_module_v3 import *
+
+	# Re-define a specific plot for the octet.
+	fig = create_subplot_octet()
+	plot_fig = create_subplot_octet()
+	plot_dict['figure'] = fig
+	plot_dict['plot_figure'] = plot_fig
+
+	param_dict = octet_box(param_dict)
+
+	# Go over each sample in the excel sheet
+	for i in range(len(ID_list)):
+		print('Analysing data: ' + str(ID_list[i]))
+
+		plot_dict['graph_names'].append(ID_list[i])
+
+		graph_name = ID_list[i]
+
+		# Updating the color counter to ensure the graphs are different colors.
+		plot_dict['color_count'] = color_selector(plot_dict, graph_name, used_graph_names)
+
+		octet_main(i, user_input_dict, plot_dict, param_dict, master_dict, df)
+
+	# Adding table to the interactive plot
+	table_plot(plot_dict, [
+		'Samples',
+		'Sensor',
+		'Concentrations (' + param_dict['octet_conc_unit'] + ')',
+		'ka (M<sup>-1</sup>s<sup>-1</sup>)',
+	    'ka stderr',
+		'kd (s<sup>-1</sup>)',
+		'kd stderr',
+		'Kinetics KD (' + param_dict['octet_conc_unit'] + ')',
+		'Kinetic KD error',
+		'R2 full',
+	    'Steady-state KD (' + param_dict['octet_conc_unit'] + ')',
+	    'Steady-state R2'], [
+		master_dict['ID_list_new'],
+		master_dict['octet_sensors'],
+		master_dict['octet_sensor_conc'],
+	    master_dict['octet_ka'],
+		master_dict['octet_ka_err'],
+		master_dict['octet_kd'],
+		master_dict['octet_kd_err'],
+		master_dict['octet_kinetic_KD'],
+		master_dict['octet_kinetic_KD_err'],
+		master_dict['octet_R2_full'],
+	    master_dict['octet_KD_SS'],
+	    master_dict['octet_R2_SS']], user_input_dict, param_dict)
+
+	# Adding interactive buttons to the plotly plot
+	plotly_buttons(plot_dict)
+
 elif args.plot_type in ['panta', 'Panta', 'PANTA']:
 
 	from plot_it_scripts.panta_module import *
