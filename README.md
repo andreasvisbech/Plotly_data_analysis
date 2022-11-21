@@ -8,7 +8,7 @@ Excel file that contains certain columns specifying how the analysis should be p
 the file is specified by putting x1, x2, x3 etc. and y1, y2, y3 etc. above the data columns.
 
 Running the script:  
-python $SCRIPT.py -s $ANALYSIS_TYPE (AKTA, FIDA, Bar, Scatter, Panta, Boxplot) -i $EXCEL_FILE.xlsx -advanced (optional)
+python $SCRIPT.py -s $ANALYSIS_TYPE (AKTA, FIDA, Bar, Scatter, Panta, Octet, Boxplot) -i $EXCEL_FILE.xlsx -advanced (optional)
 
 Columns for specifying how the analysis should be done:
 
@@ -21,6 +21,8 @@ Columns for specifying how the analysis should be done:
   and column number, of the subplot to put the data into.
 - "Data_interval": takes to numbers separated by ";". Allows user to slice data on x value to only include part of the
   data in the analysis without manually changing the data in the excel file.
+  
+AKTA MODULE:
 - "AKTA_fraction": Specific to AKTA analysis. Two numbers separated by ";". Specifies which part of the data is considered to be the peak i.e. which part of the data to use for yield calculations. Multiple peaks can be specified using "|". 
 - "AKTA_baseline": Specific to AKTA analysis. Two numbers separated by ";". Specifies the outer bounds for creating a
   linear baseline. The baseline can also be set in a different automatic manner under advanced analysis option.
@@ -28,6 +30,9 @@ Columns for specifying how the analysis should be done:
   The extinction coefficient should be given in Abs 0.1% i.e. the M-1 cm-1 extinction coeff. divided by MW.
 - "AKTA_volume_load": Specific to AKTA analysis. Takes the amount of supernatant loaded during chromatography. Used for
   calculating the culture yield.
+  
+FIDA MODULE: 
+- Note that the "global" fitting is currently not a global fit but rather fitting the individual data sets. 
 - "Fitting_interval": Used for fitting data. Two numbers separated by ";". Denotes the x value interval that should be
   passed to the fitting function.
 - "Fit_model": Used for fitting data. Can be "1to1 or "Excess" for FIDA fitting. Can be "Hill", "Hill_simple" or "4PL"
@@ -35,6 +40,23 @@ Columns for specifying how the analysis should be done:
 - "Fit_approach": Used for fitting data. Can be "Local" or "Global". Local fitting will calculate mean y values and
   standard errors for identical x values and then do fitting on the mean values. "Global fitting" will treat each data
   set individually.
+  
+SCATTER MODULE:
+- Note that the "global" fitting is currently not a global fit but rather fitting the individual data sets.  
+- "Fitting_interval": Used for fitting data. Two numbers separated by ";". Denotes the x value interval that should be
+  passed to the fitting function.
+- "Fit_model": Used for fitting data. Can be "1to1 or "Excess" for FIDA fitting. Can be "Hill", "Hill_simple" or "4PL"
+  for general scatter fitting.
+- "Fit_approach": Used for fitting data. Can be "Local" or "Global". Local fitting will calculate mean y values and
+  standard errors for identical x values and then do fitting on the mean values. "Global fitting" will treat each data
+  set individually.
+  
+PANTA MODULE:
+
+OCTET MODULE:
+- Currently only support global fitting. 
+
+
 - "Python_misc": Enables user to customize the analysis. Takes several arguments separated by ";".
     1. "logx" forces x axis logarithmic.
     2. "logy" forces y axis logarithmic.
