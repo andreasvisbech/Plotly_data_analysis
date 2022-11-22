@@ -344,3 +344,21 @@ def write_plot_fig_out(name, plot_fig, param_dict):
 		plot_fig.update_yaxes(range=[y_min, y_max])
 
 	plot_fig.write_image(name + '_Output.svg')
+
+def get_analysis_type(input):
+
+	if input in ['Scatter', 'scatter']:
+		analysis_type = 'scatter'
+	elif input in ['AKTA', 'akta', 'Akta', 'FPLC', 'fplc']:
+		analysis_type = 'fplc'
+	elif input in ['FIDA', 'fida', 'Fida']:
+		analysis_type = 'fida'
+	elif input in ['panta', 'Panta', 'PANTA']:
+		analysis_type = 'panta'
+	elif input in ['Octet', 'OCTET', 'octet']:
+		analysis_type = 'octet'
+	elif input in ['Bar', 'BAR', 'bar']:
+		analysis_type = 'bar'
+
+
+	return analysis_type
