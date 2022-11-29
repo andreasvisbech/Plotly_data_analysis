@@ -311,10 +311,9 @@ def table_plot(plot_dict, col_names_list, col_values_list, user_input_dict, para
     Variable "col_names_list" specifies a list the the column headers that should go into the table.
     Variable "col_values_list" is a list of lists. Each list contains data for an individual column
 
-    :param figure:
     :param col_names_list:
     :param col_values_list:
-    :param ID_list:
+    param_dict['plot_fig_xmin']
     :return:
     """
 
