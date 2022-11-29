@@ -314,7 +314,6 @@ def quote(file):
 	print('Thank you for using the script! And remember: "' + str(quote_list[number]) + '"' + ' - ' + str(author_list[number]))
 	print(' ')
 
-
 def write_plot_fig_out(name, plot_fig, param_dict):
 
 	if param_dict['plot_fig_width'] != 'N/A' and param_dict['plot_fig_height'] != 'N/A':
@@ -344,3 +343,44 @@ def write_plot_fig_out(name, plot_fig, param_dict):
 		plot_fig.update_yaxes(range=[y_min, y_max])
 
 	plot_fig.write_image(name + '_Output.svg')
+
+def get_analysis_type(input):
+
+	if input in ['Scatter', 'scatter']:
+		analysis_type = 'scatter'
+	elif input in ['AKTA', 'akta', 'Akta', 'FPLC', 'fplc']:
+		analysis_type = 'fplc'
+	elif input in ['FIDA', 'fida', 'Fida']:
+		analysis_type = 'fida'
+	elif input in ['panta', 'Panta', 'PANTA']:
+		analysis_type = 'panta'
+	elif input in ['Octet', 'OCTET', 'octet']:
+		analysis_type = 'octet'
+	elif input in ['Bar', 'BAR', 'bar']:
+		analysis_type = 'bar'
+
+
+	return analysis_type
+
+def read_log_file_in(input, param_dict):
+
+	# Load in the log file using pandas. Make sure pandas does not replace "N/A" values since these are used in the code
+	log_file = pd.read_csv(input, keep_default_na=False, na_values="")
+
+	for row in log_file.iterrows():
+
+		# Detect the key used in the param_dict
+		key = row[1][0]
+
+		# Detect the value to be used in the param
+		param_value = row[1][1]
+
+		# If possible we convert the values to float so they can be used in calculations.
+		# If they cannot be converted they stay the same.
+		try:
+			param_value = float(param_value)
+		except:
+			param_value = param_value
+
+		# Update the value in the param_dict.
+		param_dict[key] = param_value

@@ -2,7 +2,7 @@
 Author: Andreas Visbech Madsen
 '''
 
-__version__ = "3.1.0"
+__version__ = "3.2.0"
 
 # Load modules
 import argparse
@@ -20,14 +20,22 @@ parser.add_argument("-out", "--output", help="y/n to output", action='store_true
 parser.add_argument('-v', '--version', action='version', version=__version__)
 parser.add_argument("-plot", "--plotting", help="y/n to output", action='store_true')
 parser.add_argument("-log_out", "--log_output", help="y/n to log file output", action='store_true')
+parser.add_argument("-log_in", "--log_input", help="y/n to log file output")
 parser.add_argument("-advanced", "--advanced_option_box", help="y/n to advanced option box", action='store_true')
 args = parser.parse_args()
 
+# Figure out the type of analysis
+analysis_type = get_analysis_type(args.plot_type)
+
 if args.advanced_option_box:
-	param_dict = create_advanced_box()
+	param_dict = create_advanced_box(analysis_type)
 
 else:
 	param_dict = default_param_dict()
+
+# If the user has supplied a log file using the log_in flag then the param_dict will be overwritten with the user input
+if args.log_input:
+	log_file = read_log_file_in(args.log_input, param_dict)
 
 # Define globals
 global used_graph_names
@@ -58,8 +66,8 @@ plot_dict['figure'] = fig
 plot_dict['plot_figure'] = plot_fig
 plot_dict['color_list'] = color_list
 
-if args.plot_type in ['Scatter', 'scatter']:
-	from plot_it_scripts.scatter_module import *
+if analysis_type == 'scatter':
+	from plot_it_scripts.scatter_module_v2 import *
 
 	# Go over each sample in the excel sheet
 	for i in range(len(ID_list)):
@@ -83,6 +91,7 @@ if args.plot_type in ['Scatter', 'scatter']:
 		# Getting x values, y values and a non-redundant list of x values
 		xs, ys, unique_x = scatter_data_slice(df, i, x_id, y_id, user_input_dict)
 
+
 		# Check if the data should just be plotted or if user is trying to fit.
 		# This is checked by seing if user has inputed fitting interval and fitting model
 		if user_input_dict['fit_intervals'][i] != '0;0' and user_input_dict['fit_models'][i] != 'None':
@@ -94,27 +103,27 @@ if args.plot_type in ['Scatter', 'scatter']:
 		# Updating the color counter to ensure the graphs are different colors.
 		plot_dict['color_count'] = color_selector(plot_dict, graph_name, used_graph_names)
 
-	# Adding table to the interactive plot
-	table_plot(plot_dict, [
+		# Adding table to the interactive plot
+		table_plot(plot_dict, [
 			'Samples',
 			'Sample notes',
-			'Fitting models',
+			'Model list',
 			'Fitted KD/EC50',
-			'R^2',
-			'Fit parameters'],
-			[
-			master_dict['ID_list_new'],
-			master_dict['notes_list'],
-			master_dict['model_list'],
-			master_dict['KD_fit'],
-			master_dict['R_square'],
-			master_dict['fit_parameters']
-			], user_input_dict, param_dict)
+			'Goodness of fit (R<sup>2</sup>)',
+			'RMSE value (beta)',
+			'Fit parameters'], [
+					   master_dict['ID_list_new'],
+					   master_dict['notes_list'],
+					   master_dict['model_list'],
+					   master_dict['KD_fit'],
+					   master_dict['R_square'],
+					   master_dict['RMSE'],
+					   master_dict['fit_parameters']], user_input_dict, param_dict)
 
 	# Adding interactive buttons to the plotly plot
 	plotly_buttons(plot_dict)
 
-elif args.plot_type in ['AKTA', 'akta', 'Akta']:
+elif analysis_type == 'fplc':
 
 	sys.path.append('./plot_it_scripts/')
 
@@ -182,9 +191,9 @@ elif args.plot_type in ['AKTA', 'akta', 'Akta']:
 	# Creating an output file with the raw values used for the plotting
 	pd_out = write_output_table(['ID_list', ], [master_dict['ID_list']])
 
-elif args.plot_type in ['FIDA', 'fida', 'Fida']:
+elif analysis_type == 'fida':
 
-	from plot_it_scripts.scatter_module import *
+	from plot_it_scripts.scatter_module_v2 import *
 
 	# Go over each sample in the excel sheet
 	for i in range(len(ID_list)):
@@ -231,7 +240,6 @@ elif args.plot_type in ['FIDA', 'fida', 'Fida']:
 		'Fitted KD/EC50',
 		'Goodness of fit (R<sup>2</sup>)',
 		'RMSE value (beta)',
-		'Goodness of fit (\u03A7<sup>2</sup>) BETA',
 		'Fit parameters'],	[
 		master_dict['ID_list_new'],
 		master_dict['notes_list'],
@@ -239,16 +247,15 @@ elif args.plot_type in ['FIDA', 'fida', 'Fida']:
 		master_dict['KD_fit'],
 		master_dict['R_square'],
 		master_dict['RMSE'],
-		master_dict['chi_square'],
 		master_dict['fit_parameters']], user_input_dict, param_dict)
 
 	# Adding interactive buttons to the plotly plot
 	plotly_buttons(plot_dict)
 
-elif args.plot_type in ['Bar', 'BAR', 'bar']:
+elif analysis_type == 'bar':
 
 	from plot_it_scripts.bar_module import *
-	from plot_it_scripts.bar_module import *
+	#from plot_it_scripts.bar_module import *
 
 	for i in range(len(ID_list)):
 		print('Analysing data: ' + str(ID_list[i]))
@@ -266,17 +273,21 @@ elif args.plot_type in ['Bar', 'BAR', 'bar']:
 
 		bar_main(df, x_id, y_id, error_id, i, plot_dict, user_input_dict, param_dict, master_dict)
 
-elif args.plot_type in ['Octet', 'OCTET', 'octet']:
+elif analysis_type == 'octet':
 
 	from plot_it_scripts.octet_module import *
 
 	# Re-define a specific plot for the octet.
 	fig = create_subplot_octet()
-	plot_fig = create_subplot_octet()
+	#plot_fig = create_subplot_octet()
 	plot_dict['figure'] = fig
 	plot_dict['plot_figure'] = plot_fig
 
-	param_dict = octet_box(param_dict)
+	# If no parameter log file has been supplied the user is prompted for input.
+	if args.log_input:
+		None
+	else:
+		param_dict = octet_box(param_dict)
 
 	# Go over each sample in the excel sheet
 	for i in range(len(ID_list)):
@@ -297,21 +308,21 @@ elif args.plot_type in ['Octet', 'OCTET', 'octet']:
 		'Sensor',
 		'Concentrations (' + param_dict['octet_conc_unit'] + ')',
 		'ka (M<sup>-1</sup>s<sup>-1</sup>)',
-	    'ka stderr',
+	    # 'ka stderr',
 		'kd (s<sup>-1</sup>)',
-		'kd stderr',
+		# 'kd stderr',
 		'Kinetics KD (' + param_dict['octet_conc_unit'] + ')',
 		'Kinetic KD error',
 		'R2 full',
-	    'Steady-state KD (' + param_dict['octet_conc_unit'] + ')',
-	    'Steady-state R2'], [
+		'Steady-state KD (' + param_dict['octet_conc_unit'] + ')',
+		'Steady-state R2'], [
 		master_dict['ID_list_new'],
 		master_dict['octet_sensors'],
 		master_dict['octet_sensor_conc'],
-	    master_dict['octet_ka'],
-		master_dict['octet_ka_err'],
+		master_dict['octet_ka'],
+		# master_dict['octet_ka_err'],
 		master_dict['octet_kd'],
-		master_dict['octet_kd_err'],
+		# master_dict['octet_kd_err'],
 		master_dict['octet_kinetic_KD'],
 		master_dict['octet_kinetic_KD_err'],
 		master_dict['octet_R2_full'],
@@ -321,7 +332,7 @@ elif args.plot_type in ['Octet', 'OCTET', 'octet']:
 	# Adding interactive buttons to the plotly plot
 	plotly_buttons(plot_dict)
 
-elif args.plot_type in ['panta', 'Panta', 'PANTA']:
+elif analysis_type == 'panta':
 
 	from plot_it_scripts.panta_module import *
 
