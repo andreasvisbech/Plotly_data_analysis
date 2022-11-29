@@ -9,6 +9,8 @@ from scipy.optimize import curve_fit
 from decimal import Decimal
 from sklearn.metrics import r2_score
 
+import re
+
 from plot_it_scripts.plotting_script import *
 from plot_it_scripts.main_functions import *
 
@@ -42,7 +44,8 @@ def octet_main(sample_idx, user_input_dict, plot_dict, param_dict, master_dict, 
     y_id = 'y' + str(sample_idx + 1)
     z_id = 'z' + str(sample_idx + 1)
 
-    # Getting the right data from the dataframe. The data contains 2nd baseline, association and dissociation
+    # Getting the right data from the dataframe. The data contains 2nd baseline, association and dissociation.
+    # The resulting data is a dataframe.
     data = collect_data(df, x_id, y_id, z_id)
 
     # Get the analyte concentrations for each sensor.
@@ -79,16 +82,28 @@ def octet_main(sample_idx, user_input_dict, plot_dict, param_dict, master_dict, 
         # Plot the raw sensorgrams for the assocition/dissociation
         plot_func(figure, graph_name + '_' + sensor.upper(), x_plot, y_plot, 'None', plot_marker, x_title, y_title, 1,
                   1, 'None', sample_idx, param_dict, color_list, color_count, user_input_dict, master_dict)
+        # Also the output plot
+        plot_func(plot_figure, graph_name + '_' + sensor.upper(), x_plot, y_plot, 'None', plot_marker, x_title, y_title, 1,
+                  1, 'None', sample_idx, param_dict, color_list, color_count, user_input_dict, master_dict)
 
         # If specified by user we also plot the discrete points on the association/dissociation
         if param_dict['octet_show_points'] == 'Yes':
             plot_func(figure, graph_name + '_' + sensor.upper(), x_plot, y_plot, 'None', 'Dots', x_title, y_title,
                       1, 1, 'None', sample_idx, param_dict, color_list, color_count, user_input_dict, master_dict)
 
+            # Also to the output plot
+            #plot_func(plot_figure, graph_name + '_' + sensor.upper(), x_plot, y_plot, 'None', 'Dots', x_title, y_title,
+            #          1, 1, 'None', sample_idx, param_dict, color_list, color_count, user_input_dict, master_dict)
+
         # Plot the full completely raw sensorgrams that show all phases of experiments
         plot_func(figure, graph_name + '_' + sensor.upper(), df[x_id + sensor], df[y_id + sensor], 'None',
                   plot_marker, x_title, y_title, 4, 1, 'None', sample_idx, param_dict, color_list, color_count,
                   user_input_dict, master_dict)
+
+        # Alse the output plot
+        #plot_func(plot_figure, graph_name + '_' + sensor.upper(), df[x_id + sensor], df[y_id + sensor], 'None',
+        #          plot_marker, x_title, y_title, 4, 1, 'None', sample_idx, param_dict, color_list, color_count,
+        #          user_input_dict, master_dict)
 
 
     if fit_mode.lower() == 'global':
@@ -109,10 +124,21 @@ def octet_main(sample_idx, user_input_dict, plot_dict, param_dict, master_dict, 
                       1, 'AKTA_baseline', sample_idx, param_dict, color_list, color_count,
                       user_input_dict, master_dict)
 
+            # Also the output plot
+            plot_func(plot_figure, graph_name + '_' + sensor.upper() + '_fit',
+                      np.array(x_anal), my_fit, 'None', plot_marker, x_title, y_title, 1,
+                      1, 'AKTA_baseline', sample_idx, param_dict, color_list, color_count,
+                      user_input_dict, master_dict)
+
             # Plot the residuals
             plot_func(figure, graph_name + '_' + sensor.upper(), np.array(x_anal), residuals, 'None',
                       plot_marker, x_title, y_title, 3, 1, 'None', sample_idx, param_dict, color_list, color_count,
                       user_input_dict, master_dict)
+
+            # Also the output plot.
+            #plot_func(plot_figure, graph_name + '_' + sensor.upper(), np.array(x_anal), residuals, 'None',
+            #          plot_marker, x_title, y_title, 3, 1, 'None', sample_idx, param_dict, color_list, color_count,
+            #          user_input_dict, master_dict)
 
             # Calculate the equilibrium
             Rmax = fit_result.params['Rmax_'+str(s+1)].value
@@ -124,16 +150,21 @@ def octet_main(sample_idx, user_input_dict, plot_dict, param_dict, master_dict, 
             # Add the fitted parameters to the master dict for plotting
             fit_params_to_master_dict(s, fit_result, fit_dict['unit_conversion'], master_dict)
 
-            # Plot the steady state
-            plot_func(figure, graph_name + '_' + sensor.upper(), np.array(sensor_conc_list[s]), np.array(Req), 'None',
-                      'dots', x_title, y_title, 1, 4, 'None', sample_idx, param_dict, color_list, color_count,
-                      user_input_dict, master_dict)
+            # Plot the steady state points
+            #plot_func(figure, graph_name + '_' + sensor.upper(), np.array(sensor_conc_list[s]), np.array(Req), 'None',
+            #          'dots', x_title, y_title, 1, 4, 'None', sample_idx, param_dict, color_list, color_count,
+            #          user_input_dict, master_dict)
+
+            # Also the output plot
+            #plot_func(plot_figure, graph_name + '_' + sensor.upper(), np.array(sensor_conc_list[s]), np.array(Req), 'None',
+            #          'dots', x_title, y_title, 1, 4, 'None', sample_idx, param_dict, color_list, color_count,
+            #          user_input_dict, master_dict)
 
             # Add the appropriate color to the table coloring list
             table_color_list_manager(color_list[color_count], plot_dict['table_color_list'])
 
         # Calculate full R2 value and add to master dict using function
-        full_R2(fit_dict['y_anal_global'] , fit_dict['y_fit_global'], master_dict)
+        full_R2(fit_dict['y_anal_global'], fit_dict['y_fit_global'], master_dict)
 
         # Fit the steady state
         ss_par, ss_cov = curve_fit(steady_state_model, np.array(sensor_conc_list), np.array(fit_dict['Req']))
@@ -147,12 +178,22 @@ def octet_main(sample_idx, user_input_dict, plot_dict, param_dict, master_dict, 
         # Plot the steady state
         ss_pred = steady_state_model(np.array(sensor_conc_list), ss_Req, ss_KD)
         plot_func(figure, graph_name + '(steady state)', np.array(sensor_conc_list), ss_pred, 'None',
-                  plot_marker, x_title, y_title, 1, 4, 'None', sample_idx, param_dict, color_list, color_count,
+                  'line', x_title, y_title, 1, 4, 'None', sample_idx, param_dict, color_list, color_count,
                   user_input_dict, master_dict)
+        plot_func(figure, graph_name + '(steady state)', np.array(sensor_conc_list), ss_pred, 'None',
+                  'dots', x_title, y_title, 1, 4, 'None', sample_idx, param_dict, color_list, color_count,
+                  user_input_dict, master_dict)
+        # Also the output plot
+        #plot_func(plot_figure, graph_name + '(steady state)', np.array(sensor_conc_list), ss_pred, 'None',
+        #          plot_marker, x_title, y_title, 1, 4, 'None', sample_idx, param_dict, color_list, color_count,
+        #          user_input_dict, master_dict)
 
         ss_R2 = r2_score(np.array(fit_dict['Req']), ss_pred)
         ss_R2 = round(ss_R2, 3)
         [master_dict['octet_R2_SS'].append(ss_R2) for x in range(len(sensor_ids))]
+
+    if fit_mode.lower() == 'local':
+        print('Sorry, the module is under development.')
 
 
 def octet_box(param_dict):
@@ -255,8 +296,10 @@ def collect_data(df, x_id, y_id, z_id):
 def prepare_data(data, x_id, y_id, z_id, sample_idx, conc_list, param_dict):
 
     # Generating a letter list for the sensors.
-    sensor_ids = np.unique([x.lower().replace(x_id, '').replace(y_id, '').replace(z_id, '') for x in data.columns]).tolist()
+    sensor_ids = np.unique([re.sub(r'[^a-zA-Z]', '',x.lower().replace(x_id, '').replace(y_id, '').replace(z_id, '')) for x in data.columns]).tolist()
+    #sensor_ids = np.unique([x.lower().replace(x_id, '').replace(y_id, '').replace(z_id, '') for x in data.columns]).tolist()
     sensor_ids.remove("")
+
 
     for sensor in sensor_ids:
 
@@ -276,7 +319,8 @@ def prepare_data(data, x_id, y_id, z_id, sample_idx, conc_list, param_dict):
     data = remove_ref_sensor_trace(data, x_id, y_id, sample_idx, param_dict)
 
     # Generating a letter list for the sensors.
-    sensor_ids = np.unique([x.lower().replace(x_id, '').replace(y_id, '').replace(z_id, '') for x in data.columns]).tolist()
+    sensor_ids = np.unique([re.sub(r'[^a-zA-Z]', '', x.lower().replace(x_id, '').replace(y_id, '').replace(z_id, '')) for x in data.columns]).tolist()
+    #sensor_ids = np.unique([x.lower().replace(x_id, '').replace(y_id, '').replace(z_id, '') for x in data.columns]).tolist()
     sensor_ids.remove("")
 
     sensor_ids_new = []
@@ -400,7 +444,6 @@ def interstep_correct(data, x_id, y_id, z_id, sensor_id, sample_idx, param_dict)
         step_diff = association_end - dissociation_start
 
         ys[zs == 'Association'] = ys[zs == 'Association'] - step_diff
-
 
     # If interstep correcting to the baseline we are moving the association step so the start of association aligns
     # to the end of the baseline
@@ -689,16 +732,20 @@ def fit_params_to_master_dict(sensor_idx, fit_result, conversion_factor, master_
     ka = fit_result.params['ka_' + str(sensor_idx + 1)].value
     ka = ka * conversion_factor
     ka_round = '%.2E' % Decimal(ka)
+    ka_round = str(ka_round)
 
     ka_err = fit_result.params['ka_' + str(sensor_idx + 1)].stderr
     ka_err = ka_err * conversion_factor
     ka_err_round = '%.2E' % Decimal(ka_err)
+    ka_err_round = str(ka_err_round)
 
     kd = fit_result.params['kd_' + str(sensor_idx + 1)].value
     kd_round = '%.2E' % Decimal(kd)
+    kd_round = str(kd_round)
 
     kd_err = fit_result.params['kd_' + str(sensor_idx + 1)].stderr
     kd_err_round = '%.2E' % Decimal(kd_err)
+    kd_err_round = str(kd_err_round)
 
     kinetic_KD = fit_result.params['KD_kin'].value
     kinetic_KD_round = '%.2E' % Decimal(kinetic_KD)
@@ -706,10 +753,10 @@ def fit_params_to_master_dict(sensor_idx, fit_result, conversion_factor, master_
     kinetic_KD_err = fit_result.params['KD_kin'].stderr
     kinetic_KD_err_round = '%.2E' % Decimal(kinetic_KD_err)
 
-    master_dict['octet_ka'].append(ka_round)
-    master_dict['octet_ka_err'].append(ka_err_round)
-    master_dict['octet_kd'].append(kd_round)
-    master_dict['octet_kd_err'].append(kd_err_round)
+    master_dict['octet_ka'].append('Value: ' + ka_round + '<br>' + 'Error: ' + ka_err_round)
+    #master_dict['octet_ka_err'].append(ka_err_round)
+    master_dict['octet_kd'].append('Value: ' + kd_round + '<br>' + 'Error: ' + kd_err_round)
+    #master_dict['octet_kd_err'].append(kd_err_round)
     master_dict['octet_kinetic_KD'].append(kinetic_KD_round)
     master_dict['octet_kinetic_KD_err'].append(kinetic_KD_err_round)
 
@@ -734,3 +781,16 @@ def full_R2(y_true, y_fit, master_dict):
     # as a fit has been made in order for the output table to match.
     for a in range(y_len):
         master_dict['octet_R2_full'].append(r2_full)
+
+def full_chi_square(y_true, y_fit, master_dict):
+
+    # Make sure both y arrays are actually arrays
+    y_true = np.array(y_true)
+    y_fit = np.array(y_fit)
+
+    # Get the length of the y values. We basically count how many fits have been done.
+    y_len = len(y_true)
+
+    # Flatten both arrays
+    y_true_flat = y_true.flatten()
+    y_fit_flat = y_fit.flatten()

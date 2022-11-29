@@ -2,7 +2,7 @@
 Author: Andreas Visbech Madsen
 '''
 
-__version__ = "3.1.0"
+__version__ = "3.2.0"
 
 # Load modules
 import argparse
@@ -20,6 +20,7 @@ parser.add_argument("-out", "--output", help="y/n to output", action='store_true
 parser.add_argument('-v', '--version', action='version', version=__version__)
 parser.add_argument("-plot", "--plotting", help="y/n to output", action='store_true')
 parser.add_argument("-log_out", "--log_output", help="y/n to log file output", action='store_true')
+parser.add_argument("-log_in", "--log_input", help="y/n to log file output")
 parser.add_argument("-advanced", "--advanced_option_box", help="y/n to advanced option box", action='store_true')
 args = parser.parse_args()
 
@@ -31,6 +32,10 @@ if args.advanced_option_box:
 
 else:
 	param_dict = default_param_dict()
+
+# If the user has supplied a log file using the log_in flag then the param_dict will be overwritten with the user input
+if args.log_input:
+	log_file = read_log_file_in(args.log_input, param_dict)
 
 # Define globals
 global used_graph_names
@@ -98,22 +103,22 @@ if analysis_type == 'scatter':
 		# Updating the color counter to ensure the graphs are different colors.
 		plot_dict['color_count'] = color_selector(plot_dict, graph_name, used_graph_names)
 
-	# Adding table to the interactive plot
-	table_plot(plot_dict, [
+		# Adding table to the interactive plot
+		table_plot(plot_dict, [
 			'Samples',
 			'Sample notes',
-			'Fitting models',
+			'Model list',
 			'Fitted KD/EC50',
-			'R^2',
-			'Fit parameters'],
-			[
-			master_dict['ID_list_new'],
-			master_dict['notes_list'],
-			master_dict['model_list'],
-			master_dict['KD_fit'],
-			master_dict['R_square'],
-			master_dict['fit_parameters']
-			], user_input_dict, param_dict)
+			'Goodness of fit (R<sup>2</sup>)',
+			'RMSE value (beta)',
+			'Fit parameters'], [
+					   master_dict['ID_list_new'],
+					   master_dict['notes_list'],
+					   master_dict['model_list'],
+					   master_dict['KD_fit'],
+					   master_dict['R_square'],
+					   master_dict['RMSE'],
+					   master_dict['fit_parameters']], user_input_dict, param_dict)
 
 	# Adding interactive buttons to the plotly plot
 	plotly_buttons(plot_dict)
@@ -235,7 +240,6 @@ elif analysis_type == 'fida':
 		'Fitted KD/EC50',
 		'Goodness of fit (R<sup>2</sup>)',
 		'RMSE value (beta)',
-		'Goodness of fit (\u03A7<sup>2</sup>) BETA',
 		'Fit parameters'],	[
 		master_dict['ID_list_new'],
 		master_dict['notes_list'],
@@ -243,7 +247,6 @@ elif analysis_type == 'fida':
 		master_dict['KD_fit'],
 		master_dict['R_square'],
 		master_dict['RMSE'],
-		master_dict['chi_square'],
 		master_dict['fit_parameters']], user_input_dict, param_dict)
 
 	# Adding interactive buttons to the plotly plot
@@ -276,11 +279,15 @@ elif analysis_type == 'octet':
 
 	# Re-define a specific plot for the octet.
 	fig = create_subplot_octet()
-	plot_fig = create_subplot_octet()
+	#plot_fig = create_subplot_octet()
 	plot_dict['figure'] = fig
 	plot_dict['plot_figure'] = plot_fig
 
-	param_dict = octet_box(param_dict)
+	# If no parameter log file has been supplied the user is prompted for input.
+	if args.log_input:
+		None
+	else:
+		param_dict = octet_box(param_dict)
 
 	# Go over each sample in the excel sheet
 	for i in range(len(ID_list)):
@@ -301,21 +308,21 @@ elif analysis_type == 'octet':
 		'Sensor',
 		'Concentrations (' + param_dict['octet_conc_unit'] + ')',
 		'ka (M<sup>-1</sup>s<sup>-1</sup>)',
-	    'ka stderr',
+	    # 'ka stderr',
 		'kd (s<sup>-1</sup>)',
-		'kd stderr',
+		# 'kd stderr',
 		'Kinetics KD (' + param_dict['octet_conc_unit'] + ')',
 		'Kinetic KD error',
 		'R2 full',
-	    'Steady-state KD (' + param_dict['octet_conc_unit'] + ')',
-	    'Steady-state R2'], [
+		'Steady-state KD (' + param_dict['octet_conc_unit'] + ')',
+		'Steady-state R2'], [
 		master_dict['ID_list_new'],
 		master_dict['octet_sensors'],
 		master_dict['octet_sensor_conc'],
-	    master_dict['octet_ka'],
-		master_dict['octet_ka_err'],
+		master_dict['octet_ka'],
+		# master_dict['octet_ka_err'],
 		master_dict['octet_kd'],
-		master_dict['octet_kd_err'],
+		# master_dict['octet_kd_err'],
 		master_dict['octet_kinetic_KD'],
 		master_dict['octet_kinetic_KD_err'],
 		master_dict['octet_R2_full'],
