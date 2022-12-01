@@ -1,5 +1,6 @@
 # Import modules
 from scipy.signal import savgol_filter
+from sklearn.ensemble import IsolationForest
 
 # Import relevant scripts
 from plot_it_scripts.plotting_script import *
@@ -33,4 +34,27 @@ def savgol_1st_deriv(xs, ys, sample_idx, param_dict, master_dict, user_input_dic
 		plot_func(plot_figure, graph_name + '_1st deriv', xs, y_val_filter, 'None', plot_marker, x_title, y_title,
 				  subplot_row, subplot_col, 'None', sample_idx, param_dict, color_list, color_count,
 				  user_input_dict, master_dict)
+
+def outlier_detect(xs, ys):
+
+	from sklearn.neighbors import NearestNeighbors
+
+	X = np.vstack((xs,ys)).T
+
+	nbrs = NearestNeighbors(n_neighbors=2)
+
+	nbrs.fit(X)
+
+	distances, indexes = nbrs.kneighbors(X)
+
+	outlier_index = np.where(distances.mean(axis=1) > 0.5)
+
+	print(ys[outlier_index])
+
+	None
+
+
+
+
+
 

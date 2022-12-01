@@ -40,7 +40,6 @@ def scatter_plot_without_fit(master_dict, sample_idx, user_input_dict, plot_dict
     # Add the appropriate color to the table coloring list
     table_color_list_manager(color_list[color_count], plot_dict['table_color_list'])
 
-
 def scatter_plot_with_fit(sample_idx, user_input_dict, plot_dict, param_dict, master_dict, xs, ys, unique_x):
 
     fit_intervals = user_input_dict['fit_intervals']
@@ -342,6 +341,7 @@ def fit_statistics(xs, ys, model, fit_result, fit_mode, master_dict):
         KD = fit_result.params['KD_1'].value
         p = 3
         y_fit = model_fida_1to1(x_val, RI, RIA, KD)
+        y_fit_full = model_fida_1to1(xs, RI, RIA, KD)
 
     elif model == 'fida_excess':
         RI = fit_result.params['RI_1'].value
@@ -350,6 +350,7 @@ def fit_statistics(xs, ys, model, fit_result, fit_mode, master_dict):
         CI = fit_result.params['CI_1'].value
         p = 4
         y_fit = model_fida_excess(x_val, RI, RIA, KD, CI)
+        y_fit_full = model_fida_excess(xs, RI, RIA, KD, CI)
 
     elif model == '4pl':
         Bmin = fit_result.params['Bmin_1'].value
@@ -358,6 +359,7 @@ def fit_statistics(xs, ys, model, fit_result, fit_mode, master_dict):
         kcoop = fit_result.params['kcoop_1'].value
         p = 4
         y_fit = model_4pl(x_val, Bmin, Bmax, KD, kcoop)
+        y_fit_full = model_4pl(xs, Bmin, Bmax, KD, kcoop)
 
     elif model == '3pl':
         Bmin = fit_result.params['Bmin_1'].value
@@ -365,6 +367,7 @@ def fit_statistics(xs, ys, model, fit_result, fit_mode, master_dict):
         KD = fit_result.params['KD_1'].value
         p = 3
         y_fit = model_3pl(x_val, Bmin, Bmax, KD)
+        y_fit_full = model_3pl(xs, Bmin, Bmax, KD)
 
     else:
         p = None
@@ -384,13 +387,17 @@ def fit_statistics(xs, ys, model, fit_result, fit_mode, master_dict):
     r_square_adj = str(round(r_square_adj, 3))
     master_dict['R_square'].append('R<sup>2</sup>=' + r_square + '<br>' + 'R<sup>2</sup><sub>adj</sub>=' + r_square_adj)
 
-    # Calculate RMSE
-    MSE = np.square(np.subtract(y_val, y_fit)).mean()
+    # Calculate RMSE.
+    # The RMSE value is calculated on the full data i.e. not the means of replicates
+    MSE = np.square(np.subtract(ys, y_fit_full)).mean()
     RMSE = np.sqrt(MSE)
     RMSE = str(round(RMSE, 3))
+    #MSE_full = np.square(np.subtract(ys, y_fit_full)).mean()
+    #RMSE_full = np.sqrt(MSE_full)
+    #RMSE_full = str(round(RMSE_full, 3))
 
     # Append RMSE to master dict
-    master_dict['RMSE'].append(RMSE)
+    master_dict['RMSE'].append('RMSE=' + RMSE)
 
 def calc_residuals(xs, ys, model, fit_result):
 

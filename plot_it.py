@@ -194,6 +194,7 @@ elif analysis_type == 'fplc':
 elif analysis_type == 'fida':
 
 	from plot_it_scripts.scatter_module_v2 import *
+	from plot_it_scripts.data_manipulation import *
 
 	# Go over each sample in the excel sheet
 	for i in range(len(ID_list)):
