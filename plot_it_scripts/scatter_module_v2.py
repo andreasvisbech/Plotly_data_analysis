@@ -1,6 +1,7 @@
-
 import lmfit
 from sklearn.metrics import r2_score
+#from scipy import stats
+#import scipy
 
 # Import functions from other scripts
 from plot_it_scripts.plotting_script import *
@@ -111,6 +112,7 @@ def scatter_plot_with_fit(sample_idx, user_input_dict, plot_dict, param_dict, ma
 
     # Calculate residuals. If specified by user we also plot the residuals.
     residuals = calc_residuals(xs, ys, fitting_model, fit_result)
+
     if param_dict['scatter_residuals'] == 'yes':
         plot_func(figure, graph_name + '_residuals', xs, residuals, 'None', 'dots', x_title, y_title,
                   subplot_row, subplot_col, 'scatter_residuals', sample_idx, param_dict, color_list,
