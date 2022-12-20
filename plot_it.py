@@ -52,6 +52,7 @@ ID_list = user_input_dict['ID_list']
 
 # Defining a master dictionary for storing data
 master_dict = define_master_dict()
+master_dict['columns'] = df.columns
 
 # Defining figure for making the plots in. 
 fig = create_subplot_function(ID_list, user_input_dict)
@@ -81,6 +82,9 @@ if analysis_type == 'scatter':
 		ignore_id = 'ignore' + str(i + 1)
 		graph_name = ID_list[i]
 
+		error_id = 'error' + str(i + 1)
+		plot_dict['error_id'] = error_id
+
 		# Updating the color counter to ensure the graphs are different colors.
 		plot_dict['color_count'] = color_selector(plot_dict, graph_name, used_graph_names)
 
@@ -88,9 +92,12 @@ if analysis_type == 'scatter':
 		if ignore_id in df.columns:
 			df = df[df[ignore_id].fillna(' ').str.isalpha() == False]
 
+		# Check if user has supplied error values
+		if error_id in df.columns:
+			plot_dict['errors'] = df[error_id][pd.to_numeric(df[error_id], errors='coerce').notnull()]
+
 		# Getting x values, y values and a non-redundant list of x values
 		xs, ys, unique_x = scatter_data_slice(df, i, x_id, y_id, user_input_dict)
-
 
 		# Check if the data should just be plotted or if user is trying to fit.
 		# This is checked by seing if user has inputed fitting interval and fitting model

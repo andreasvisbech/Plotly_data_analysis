@@ -30,13 +30,29 @@ def scatter_plot_without_fit(master_dict, sample_idx, user_input_dict, plot_dict
     subplot_col = user_input_dict['subplot_col'][sample_idx]
     color_list = plot_dict['color_list']
     color_count = plot_dict['color_count']
+    error_id = plot_dict['error_id']
 
-    plot_func(
-        figure, graph_name, xs, ys, 'None', plot_marker, x_title, y_title, subplot_row, subplot_col, 'None',
-        sample_idx, param_dict, color_list, color_count, user_input_dict, master_dict)
-    plot_func(
-        plot_figure, graph_name, xs, ys, 'None', plot_marker, x_title, y_title, subplot_row, subplot_col, 'None',
-        sample_idx, param_dict, color_list, color_count, user_input_dict, master_dict)
+    if error_id in master_dict['columns']:
+
+        std_dev = plot_dict['errors']
+
+        plot_func(
+            figure, graph_name, xs, ys, std_dev, plot_marker, x_title, y_title, subplot_row,
+            subplot_col, 'Scatter_error', sample_idx, param_dict, color_list, color_count,
+            user_input_dict, master_dict)
+        plot_func(
+            plot_figure, graph_name, xs, ys, std_dev, plot_marker, x_title, y_title, subplot_row,
+            subplot_col, 'Scatter_error', sample_idx, param_dict, color_list, color_count,
+            user_input_dict, master_dict)
+
+
+    else:
+        plot_func(
+            figure, graph_name, xs, ys, 'None', plot_marker, x_title, y_title, subplot_row, subplot_col, 'None',
+            sample_idx, param_dict, color_list, color_count, user_input_dict, master_dict)
+        plot_func(
+            plot_figure, graph_name, xs, ys, 'None', plot_marker, x_title, y_title, subplot_row, subplot_col, 'None',
+            sample_idx, param_dict, color_list, color_count, user_input_dict, master_dict)
 
     # Add the appropriate color to the table coloring list
     table_color_list_manager(color_list[color_count], plot_dict['table_color_list'])
@@ -374,6 +390,7 @@ def fit_statistics(xs, ys, model, fit_result, fit_mode, master_dict):
     else:
         p = None
         y_fit = None
+        y_fit_full = None
 
     # Calculate R square based on the fitted values and the observed values
     r_square = r2_score(y_val, y_fit)
