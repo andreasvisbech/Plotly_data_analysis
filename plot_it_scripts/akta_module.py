@@ -55,12 +55,12 @@ def akta_main_func(df, xs, ys, sample_idx, x_id, y_id, param_dict, master_dict, 
 
 	# Calculate the total AUC from entire sample
 	AUC_sample_tot = auc(xs, ys)
-	AUC_sample_tot = "{:.3f}".format(AUC_sample_tot)
+	#AUC_sample_tot = "{:.3f}".format(AUC_sample_tot)
 	#master_dict['sample_areas_tot'].append(AUC_sample_tot)
 
 	# Calculate AUC for the baseline
 	AUC_baseline_tot = auc(baseline_values[0], baseline_values[1])
-	AUC_baseline_tot = "{:.3f}".format(AUC_baseline_tot)
+	#AUC_baseline_tot = "{:.3f}".format(AUC_baseline_tot)
 	#master_dict['baseline_area_tot'].append(AUC_baseline_tot)
 
 	# Plotting the data values into interactive plot and the stativ "plotting plot"
@@ -92,6 +92,9 @@ def akta_main_func(df, xs, ys, sample_idx, x_id, y_id, param_dict, master_dict, 
 		else:
 			peak_list = [df['AKTA_fraction'][sample_idx].replace(',', '.')]
 
+		# Create a list for storing the AUC values for the peaks.
+		peak_AUC_list = []
+
 		for my_peak in peak_list:
 
 			peak_count = peak_count + 1
@@ -100,8 +103,9 @@ def akta_main_func(df, xs, ys, sample_idx, x_id, y_id, param_dict, master_dict, 
 			master_dict['ID_list_new'].append(graph_name)
 			master_dict['notes_list'].append(user_input_dict['sample_notes'][sample_idx])
 			master_dict['peak_id'].append('Peak' + str(peak_count))
-			master_dict['sample_areas_tot'].append(AUC_sample_tot)
-			master_dict['baseline_area_tot'].append(AUC_baseline_tot)
+			master_dict['sample_areas_tot'].append(round(AUC_sample_tot,3))
+			#master_dict['sample_areas_tot'].append(AUC_sample_tot)
+			master_dict['baseline_area_tot'].append(round(AUC_baseline_tot,3))
 
 			# Get fraction boundaries from excel and turn them to floats
 			fraction = my_peak.split(';')
@@ -130,6 +134,7 @@ def akta_main_func(df, xs, ys, sample_idx, x_id, y_id, param_dict, master_dict, 
 
 			# Do calculation on the total fraction AUC by subtracting fraction AUC and fraction baseline AUC
 			AUC_calculation = AUC_frac - AUC_frac_baseline
+			peak_AUC_list.append(AUC_calculation)
 
 			# Calculate fraction yield using the user specified extinction coefficient and the path length. Convert to mg to dividing by 1000
 			frac_yield = AUC_calculation / (float(ext_coeff[sample_idx]) * param_dict['AKTA_pathlength'])
@@ -167,6 +172,8 @@ def akta_main_func(df, xs, ys, sample_idx, x_id, y_id, param_dict, master_dict, 
 
 			# Add the appropriate color to the table coloring list
 			table_color_list_manager(color_list[color_count], plot_dict['table_color_list'])
+
+		peak_frac_calculation(peak_AUC_list, AUC_sample_tot, AUC_baseline_tot, master_dict)
 
 	# If no fraction is specified 'N/A' values are appended to the master dict.
 	# This is to make sure value positions in the table are not shifted
@@ -243,6 +250,32 @@ def akta_baseline(baseline, x_val, y_val, mode, param_dict):
 			baseline_values = [x_val_baseline, peakutils.baseline(y_val_baseline, deg=param_dict['AKTA baseline deg'])]
 
 	return baseline_values
+
+def peak_frac_calculation(peak_AUC_list, AUC_sample_tot, AUC_baseline_tot, master_dict):
+
+	# The function calculates the relative AUC of the user specified peak compared to the total peak area.
+	# It compares the individal peaks to the total peak area as well as the total sample area.
+
+	# Convert list to array
+	peak_AUC_list = np.array(peak_AUC_list)
+
+	# Get the sum of the peak AUC values
+	peak_sum = np.sum(peak_AUC_list)
+
+	# Calculate the total AUC in the sample by subtracting total baseline AUC from total sample AUC
+	AUC_tot = AUC_sample_tot - AUC_baseline_tot
+
+	for i in peak_AUC_list:
+
+		# Calculate the relationship between the peak AUC and the total AUC of peak.
+		var1 = (i/peak_sum)*100
+
+		# Calculate the relationship between the peak AUC and the total AUC of the sample.
+		var2 = (i/AUC_tot)*100
+
+		# Append the calculated values to the table.
+		master_dict['fraction_AUC_of_total'].append('Of peak=' + str(round(var1, 1)) + '<br>' +
+													'Of sample='+ str(round(var2, 1)))
 
 
 def linear_model(x, a, b):

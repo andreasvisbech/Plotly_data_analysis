@@ -174,9 +174,8 @@ elif analysis_type == 'fplc':
 		'Total sample area',
 		'Total baseline area',
 		'Retention time/volume (beta)',
-		'Area of fraction',
-		'Baseline area (peak)',
-		'Area used for calculation',
+		'Peak area (raw)',
+		'Peak area (%)',
 		'Fraction yield [mg]',
 		'Culture yield [ug/mL]'],
 		[
@@ -186,9 +185,8 @@ elif analysis_type == 'fplc':
 			master_dict['sample_areas_tot'],
 			master_dict['baseline_area_tot'],
 			master_dict['fraction_retentions'],
-			master_dict['fraction_areas'],
-			master_dict['fraction_baseline'],
 			master_dict['fraction_calculation'],
+			master_dict['fraction_AUC_of_total'],
 			master_dict['fraction_yield'],
 			master_dict['culture_yield']], user_input_dict, param_dict)
 
@@ -374,10 +372,6 @@ elif analysis_type == 'panta':
 
 	# Adding interactive buttons to the plotly plot
 	plotly_buttons(plot_dict)
-
-# TODO: figure out how to re-establish this...?        
-# os.makedirs(args.output, exist_ok=True)
-# pd_out.to_csv(args.output.joinpath(args.input_file.stem + '.tsv'), sep='\t')
 
 if args.log_output == True:
 	output_file_name = str(args.input_file[:len(args.input_file) - 5])

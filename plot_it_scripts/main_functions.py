@@ -144,6 +144,7 @@ def define_master_dict():
 	master_dict['fraction_areas'] = []
 	master_dict['fraction_baseline'] = []
 	master_dict['fraction_calculation'] = []
+	master_dict['fraction_AUC_of_total'] = []
 	master_dict['fraction_concentrations'] = []
 	master_dict['fraction_yield'] = []
 	master_dict['culture_yield'] = []
