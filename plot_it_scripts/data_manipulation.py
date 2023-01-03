@@ -24,6 +24,7 @@ def savgol_1st_deriv(xs, ys, sample_idx, param_dict, master_dict, user_input_dic
 	savgol_pol = param_dict['savgol_1st_deriv_pol']
 
 	# Check if the inputs have been changed from N/A. If they have been changed then apply the computation.
+	# Set window to 1 and polynomium to 0 if no smoothing is needed.
 	if savgol_window != 'N/A' and savgol_pol != 'N/A':
 
 		y_val_filter = savgol_filter(ys, int(savgol_window), int(savgol_pol), deriv=1)

@@ -43,27 +43,39 @@ def akta_main_func(df, xs, ys, sample_idx, x_id, y_id, param_dict, master_dict, 
 	# user specified values loaded
 	ext_coeff = user_input_dict['ext_coeff']
 	volume_load = user_input_dict['akta volume loaded']
+	baseline_bounds = user_input_dict['baseline_bounds']
 
-	# Check the user input for the baseline. Single number input will give flat baseline.
-	# Two number input will be used as boundaries for baseline
-	if str(df['AKTA_baseline'][sample_idx]).count(';') == 0:
-		baseline_coord = [float(str(df['AKTA_baseline'][sample_idx]).replace(',', '.'))]
-	elif df['AKTA_baseline'][sample_idx].count(';') > 0:
-		baseline_coord = list(df['AKTA_baseline'][sample_idx].replace(',', '.').split(';'))
+	if baseline_bounds[sample_idx] != 'None':
+		if str(baseline_bounds[sample_idx]).count(';') == 0:
+			baseline_coord = str(baseline_bounds[sample_idx]).replace(',', '.')
+			baseline_coord = [float(baseline_coord)]
+		elif str(baseline_bounds[sample_idx]).count(';') == 1:
+			baseline_coord = str(baseline_bounds[sample_idx]).replace(',', '.').split(';')
+		else:
+			raise ValueError('Something seems wrong with the specified baseline interval..?')
 
-	baseline_values = akta_baseline(baseline_coord, xs, ys, param_dict['AKTA baseline mode'], param_dict)
+	else:
+		baseline_coord = [0]
+
+	# Calculate values for the baseline.
+	baseline_xs, baseline_ys = akta_baseline(baseline_coord, xs, ys, param_dict['AKTA baseline mode'], param_dict)
+
+	# Only plot the baseline if a baseline has been specified
+	if str(baseline_bounds[sample_idx]) != 'None':
+		plot_func(figure, graph_name + '_baseline', baseline_xs, baseline_ys, 'None', 'lines',
+				  x_title, y_title, subplot_row, subplot_col, 'AKTA_baseline', sample_idx, param_dict, 'N/A', 'N/A',
+				  user_input_dict, master_dict)
+		plot_func(plot_figure, graph_name + '_baseline', baseline_xs, baseline_ys, 'None', 'lines',
+				  x_title, y_title, subplot_row, subplot_col, 'AKTA_baseline', sample_idx, param_dict, 'N/A', 'N/A',
+				  user_input_dict, master_dict)
 
 	# Calculate the total AUC from entire sample
 	AUC_sample_tot = auc(xs, ys)
-	#AUC_sample_tot = "{:.3f}".format(AUC_sample_tot)
-	#master_dict['sample_areas_tot'].append(AUC_sample_tot)
 
 	# Calculate AUC for the baseline
-	AUC_baseline_tot = auc(baseline_values[0], baseline_values[1])
-	#AUC_baseline_tot = "{:.3f}".format(AUC_baseline_tot)
-	#master_dict['baseline_area_tot'].append(AUC_baseline_tot)
+	AUC_baseline_tot = auc(baseline_xs, baseline_ys)
 
-	# Plotting the data values into interactive plot and the stativ "plotting plot"
+	# Plotting the data values
 	plot_func(figure, graph_name, xs, ys, 'None', plot_marker, x_title, y_title, subplot_row, subplot_col,
 			  'None', sample_idx, param_dict, color_list, color_count, user_input_dict, master_dict)
 	plot_func(plot_figure, graph_name, xs, ys, 'None', plot_marker, x_title, y_title, subplot_row, subplot_col,
@@ -71,14 +83,6 @@ def akta_main_func(df, xs, ys, sample_idx, x_id, y_id, param_dict, master_dict, 
 
 	# Run 1st derivative function. The derivative can maybe help resolve peak borders.
 	savgol_1st_deriv(xs, ys, sample_idx, param_dict, master_dict, user_input_dict, plot_dict)
-
-	# Plotting the baseline values into interactive plot and the stativ "plotting plot"
-	plot_func(figure, graph_name + '_baseline', baseline_values[0], baseline_values[1], 'None', 'lines',
-			  x_title, y_title, subplot_row, subplot_col, 'AKTA_baseline', sample_idx, param_dict, 'N/A', 'N/A',
-			  user_input_dict, master_dict)
-	plot_func(plot_figure, graph_name + '_baseline', baseline_values[0], baseline_values[1], 'None', 'lines',
-			  x_title, y_title, subplot_row, subplot_col, 'AKTA_baseline', sample_idx, param_dict, 'N/A', 'N/A',
-			  user_input_dict, master_dict)
 
 	# Check if the user has specified a peak. If this is the case minimum one ; must be placed
 	if str(df['AKTA_fraction'][sample_idx]).count(';') > 0:
@@ -120,7 +124,7 @@ def akta_main_func(df, xs, ys, sample_idx, x_id, y_id, param_dict, master_dict, 
 
 			# Slicing baseline data to only get data points that are part of fraction interval
 			# Create a dataframe from the lists containing the baseline values
-			xsys_baseline = pd.DataFrame({str(x_id): baseline_values[0], str(y_id): baseline_values[1]})
+			xsys_baseline = pd.DataFrame({str(x_id): baseline_xs, str(y_id): baseline_ys})
 			xsys_baseline_slice = xsys_baseline[(xsys_baseline[x_id] >= fraction[0]) & (xsys_baseline[x_id] <= fraction[1])]
 
 			# The retention time/volume is defined as the x value where the y value hits max
@@ -185,6 +189,7 @@ def akta_main_func(df, xs, ys, sample_idx, x_id, y_id, param_dict, master_dict, 
 		master_dict['fraction_yield'].append('N/A')
 		master_dict['culture_yield'].append('N/A')
 		master_dict['fraction_concentrations'].append('N/A')
+		master_dict['fraction_AUC_of_total'].append('N/A')
 
 
 def akta_plotly_table(plot_dict, master_dict, user_input_dict):
@@ -220,25 +225,49 @@ def akta_plotly_table(plot_dict, master_dict, user_input_dict):
 
 
 def akta_baseline(baseline, x_val, y_val, mode, param_dict):
-	baseline_values = [[], []]
 
-	for k in range(0, len(baseline)):
-		baseline[k] = float(baseline[k])
+	#baseline_values = [[], []]
 
+	# Make sure the data is in arrays
+	x_val = np.array(x_val).astype(float)
+	y_val = np.array(y_val).astype(float)
+	baseline = np.array(baseline).astype(float)
+
+	# If only a single value is given, the baseline data is simply this value and then using the full x range
 	if len(baseline) == 1:
 		baseline_values = [x_val, [baseline[0]] * len(x_val)]
+		baseline_xs = x_val
+		baseline_ys = [baseline[0]] * len(x_val)
 
 	elif len(baseline) == 2:
 
+		base_low = baseline[0]
+		base_high = baseline[1]
+
+		# We then need to find the values in the data that is actually closest to the baseline bounds.
+		# This is done by taking difference between baseline bounds and the x_vals and finding difference minimum
+		diff_x1 = np.absolute(x_val - base_low)
+		idx_x1 = diff_x1.argmin()
+		baseline_x1 = x_val[idx_x1]
+		baseline_y1 = y_val[idx_x1]
+
+		diff_x2 = np.absolute(x_val - base_high)
+		idx_x2 = diff_x2.argmin()
+		baseline_x2 = x_val[idx_x2]
+		baseline_y2 = y_val[idx_x2]
+
 		# Calculate flat baseline similar to Unicorn software
-		baseline_x1 = float(x_val.iloc[(x_val - baseline[0]).abs().argsort().iloc[:1]])
-		baseline_y1 = float(y_val.iloc[(x_val - baseline[0]).abs().argsort().iloc[:1]])
-		baseline_x2 = float(x_val.iloc[(x_val - baseline[1]).abs().argsort().iloc[:1]])
-		baseline_y2 = float(y_val.iloc[(x_val - baseline[1]).abs().argsort().iloc[:1]])
+		#baseline_x1 = float(x_val.iloc[(x_val - baseline[0]).abs().argsort().iloc[:1]])
+		#baseline_y1 = float(y_val.iloc[(x_val - baseline[0]).abs().argsort().iloc[:1]])
+		#baseline_x2 = float(x_val.iloc[(x_val - baseline[1]).abs().argsort().iloc[:1]])
+		#baseline_y2 = float(y_val.iloc[(x_val - baseline[1]).abs().argsort().iloc[:1]])
 
 		if mode == 'linear':
 			a = (baseline_y2 - baseline_y1) / (baseline_x2 - baseline_x1)  # Calculate slope of linar baseline curve
 			b = baseline_y1 - (a * baseline_x1)  # Calculate intercept of linear baseline curve
+
+			baseline_xs = x_val
+			baseline_ys = linear_model(x_val, a, b)
 
 			baseline_values = [x_val, linear_model(x_val, a, b)]
 
@@ -249,7 +278,18 @@ def akta_baseline(baseline, x_val, y_val, mode, param_dict):
 
 			baseline_values = [x_val_baseline, peakutils.baseline(y_val_baseline, deg=param_dict['AKTA baseline deg'])]
 
-	return baseline_values
+			baseline_xs = x_val_baseline
+			baseline_ys = peakutils.baseline(y_val_baseline, deg=param_dict['AKTA baseline deg'])
+
+		else:
+			baseline_xs = 0
+			baseline_ys = 0
+
+	else:
+		baseline_xs = 0
+		baseline_ys = 0
+
+	return baseline_xs, baseline_ys
 
 def peak_frac_calculation(peak_AUC_list, AUC_sample_tot, AUC_baseline_tot, master_dict):
 

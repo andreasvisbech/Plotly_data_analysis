@@ -45,8 +45,8 @@ def load_user_input(df):
 	ID_list = [x for x in ID_list if str(x) != 'nan']
 	out_dict['ID_list'] = ID_list
 
-	data_interval = df['Data_interval'].fillna(0).replace(',',
-														  '.').tolist()  # Get the data intervals for slicing the data to only analyse sections of full dataset.
+	# Get the data intervals for slicing the data to only analyse sections of full dataset.
+	data_interval = df['Data_interval'].fillna(0).replace(',', '.').tolist()
 	data_interval = data_interval[0:len(ID_list)]
 	out_dict['data_interval'] = data_interval
 
@@ -61,6 +61,9 @@ def load_user_input(df):
 
 	python_misc = df['Python_misc'].fillna('None').tolist()
 	out_dict['python_misc'] = python_misc
+
+	# Make a key for keeping track of which traces have secondary y
+	out_dict['second_y_traces'] = []
 
 	# Getting the axis titles for each sample
 	axis_title = df['Axis_titles'].fillna(';').tolist()
@@ -109,9 +112,15 @@ def load_user_input(df):
 	out_dict['subplot_row_count'] = subplot_row_count
 	out_dict['subplot_col_count'] = subplot_col_count
 
-	# Get listed extinction coefficient from excel sheet and replace empty values with zero. Also make sure the the right decimal seperator is used in case people use e.g. Danish excel
+	# Get list of AKTA baseline boundaries. If nothing specified assume user don't want a baseline
+	out_dict['baseline_bounds'] = df['AKTA_baseline'].fillna('None').replace(',', '.').tolist()
+
+	# Get listed extinction coefficient from excel sheet and replace empty values with zero.
+	# Also make sure the the right decimal seperator is used in case people use e.g. Danish excel
 	ext_coeff = df['AKTA_extinc_coeff'].fillna(0).replace(',', '.').tolist()
-	# ext_coeff = ext_coeff[0:len(ID_list)]  # Restrict the list so it has the same length as ID list. Basically just removing nan values
+
+	# ext_coeff = ext_coeff[0:len(ID_list)]  # Restrict the list so it has the same length as ID list.
+	# Basically just removing nan values
 	out_dict['ext_coeff'] = ext_coeff
 
 	# Get the volumes loaded. This is the total volume of supernatant loaded during experiments. Replace empty values with zero
@@ -266,20 +275,20 @@ def table_color_list_manager(color,list):
 	list.append(rgb_color)
 
 
-def create_subplot_function(ID_list, user_input_dict):
+def create_subplot_function(user_input_dict):
+
+	# Generate specs
+	my_specs = [[{"secondary_y": True}]*user_input_dict['subplot_col_count']]
+
+	my_specs = [[{"secondary_y": True}]*user_input_dict['subplot_col_count']]*user_input_dict['subplot_row_count']
 
 	figure = make_subplots(
 		rows=user_input_dict['subplot_row_count'],
 		cols=user_input_dict['subplot_col_count'],
 		vertical_spacing=0.07,
-		horizontal_spacing=0.07)
-
-	# Positioning the subplot titles
-	#for c in figure['layout']['annotations']:
-	#	c['xref'] = 'x' + str(ax_id)
-	#	c['x'] = 0.1
-		#c['yref'] = 'y' + str(ax_id)
-		#c['y'] = 0.1
+		horizontal_spacing=0.07,
+		specs=my_specs
+	)
 
 	return figure
 

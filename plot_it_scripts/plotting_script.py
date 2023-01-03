@@ -10,6 +10,9 @@ used_graph_names = []
 global used_color_IDs
 used_colors = []
 
+global secondary_y_counter
+
+
 
 # color_count_global = 0
 
@@ -36,15 +39,35 @@ def plot_func(figure, graph_name, x_val, y_val, std_dev, marker, x_title, y_titl
     :param color_list: A list of colors in hex format
     :return:
     """
-	# global used_graph_names, color_count_global
 
 	# Define template for hover label
 	my_hover_template = graph_name + '<extra></extra>' + '<br>x: %{x}' + '<br>y: %{y}<br>' + 'Note: ' + \
 						user_input_dict['sample_notes'][i]
 
+	# Determining the "number id" for the individual subplot. This can be used for targeting customization
+	# such as axis labels to this subplot.
+	# Note this code used to be defined after adding traces
+	subplot_id = ((subplot_row - 1) * user_input_dict['subplot_col_count']) + subplot_col
 
+	#ax_id_x, ax_id_y = get_ax_id(subplot_id, user_input_dict)
+	#if subplot_id == 1:
+	#	ax_id = ''
+	#else:
+	#	ax_id = str(subplot_id)
+
+	# Customize the plot is specified by user
+	# Note this code used to be defined after adding the trace
+	#if user_input_dict['python_misc'][i] != 'None':
+	plot_customize(figure, i, user_input_dict, param_dict, subplot_id)
+
+	# Setting titles on the subplots
+	# Note this code used to be defined after adding traces.
+	#figure['layout']['xaxis' + ax_id_x]['title'] = x_title
+	#figure['layout']['yaxis' + ax_id_y]['title'] = y_title
+
+	# Keep track of which graph names have already been used.
+	# If the graph name has already been used we don't include it in the legend again
 	used_graph_names.append(graph_name)
-
 	if used_graph_names.count(graph_name) > 1 and figure != 'plot_figure':
 		legend_show = False
 	else:
@@ -57,7 +80,7 @@ def plot_func(figure, graph_name, x_val, y_val, std_dev, marker, x_title, y_titl
 					name=graph_name, x=x_val, y=y_val, mode='lines', legendgroup=graph_name, showlegend=legend_show,
 					hovertemplate=my_hover_template,
 					line=dict(width=param_dict['graph width'], color=color_list[color_count])),
-				row=subplot_row, col=subplot_col
+				row=subplot_row, col=subplot_col, secondary_y=user_input_dict['secondary_y']
 			)
 
 		elif marker.lower() in ['dot', 'dots', 'marker', 'markers']:
@@ -202,7 +225,7 @@ def plot_func(figure, graph_name, x_val, y_val, std_dev, marker, x_title, y_titl
 			go.Scatter(name=graph_name, x=x_val, y=y_val, mode='lines', legendgroup=graph_name, showlegend=legend_show,
 					   hovertemplate=my_hover_template,
 					   line=dict(width=param_dict['graph width'], color='rgb(255,0,0)')),
-			row=subplot_row, col=subplot_col
+			row=subplot_row, col=subplot_col, secondary_y=user_input_dict['secondary_y']
 		)
 
 	elif comment == 'AKTA_fraction':
@@ -245,17 +268,14 @@ def plot_func(figure, graph_name, x_val, y_val, std_dev, marker, x_title, y_titl
 
 	# Determining the "number id" for the individual subplot. This can be used for targeting customization
 	# such as axis labels to this subplot.
-	subplot_id = ((subplot_row - 1) * user_input_dict['subplot_col_count']) + subplot_col
-	if subplot_id == 1:
-		ax_id = ''
-	else:
-		ax_id = str(subplot_id)
+	#subplot_id = ((subplot_row - 1) * user_input_dict['subplot_col_count']) + subplot_col
+	#if subplot_id == 1:
+	#	ax_id = ''
+	#else:
+	#	ax_id = str(subplot_id)
 
-	figure['layout']['xaxis' + ax_id]['title'] = x_title
-	figure['layout']['yaxis' + ax_id]['title'] = y_title
-
-	#figure.for_each_xaxis(lambda axis: axis.title.update(font=dict(size=param_dict['xaxis_title_font_size'])))
-	#figure.for_each_yaxis(lambda axis: axis.title.update(font=dict(size=param_dict['yaxis_title_font_size'])))
+	#figure['layout']['xaxis' + ax_id]['title'] = x_title
+	#figure['layout']['yaxis' + ax_id]['title'] = y_title
 
 	#print(figure)
 
@@ -274,20 +294,59 @@ def plot_func(figure, graph_name, x_val, y_val, std_dev, marker, x_title, y_titl
 		)
 	)
 
-	if user_input_dict['python_misc'][i] != 'None':
-		plot_customize(figure, user_input_dict['python_misc'][i], ax_id)
+	#if user_input_dict['python_misc'][i] != 'None':
+	#	plot_customize(figure, user_input_dict['python_misc'][i], ax_id)
 
-def plot_customize(figure, flags, ax_id):
-	in_list = flags.split(';')
 
-	for a1 in range(len(in_list)):
-		if in_list[a1] == 'logx':
-			figure['layout']['xaxis' + ax_id]['type'] = 'log'
-			figure['layout']['xaxis' + ax_id]['dtick'] = 1
 
-		elif in_list[a1] == 'logy':
-			figure['layout']['yaxis' + ax_id]['type'] = 'log'
-			figure['layout']['yaxis' + ax_id]['dtick'] = 1
+def plot_customize(figure, sample_idx, user_input_dict, param_dict, subplot_id):
+
+	x_title = user_input_dict['x_titles'][sample_idx]
+	y_title = user_input_dict['y_titles'][sample_idx]
+	x_title_font_size = param_dict['xaxis_title_font_size']
+	y_title_font_size = param_dict['yaxis_title_font_size']
+
+	flags = user_input_dict['python_misc'][sample_idx]
+
+	flag_list = flags.split(';')
+
+	# Pre-define some of the variables in case the length of the flag list is zero
+	user_input_dict['secondary_y'] = False
+
+	ax_id_x, ax_id_y = get_ax_id(subplot_id, user_input_dict)
+
+	# We first go through the flag list the first time to see if secondary y is defined.
+	# This is needed because the ax ids must be updated accordingly.
+	for a in range(len(flag_list)):
+		if flag_list[a].lower() == 'secondary_y':
+			user_input_dict['secondary_y'] = True
+			user_input_dict['second_y_traces'].append(subplot_id)
+
+			if ax_id_y != '':
+				ax_id_y = str(int(ax_id_y)+1)
+			else:
+				ax_id_y = '2'
+
+		else:
+			user_input_dict['secondary_y'] = False
+
+	# After considering secondary y axes we get the axis ids
+	#ax_id_x, ax_id_y = get_ax_id(subplot_id, user_input_dict)
+
+	# We go through the flags again looking for other inputs.
+	for b in range(len(flag_list)):
+		if flag_list[b].lower() == 'logx':
+			figure['layout']['xaxis' + ax_id_x]['type'] = 'log'
+			figure['layout']['xaxis' + ax_id_x]['dtick'] = 1
+
+		if flag_list[b].lower() == 'logy':
+			figure['layout']['yaxis' + ax_id_y]['type'] = 'log'
+			figure['layout']['yaxis' + ax_id_y]['dtick'] = 1
+
+	# Setting titles on the subplots
+	# Note this code used to be defined after adding traces.
+	figure['layout']['xaxis' + ax_id_x]['title'] = {'text': x_title, 'font': {'size':x_title_font_size}}
+	figure['layout']['yaxis' + ax_id_y]['title'] = {'text': y_title, 'font': {'size':y_title_font_size}}
 
 
 def plotly_buttons(plot_dict):
@@ -402,3 +461,24 @@ def table_plot(plot_dict, col_names_list, col_values_list, user_input_dict, para
 					cells=dict(values=df_func.transpose().values.tolist(), align='left', height=50))
 			)
 
+def get_ax_id(subplot_id, user_input_dict):
+
+	# The function gets the internal ids that is used for navigating the plot layout
+
+	# We need to keep track of the number of secondary y axis have been added because this affects the axis ids.
+	# The index is being added both for the interactive plot and the static plot so we need to remove the duplicates
+	sec_y_count = user_input_dict['second_y_traces']
+	sec_y_count = list(dict.fromkeys(sec_y_count))
+	sec_y_count = len(sec_y_count)
+
+	#print(sec_y_count)
+
+	if subplot_id == 1 and sec_y_count == 0:
+		x_ax_id = ''
+		y_ax_id = ''
+	else:
+		x_ax_id = str(subplot_id)
+		y_ax_id = str((subplot_id*2)-1)
+		#y_ax_id = str(subplot_id + sec_y_count)
+
+	return x_ax_id, y_ax_id

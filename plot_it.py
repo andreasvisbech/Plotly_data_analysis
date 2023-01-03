@@ -55,8 +55,8 @@ master_dict = define_master_dict()
 master_dict['columns'] = df.columns
 
 # Defining figure for making the plots in. 
-fig = create_subplot_function(ID_list, user_input_dict)
-plot_fig = create_subplot_function(ID_list, user_input_dict)
+fig = create_subplot_function(user_input_dict)
+plot_fig = create_subplot_function(user_input_dict)
 
 # Define color list for coloring graphs
 color_list = define_color_list(user_input_dict, param_dict)
