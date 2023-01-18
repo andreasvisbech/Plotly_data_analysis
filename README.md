@@ -32,7 +32,6 @@ AKTA MODULE:
   calculating the culture yield.
   
 FIDA MODULE: 
-- Note that the "global" fitting is currently not a global fit but rather fitting the individual data sets. 
 - "Fitting_interval": Used for fitting data. Two numbers separated by ";". Denotes the x value interval that should be
   passed to the fitting function.
 - "Fit_model": Used for fitting data. Can be "1to1 or "Excess" for FIDA fitting. Can be "Hill", "Hill_simple" or "4PL"
@@ -41,8 +40,7 @@ FIDA MODULE:
   standard errors for identical x values and then do fitting on the mean values. "Global fitting" will treat each data
   set individually.
   
-SCATTER MODULE:
-- Note that the "global" fitting is currently not a global fit but rather fitting the individual data sets.  
+SCATTER MODULE: 
 - "Fitting_interval": Used for fitting data. Two numbers separated by ";". Denotes the x value interval that should be
   passed to the fitting function.
 - "Fit_model": Used for fitting data. Can be "1to1 or "Excess" for FIDA fitting. Can be "Hill", "Hill_simple" or "4PL"
@@ -60,6 +58,7 @@ OCTET MODULE:
 - "Python_misc": Enables user to customize the analysis. Takes several arguments separated by ";".
     1. "logx" forces x axis logarithmic.
     2. "logy" forces y axis logarithmic.
-    3. "table_pos=$VALUE". Allows user to specify positions of data samples in the analysis table. Can make comparison
+    3. "secondary_y" specifies the data to be plotted on a secondary y axis.
+    4. "table_pos=$VALUE". Allows user to specify positions of data samples in the analysis table. Can make comparison
        easier in case of large datasets.
-    4. "Box_all" will include all the datapoints next to the boxplot in the figure.    
+    5. "Box_all" will include all the datapoints next to the boxplot in the figure.    
