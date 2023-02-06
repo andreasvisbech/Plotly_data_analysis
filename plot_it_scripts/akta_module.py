@@ -182,6 +182,11 @@ def akta_main_func(df, xs, ys, sample_idx, x_id, y_id, param_dict, master_dict, 
 	# If no fraction is specified 'N/A' values are appended to the master dict.
 	# This is to make sure value positions in the table are not shifted
 	else:
+		master_dict['ID_list_new'].append('N/A')
+		master_dict['notes_list'].append('N/A')
+		master_dict['peak_id'].append('N/A')
+		master_dict['sample_areas_tot'].append('N/A')
+		master_dict['baseline_area_tot'].append('N/A')
 		master_dict['fraction_retentions'].append('N/A')
 		master_dict['fraction_areas'].append('N/A')
 		master_dict['fraction_baseline'].append('N/A')
