@@ -40,6 +40,9 @@ def plot_func(figure, graph_name, x_val, y_val, std_dev, marker, x_title, y_titl
     :return:
     """
 
+	# Set color for the trace
+	user_input_dict['plot_color'] = color_list[color_count]
+
 	# Define template for hover label
 	my_hover_template = graph_name + '<extra></extra>' + '<br>x: %{x}' + '<br>y: %{y}<br>' + 'Note: ' + \
 						user_input_dict['sample_notes'][i]
@@ -55,7 +58,7 @@ def plot_func(figure, graph_name, x_val, y_val, std_dev, marker, x_title, y_titl
 	#else:
 	#	ax_id = str(subplot_id)
 
-	# Customize the plot is specified by user
+	# Customize the plot if specified by user
 	# Note this code used to be defined after adding the trace
 	#if user_input_dict['python_misc'][i] != 'None':
 	plot_customize(figure, i, user_input_dict, param_dict, subplot_id)
@@ -79,7 +82,7 @@ def plot_func(figure, graph_name, x_val, y_val, std_dev, marker, x_title, y_titl
 				go.Scatter(
 					name=graph_name, x=x_val, y=y_val, mode='lines', legendgroup=graph_name, showlegend=legend_show,
 					hovertemplate=my_hover_template,
-					line=dict(width=param_dict['graph width'], color=color_list[color_count])),
+					line=dict(width=param_dict['graph width'], color=user_input_dict['plot_color'])),
 				row=subplot_row, col=subplot_col, secondary_y=user_input_dict['secondary_y']
 			)
 
@@ -88,13 +91,13 @@ def plot_func(figure, graph_name, x_val, y_val, std_dev, marker, x_title, y_titl
 				go.Scatter(
 					name=graph_name, x=x_val, y=y_val, mode='markers', legendgroup=graph_name, showlegend=legend_show,
 					hovertemplate=my_hover_template,
-					marker=dict(size=param_dict['marker_size'], color=color_list[color_count])),
+					marker=dict(size=param_dict['marker_size'], color=user_input_dict['plot_color'])),
 				row=subplot_row, col=subplot_col
 			)
 
 	elif comment == 'Scatter_error':
 
-		rgb_color = matplotlib.colors.to_rgb(color_list[color_count])
+		rgb_color = matplotlib.colors.to_rgb(user_input_dict['plot_color'])
 		rgb_color = 'rgba(' + str(rgb_color[0]) + ',' + str(rgb_color[1]) + ',' + str(rgb_color[2]) + ', 0.3)'
 
 		y_val_upper = np.add(y_val, std_dev)
@@ -107,14 +110,14 @@ def plot_func(figure, graph_name, x_val, y_val, std_dev, marker, x_title, y_titl
 				figure.add_trace(
 					go.Scatter(
 						name=graph_name, x=x_val, y=y_val, mode='lines', legendgroup=graph_name, showlegend=legend_show,
-						line=dict(width=param_dict['graph width'], color=color_list[color_count])),
+						line=dict(width=param_dict['graph width'], color=user_input_dict['plot_color'])),
 					row=subplot_row, col=subplot_col
 				)
 
 				figure.add_trace(
 					go.Scatter(
 						name=graph_name + '_upper', x=x_val, y=y_val_upper, mode='lines', legendgroup=graph_name,
-						showlegend=False, line=dict(width=0, color=color_list[color_count])),
+						showlegend=False, line=dict(width=0, color=user_input_dict['plot_color'])),
 					row=subplot_row, col=subplot_col
 				)
 
@@ -122,7 +125,7 @@ def plot_func(figure, graph_name, x_val, y_val, std_dev, marker, x_title, y_titl
 					go.Scatter(
 						name=graph_name + '_lower', x=x_val, y=y_val_lower, mode='lines', legendgroup=graph_name,
 						showlegend=False, fillcolor=rgb_color, fill='tonexty',
-						line=dict(width=0, color=color_list[color_count])),
+						line=dict(width=0, color=user_input_dict['plot_color'])),
 					row=subplot_row, col=subplot_col
 				)
 
@@ -133,7 +136,7 @@ def plot_func(figure, graph_name, x_val, y_val, std_dev, marker, x_title, y_titl
 						name=graph_name, x=x_val, y=y_val, mode='lines', legendgroup=graph_name, showlegend=legend_show,
 						hovertemplate=my_hover_template,
 						error_y=dict(type='data', array=std_dev, visible=True),
-						line=dict(width=param_dict['graph width'], color=color_list[color_count])),
+						line=dict(width=param_dict['graph width'], color=user_input_dict['plot_color'])),
 					row=subplot_row, col=subplot_col
 				)
 
@@ -146,7 +149,7 @@ def plot_func(figure, graph_name, x_val, y_val, std_dev, marker, x_title, y_titl
 						name=graph_name, x=x_val, y=y_val, mode='markers', legendgroup=graph_name,
 						showlegend=legend_show,
 						hovertemplate=my_hover_template,
-						marker=dict(size=param_dict['marker_size'], color=color_list[color_count])),
+						marker=dict(size=param_dict['marker_size'], color=user_input_dict['plot_color'])),
 					row=subplot_row, col=subplot_col
 				)
 
@@ -155,7 +158,7 @@ def plot_func(figure, graph_name, x_val, y_val, std_dev, marker, x_title, y_titl
 						name=graph_name + '_upper', x=x_val, y=y_val_upper, mode='lines', legendgroup=graph_name,
 						showlegend=False,
 						hovertemplate=my_hover_template,
-						line=dict(width=0, color=color_list[color_count])),
+						line=dict(width=0, color=user_input_dict['plot_color'])),
 					row=subplot_row, col=subplot_col
 				)
 
@@ -164,7 +167,7 @@ def plot_func(figure, graph_name, x_val, y_val, std_dev, marker, x_title, y_titl
 						name=graph_name + '_lower', x=x_val, y=y_val_lower, mode='lines', legendgroup=graph_name,
 						showlegend=False, fillcolor=rgb_color, fill='tonexty',
 						hovertemplate=my_hover_template,
-						line=dict(width=0, color=color_list[color_count])),
+						line=dict(width=0, color=user_input_dict['plot_color'])),
 					row=subplot_row, col=subplot_col
 				)
 
@@ -177,7 +180,7 @@ def plot_func(figure, graph_name, x_val, y_val, std_dev, marker, x_title, y_titl
 						showlegend=legend_show,
 						hovertemplate=my_hover_template,
 						error_y=dict(type='data', array=std_dev, visible=True),
-						marker=dict(size=param_dict['marker_size'], color=color_list[color_count])),
+						marker=dict(size=param_dict['marker_size'], color=user_input_dict['plot_color'])),
 					row=subplot_row, col=subplot_col
 				)
 
@@ -188,7 +191,7 @@ def plot_func(figure, graph_name, x_val, y_val, std_dev, marker, x_title, y_titl
 				name=graph_name, x=x_val, y=y_val, mode='markers', marker_symbol='x',
 				legendgroup=graph_name, showlegend=legend_show,
 				hovertemplate=my_hover_template,
-				marker=dict(size=param_dict['marker_size'], color=color_list[color_count])),
+				marker=dict(size=param_dict['marker_size'], color=user_input_dict['plot_color'])),
 			row=subplot_row, col=subplot_col
 		)
 
@@ -196,7 +199,7 @@ def plot_func(figure, graph_name, x_val, y_val, std_dev, marker, x_title, y_titl
 		figure.add_trace(
 			go.Bar(name=graph_name, x=x_val, y=y_val, legendgroup=graph_name, showlegend=legend_show,
 				   hovertemplate=my_hover_template,
-				   marker=dict(color=color_list[color_count])),
+				   marker=dict(color=user_input_dict['plot_color'])),
 			row=subplot_row, col=subplot_col
 		)
 
@@ -216,7 +219,7 @@ def plot_func(figure, graph_name, x_val, y_val, std_dev, marker, x_title, y_titl
 				name=graph_name, x=x_val, y=y_val, legendgroup=graph_name, showlegend=legend_show,
 				hovertemplate=my_hover_template,
 				error_y=dict(type='data', array=std_dev, visible=True),
-				marker=dict(color=color_list[color_count])),
+				marker=dict(color=user_input_dict['plot_color'])),
 			row=subplot_row, col=subplot_col
 		)
 
@@ -234,7 +237,7 @@ def plot_func(figure, graph_name, x_val, y_val, std_dev, marker, x_title, y_titl
 				name=graph_name, x=x_val, y=y_val, mode='lines', fill='tozeroy', legendgroup=graph_name,
 				showlegend=legend_show,
 				hovertemplate=my_hover_template,
-				line=dict(width=param_dict['graph width'], color=color_list[color_count])),
+				line=dict(width=param_dict['graph width'], color=user_input_dict['plot_color'])),
 			row=subplot_row, col=subplot_col
 		)
 
@@ -247,7 +250,7 @@ def plot_func(figure, graph_name, x_val, y_val, std_dev, marker, x_title, y_titl
 			go.Scatter(
 				name=graph_name, x=x_val, y=y_val, mode='lines', legendgroup=graph_name, showlegend=legend_show,
 				hovertemplate=my_hover_template,
-				line=dict(width=param_dict['graph width'], color=color_list[color_count])),
+				line=dict(width=param_dict['graph width'], color=user_input_dict['plot_color'])),
 			row=subplot_row, col=subplot_col
 		)
 
@@ -342,6 +345,12 @@ def plot_customize(figure, sample_idx, user_input_dict, param_dict, subplot_id):
 		if flag_list[b].lower() == 'logy':
 			figure['layout']['yaxis' + ax_id_y]['type'] = 'log'
 			figure['layout']['yaxis' + ax_id_y]['dtick'] = 1
+
+		if 'color' in flag_list[b].lower():
+			# If a color is defined by the user this will be used over the default color.
+			new_color = flag_list[b].lower().split('=')[1]
+			user_input_dict['plot_color'] = new_color
+
 
 	# Setting titles on the subplots
 	# Note this code used to be defined after adding traces.
