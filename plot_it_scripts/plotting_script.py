@@ -199,6 +199,7 @@ def plot_func(figure, graph_name, x_val, y_val, std_dev, marker, x_title, y_titl
 		figure.add_trace(
 			go.Bar(name=graph_name, x=x_val, y=y_val, legendgroup=graph_name, showlegend=legend_show,
 				   hovertemplate=my_hover_template,
+				   marker_line=dict(width=param_dict['bar_edge_width'], color='black'),
 				   marker=dict(color=user_input_dict['plot_color'])),
 			row=subplot_row, col=subplot_col
 		)
@@ -219,6 +220,7 @@ def plot_func(figure, graph_name, x_val, y_val, std_dev, marker, x_title, y_titl
 				name=graph_name, x=x_val, y=y_val, legendgroup=graph_name, showlegend=legend_show,
 				hovertemplate=my_hover_template,
 				error_y=dict(type='data', array=std_dev, visible=True),
+				marker_line=dict(width=param_dict['bar_edge_width'], color='black'),
 				marker=dict(color=user_input_dict['plot_color'])),
 			row=subplot_row, col=subplot_col
 		)

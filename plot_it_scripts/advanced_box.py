@@ -503,6 +503,128 @@ def create_advanced_box(analysis_type):
 		e116.insert(10, "N/A")
 		e116.grid(row=12, column=10)
 
+	elif analysis_type == 'bar':
+		def show_entry_fields():
+			print('Values have been registered')
+
+			param_dict['bar_edge_width'] = float(e1.get())
+
+			param_dict['graph width'] = float(e100.get())
+			param_dict['Baseline graph width'] = float(e101.get())
+			param_dict['marker_size'] = float(e102.get())
+			param_dict['xaxis_title_font_size'] = float(e103.get())
+			param_dict['yaxis_title_font_size'] = float(e104.get())
+			param_dict['xaxis_ticks_font_size'] = float(e105.get())
+			param_dict['yaxis_ticks_font_size'] = float(e106.get())
+			param_dict['plot_template'] = str(var107.get())
+			param_dict['error_marker'] = str(var108.get())
+			param_dict['table_coloring'] = str(var109.get())
+			param_dict['color_palette'] = str(var110.get())
+			param_dict['plot_fig_width'] = str(e111.get())
+			param_dict['plot_fig_height'] = str(e112.get())
+			param_dict['plot_fig_xmin'] = str(e113.get())
+			param_dict['plot_fig_xmax'] = str(e114.get())
+			param_dict['plot_fig_ymin'] = str(e115.get())
+			param_dict['plot_fig_ymax'] = str(e116.get())
+
+		master = tk.Tk()
+
+		ttk.Label(master, text="Width of black edge on bars").grid(row=1, column=1)
+		e1 = ttk.Entry(master)
+		e1.insert(10, "0")
+		e1.grid(row=1, column=2)
+
+		ttk.Label(master, text="Graph width").grid(row=1, column=6)
+		e100 = ttk.Entry(master)
+		e100.insert(10, "2")
+		e100.grid(row=1, column=7)
+
+		ttk.Label(master, text="Baseline graph width").grid(row=2, column=6)
+		e101 = ttk.Entry(master)
+		e101.insert(10, "2")
+		e101.grid(row=2, column=7)
+
+		ttk.Label(master, text='Marker size').grid(row=3, column=6)
+		e102 = ttk.Entry(master)
+		e102.insert(10, "10")
+		e102.grid(row=3, column=7)
+
+		ttk.Label(master, text='X axis title font size').grid(row=4, column=6)
+		e103 = ttk.Entry(master)
+		e103.insert(10, "12")
+		e103.grid(row=4, column=7)
+
+		ttk.Label(master, text='Y axis title font size').grid(row=4, column=9)
+		e104 = ttk.Entry(master)
+		e104.insert(10, "12")
+		e104.grid(row=4, column=10)
+
+		ttk.Label(master, text='X axis tick font size').grid(row=5, column=6)
+		e105 = ttk.Entry(master)
+		e105.insert(10, "12")
+		e105.grid(row=5, column=7)
+
+		ttk.Label(master, text='Y axis tick font size').grid(row=5, column=9)
+		e106 = ttk.Entry(master)
+		e106.insert(10, "12")
+		e106.grid(row=5, column=10)
+
+		ttk.Label(master, text="Plotting theme [layout]").grid(row=6, column=6)
+		var107 = tk.StringVar(master)
+		var107.set('plotly')
+		e107 = ttk.OptionMenu(master, var107, 'plotly', 'plotly', 'plotly_white', 'simple_white')
+		e107.grid(row=6, column=7)
+
+		ttk.Label(master, text="Error markers [layout]").grid(row=7, column=6)
+		var108 = tk.StringVar(master)
+		var108.set('Error bands')
+		e108 = ttk.OptionMenu(master, var108, 'Error bands', 'Error bands', 'Error bars')
+		e108.grid(row=7, column=7)
+
+		ttk.Label(master, text="Table coloring [layout]").grid(row=8, column=6)
+		var109 = tk.StringVar(master)
+		var109.set('yes')
+		e109 = ttk.OptionMenu(master, var109, 'yes', 'yes', 'no')
+		e109.grid(row=8, column=7)
+
+		ttk.Label(master, text="Coloring palette [layout]").grid(row=9, column=6)
+		var110 = tk.StringVar(master)
+		var110.set('Default (10 color)')
+		e110 = ttk.OptionMenu(master, var110, 'Default (10 color)', 'Default (10 color)', '15 color', '18 color',
+							  '4 color (color blind safe')
+		e110.grid(row=9, column=7)
+
+		ttk.Label(master, text="Plot figure width [layout]").grid(row=10, column=6)
+		e111 = ttk.Entry(master)
+		e111.insert(10, "N/A")
+		e111.grid(row=10, column=7)
+
+		ttk.Label(master, text="Plot figure height [layout]").grid(row=10, column=9)
+		e112 = ttk.Entry(master)
+		e112.insert(10, "N/A")
+		e112.grid(row=10, column=10)
+
+		ttk.Label(master, text="Plot figure x_min [layout]").grid(row=11, column=6)
+		e113 = ttk.Entry(master)
+		e113.insert(10, "N/A")
+		e113.grid(row=11, column=7)
+
+		ttk.Label(master, text="Plot figure x_max [layout]").grid(row=11, column=9)
+		e114 = ttk.Entry(master)
+		e114.insert(10, "N/A")
+		e114.grid(row=11, column=10)
+
+		ttk.Label(master, text="Plot figure y_min [layout]").grid(row=12, column=6)
+		e115 = ttk.Entry(master)
+		e115.insert(10, "N/A")
+		e115.grid(row=12, column=7)
+
+		ttk.Label(master, text="Plot figure y_max [layout]").grid(row=12, column=9)
+		e116 = ttk.Entry(master)
+		e116.insert(10, "N/A")
+		e116.grid(row=12, column=10)
+
+
 	else:
 		def show_entry_fields():
 			print('Values have been registered')
@@ -818,5 +940,6 @@ def default_param_dict():
 		'plot_fig_xmin': 'N/A',
 		'plot_fig_xmax': 'N/A',
 		'plot_fig_ymin': 'N/A',
-		'plot_fig_xmax': 'N/A'
+		'plot_fig_xmax': 'N/A',
+		'bar_edge_width':0
 	}
