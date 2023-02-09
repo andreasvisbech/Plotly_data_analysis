@@ -63,11 +63,15 @@ def akta_main_func(df, xs, ys, sample_idx, x_id, y_id, param_dict, master_dict, 
 	# Only plot the baseline if a baseline has been specified
 	if str(baseline_bounds[sample_idx]) != 'None':
 		plot_func(figure, graph_name + '_baseline', baseline_xs, baseline_ys, 'None', 'lines',
-				  x_title, y_title, subplot_row, subplot_col, 'AKTA_baseline', sample_idx, param_dict, 'N/A', 'N/A',
-				  user_input_dict, master_dict)
+				  x_title, y_title, subplot_row, subplot_col, 'AKTA_baseline', sample_idx, param_dict,
+				  color_list, color_count, user_input_dict, master_dict)
+
 		plot_func(plot_figure, graph_name + '_baseline', baseline_xs, baseline_ys, 'None', 'lines',
-				  x_title, y_title, subplot_row, subplot_col, 'AKTA_baseline', sample_idx, param_dict, 'N/A', 'N/A',
-				  user_input_dict, master_dict)
+				  x_title, y_title, subplot_row, subplot_col, 'AKTA_baseline', sample_idx, param_dict,
+				  color_list, color_count, user_input_dict, master_dict)
+		#plot_func(plot_figure, graph_name + '_baseline', baseline_xs, baseline_ys, 'None', 'lines',
+		#		  x_title, y_title, subplot_row, subplot_col, 'AKTA_baseline', sample_idx, param_dict, 'N/A', 'N/A',
+		#		  user_input_dict, master_dict)
 
 	# Calculate the total AUC from entire sample
 	AUC_sample_tot = auc(xs, ys)
