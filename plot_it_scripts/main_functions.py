@@ -285,8 +285,8 @@ def create_subplot_function(user_input_dict):
 	figure = make_subplots(
 		rows=user_input_dict['subplot_row_count'],
 		cols=user_input_dict['subplot_col_count'],
-		vertical_spacing=0.07,
-		horizontal_spacing=0.07,
+		vertical_spacing=0.1,
+		horizontal_spacing=0.1,
 		specs=my_specs
 	)
 

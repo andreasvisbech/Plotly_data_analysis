@@ -151,7 +151,7 @@ elif analysis_type == 'fplc':
 
 		# Updating the color counter to ensure the graphs are different colors.
 		plot_dict['color_count'] = color_selector(plot_dict, graph_name, used_graph_names)
-
+		
 		# Extracting the raw x and y values from the excel sheet
 		xs = df[x_id][pd.to_numeric(df[x_id], errors='coerce').notnull()]
 		ys = df[y_id][pd.to_numeric(df[y_id], errors='coerce').notnull()]
