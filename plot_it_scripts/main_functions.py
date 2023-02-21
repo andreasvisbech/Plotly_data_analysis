@@ -171,6 +171,7 @@ def define_master_dict():
 	master_dict['octet_R2_full'] = []
 	master_dict['octet_KD_SS'] = []
 	master_dict['octet_R2_SS'] = []
+	master_dict['trace_stack_jump'] = 0
 
 	return master_dict
 
@@ -292,6 +293,7 @@ def create_subplot_function(user_input_dict):
 
 	return figure
 
+
 def create_subplot_octet():
 
 	figure = make_subplots(rows=4,
@@ -311,6 +313,7 @@ def log_file_out(param_dict, file_name):
 	log_pd = pd.DataFrame.from_dict(param_dict, orient = 'index')
 
 	log_pd.to_csv(file_name + '_log.txt', sep=',')
+
 
 def quote(file):
 	df = pd.read_csv(file)

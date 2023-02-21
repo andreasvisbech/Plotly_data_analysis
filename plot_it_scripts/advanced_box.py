@@ -17,6 +17,7 @@ def create_advanced_box(analysis_type):
 			param_dict['AKTA_pathlength'] = float(e4.get())
 			param_dict['savgol_1st_deriv_window'] = str(e5.get())
 			param_dict['savgol_1st_deriv_pol'] = str(e6.get())
+			param_dict['trace_stacking'] = int(e7.get())
 
 			param_dict['graph width'] = float(e100.get())
 			param_dict['Baseline graph width'] = float(e101.get())
@@ -70,6 +71,11 @@ def create_advanced_box(analysis_type):
 		e6 = ttk.Entry(master)
 		e6.insert(10, "N/A")
 		e6.grid(row=5, column=4)
+
+		ttk.Label(master, text="Degree of trace stacking (%)").grid(row=6, column=0)
+		e7 = ttk.Entry(master)
+		e7.insert(10, "0")
+		e7.grid(row=6, column=1)
 
 		ttk.Label(master, text="Graph width").grid(row=1, column=6)
 		e100 = ttk.Entry(master)
@@ -941,5 +947,6 @@ def default_param_dict():
 		'plot_fig_xmax': 'N/A',
 		'plot_fig_ymin': 'N/A',
 		'plot_fig_xmax': 'N/A',
-		'bar_edge_width':0
+		'bar_edge_width':0,
+		'trace_stacking': 0
 	}

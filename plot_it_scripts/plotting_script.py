@@ -392,7 +392,10 @@ def table_plot(plot_dict, col_names_list, col_values_list, user_input_dict, para
 	ID_list = user_input_dict['ID_list']
 	python_misc = user_input_dict['python_misc']
 
+	# Getting the list of colors to use in the table. If the color list has no colors we add white.
 	fill_color_list = plot_dict['table_color_list']
+	if not fill_color_list:
+		fill_color_list = ['#ffffff']
 
 	table_pos_list = []
 

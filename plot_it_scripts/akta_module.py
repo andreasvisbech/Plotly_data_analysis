@@ -10,20 +10,36 @@ from plot_it_scripts.data_manipulation import *
 
 
 def akta_data_slice(x_id, y_id, sample_idx, xs, ys, user_input_dict):
+
 	data_interval = user_input_dict['data_interval']
+
+	# Make sure xs and ys are arrays
+	xs = np.array(xs)
+	ys = np.array(ys)
 
 	# Slicing the data so only data within the specified data interval is included.
 	if data_interval[sample_idx] != 0:
+
 		interval_var = data_interval[sample_idx].split(';')
+		interval_min = float(interval_var[0])
+		interval_max = float(interval_var[1])
 
-		xsys_interval = pd.concat([xs, ys], axis=1)
-		xsys_interval_slice = xsys_interval[
-			(xsys_interval[x_id] >= float(interval_var[0])) & (xsys_interval[x_id] <= float(interval_var[1]))]
+		# Getting the x_range as the x values that are within the specified inter
+		xs_new = xs[np.logical_and(xs >= interval_min, xs <= interval_max)]
+		ys_new = ys[np.logical_and(xs >= interval_min, xs <= interval_max)]
 
-		xs = xsys_interval_slice[x_id]
-		ys = xsys_interval_slice[y_id]
+	# Slicing the data so only data within the specified data interval is included.
+	#if data_interval[sample_idx] != 0:
+	#	interval_var = data_interval[sample_idx].split(';')
 
-	return xs, ys
+	#	xsys_interval = pd.concat([xs, ys], axis=1)
+	#	xsys_interval_slice = xsys_interval[
+	#		(xsys_interval[x_id] >= float(interval_var[0])) & (xsys_interval[x_id] <= float(interval_var[1]))]
+
+	#	xs = xsys_interval_slice[x_id]
+	#	ys = xsys_interval_slice[y_id]
+
+	return xs_new, ys_new
 
 
 def akta_main_func(df, xs, ys, sample_idx, x_id, y_id, param_dict, master_dict, user_input_dict, plot_dict):
@@ -326,8 +342,45 @@ def peak_frac_calculation(peak_AUC_list, AUC_sample_tot, AUC_baseline_tot, maste
 		master_dict['fraction_AUC_of_total'].append('Of peak=' + str(round(var1, 1)) + '<br>' +
 													'Of sample='+ str(round(var2, 1)))
 
-
 def linear_model(x, a, b):
 	y = x * a + b
 	return y
 
+def trace_stacking(i, ys, param_dict, master_dict):
+
+	# The function moves traces vertially to allow stacking of data traces. It uses percent so if 100% is given
+	# the function will place the lowest point of the top graph at the same y value as the highest point on the
+	# graph below.
+
+	# Setting the new ys value to the old ys value just as a default
+	ys_new = ys
+
+	# The default value is zero. The code should only change the traces if the default has been changed
+	if param_dict['trace_stacking'] != 0:
+
+		# Getting the factor that will be used to move traces
+		factor = param_dict['trace_stacking'] / 100
+
+		# The trace should only be stacked if i is greater than zero i.e. the first trace is not stacked.
+		if i > 0:
+
+			ys_new = ys + master_dict['trace_stack_jump']
+
+		# Get the max value of y values and put it to master dict. Used to know how much next trace needs to be moved.
+		master_dict['trace_stack_jump'] = master_dict['trace_stack_jump'] + max(ys)*factor
+
+	return ys_new
+
+def akta_normalize_to_max(xs, ys, idx, user_input_dict):
+
+	flags = user_input_dict['python_misc'][idx].split(';')
+
+	if 'normalize_to_max' in flags:
+
+		# Get max value of the data
+		ys_max = max(ys)
+
+		# Update the y values by getting them as percent of the max value in the data.
+		ys = (ys/ys_max)*100
+
+	return ys

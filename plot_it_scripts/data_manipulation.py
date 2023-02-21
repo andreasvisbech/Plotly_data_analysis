@@ -36,6 +36,7 @@ def savgol_1st_deriv(xs, ys, sample_idx, param_dict, master_dict, user_input_dic
 				  subplot_row, subplot_col, 'None', sample_idx, param_dict, color_list, color_count,
 				  user_input_dict, master_dict)
 
+
 def outlier_detect(xs, ys):
 
 	from sklearn.neighbors import NearestNeighbors
@@ -55,7 +56,54 @@ def outlier_detect(xs, ys):
 	None
 
 
+def normalize_to_max(ys, idx, user_input_dict):
+
+	flags = user_input_dict['python_misc'][idx].split(';')
+
+	if 'normalize_to_max' in flags:
+
+		# Get max value of the data
+		ys_max = max(ys)
+
+		# Update the y values by getting them as percent of the max value in the data.
+		ys = (ys/ys_max)*100
+
+	return ys
 
 
+def find_nearest(arr, value):
 
+	# The function takes an array and finds the value in the array closest to a specified value
+
+	idx = np.abs(arr - value).argmin()
+
+	return arr[idx]
+
+
+def normalize_to_x(xs, ys, idx, user_input_dict):
+
+	# Getting flags
+	flags = user_input_dict['python_misc'][idx].split(';')
+
+	# Make sure data is arrays
+	xs = np.array(xs)
+	ys = np.array(ys)
+
+	for flag in flags:
+		if 'baseline_x=' in flag:
+
+			# The user specifies which x value should be used as the baseline point
+			x_ref = flag.split('=')[1]
+			x_ref = float(x_ref)
+
+			# Finding the x value in the data closest to the user specified x value to be used as reference
+			x_near = find_nearest(xs, x_ref)
+
+			# Getting the y value that will be used for subtraction.
+			y_ref = ys[xs==x_near][0]
+
+			# Subtract the baseline value from the ys data
+			ys = ys-y_ref
+
+	return ys
 

@@ -156,8 +156,17 @@ elif analysis_type == 'fplc':
 		xs = df[x_id][pd.to_numeric(df[x_id], errors='coerce').notnull()]
 		ys = df[y_id][pd.to_numeric(df[y_id], errors='coerce').notnull()]
 
+		# Subtracting baseline value specified by the user.
+		ys = normalize_to_x(xs, ys, i, user_input_dict)
+
 		# Slicing the data so only data within the specified data interval is included.
 		xs, ys = akta_data_slice(x_id, y_id, i, xs, ys, user_input_dict)
+
+		# Normalizing the data is specified by user
+		ys = normalize_to_max(ys, i, user_input_dict)
+
+		# Stacking the traces if specified. The default is no stacking.
+		ys = trace_stacking(i, ys, param_dict, master_dict)
 
 		# If specified by user all the negative y values will be replaced by zeros.
 		# Can be relevant since the negative values negatively impact the area calculations
