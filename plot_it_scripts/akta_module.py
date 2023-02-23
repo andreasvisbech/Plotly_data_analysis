@@ -28,6 +28,10 @@ def akta_data_slice(x_id, y_id, sample_idx, xs, ys, user_input_dict):
 		xs_new = xs[np.logical_and(xs >= interval_min, xs <= interval_max)]
 		ys_new = ys[np.logical_and(xs >= interval_min, xs <= interval_max)]
 
+	else:
+		xs_new = xs
+		ys_new = ys
+
 	# Slicing the data so only data within the specified data interval is included.
 	#if data_interval[sample_idx] != 0:
 	#	interval_var = data_interval[sample_idx].split(';')
