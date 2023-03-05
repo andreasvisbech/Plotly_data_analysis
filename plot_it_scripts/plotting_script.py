@@ -323,6 +323,7 @@ def plot_customize(figure, sample_idx, user_input_dict, param_dict, subplot_id):
 	# We first go through the flag list the first time to see if secondary y is defined.
 	# This is needed because the ax ids must be updated accordingly.
 	for a in range(len(flag_list)):
+		print(flag_list[a])
 		if flag_list[a].lower() == 'secondary_y':
 			user_input_dict['secondary_y'] = True
 			user_input_dict['second_y_traces'].append(subplot_id)
@@ -331,12 +332,6 @@ def plot_customize(figure, sample_idx, user_input_dict, param_dict, subplot_id):
 				ax_id_y = str(int(ax_id_y)+1)
 			else:
 				ax_id_y = '2'
-
-		else:
-			user_input_dict['secondary_y'] = False
-
-	# After considering secondary y axes we get the axis ids
-	#ax_id_x, ax_id_y = get_ax_id(subplot_id, user_input_dict)
 
 	# We go through the flags again looking for other inputs.
 	for b in range(len(flag_list)):
