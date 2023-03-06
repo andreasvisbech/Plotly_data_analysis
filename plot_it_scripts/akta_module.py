@@ -191,7 +191,9 @@ def akta_main_func(df, xs, ys, sample_idx, x_id, y_id, param_dict, master_dict, 
 			fraction_conc = "{:.3f}".format(fraction_conc)
 			master_dict['fraction_concentrations'].append(fraction_conc)
 
-			# Re-plot the baseline. This is important for the fill coloring of the fractions
+			# Re-plot the baseline. This is important for the fill coloring of the fractions.
+			# The filling function uses the previous trace so the baseline must be plotted again since the
+			# peaks are plotted right after.
 			plot_func(figure, graph_name + '_baseline', xsys_baseline_slice[x_id], xsys_baseline_slice[y_id], 'None', 'lines',
 					  x_title, y_title, subplot_row, subplot_col, 'AKTA_baseline', sample_idx, param_dict,
 					  color_list, color_count, user_input_dict, master_dict)
@@ -232,36 +234,36 @@ def akta_main_func(df, xs, ys, sample_idx, x_id, y_id, param_dict, master_dict, 
 		master_dict['fraction_AUC_of_total'].append('N/A')
 
 
-def akta_plotly_table(plot_dict, master_dict, user_input_dict):
+#def akta_plotly_table(plot_dict, master_dict, user_input_dict):
 	# Getting the figure from the plotting dictionary
-	figure = plot_dict['figure']
+#	figure = plot_dict['figure']
 
-	figure.add_trace(
-		go.Table(
-			header=dict(values=[
-				'Sample ID',
-				'Sample notes',
-				'Total sample area',
-				'Total baseline area',
-				'Retention time/volume (beta)',
-				'Area of fraction',
-				'Baseline area (fraction)',
-				'Area used for calculation',
-				'Fraction yield [mg]',
-				'Culture yield [ug/mL]'],
-				align='left'),
-			cells=dict(values=[
-				user_input_dict['ID_list'],
-				master_dict['notes_list'],
-				master_dict['sample_areas_tot'],
-				master_dict['baseline_area_tot'],
-				master_dict['fraction_retentions'],
-				master_dict['fraction_areas'],
-				master_dict['fraction_baseline'],
-				master_dict['fraction_calculation'],
-				master_dict['fraction_yield'],
-				master_dict['culture_yield']],
-				align='left', height=50)))
+#	figure.add_trace(
+#		go.Table(
+#			header=dict(values=[
+#				'Sample ID',
+#				'Sample notes',
+#				'Total sample area',
+#				'Total baseline area',
+#				'Retention time/volume (beta)',
+#				'Area of fraction',
+#				'Baseline area (fraction)',
+#				'Area used for calculation',
+#				'Fraction yield [mg]',
+#				'Culture yield [ug/mL]'],
+#				align='left'),
+#			cells=dict(values=[
+#				user_input_dict['ID_list'],
+#				master_dict['notes_list'],
+#				master_dict['sample_areas_tot'],
+#				master_dict['baseline_area_tot'],
+#				master_dict['fraction_retentions'],
+#				master_dict['fraction_areas'],
+#				master_dict['fraction_baseline'],
+#				master_dict['fraction_calculation'],
+#				master_dict['fraction_yield'],
+#				master_dict['culture_yield']],
+#				align='left', height=50)))
 
 
 def akta_baseline(baseline, x_val, y_val, mode, param_dict):
@@ -385,17 +387,3 @@ def trace_stacking(i, ys, param_dict, master_dict):
 		master_dict['trace_stack_jump'] = master_dict['trace_stack_jump'] + max(ys)*factor
 
 	return ys_new
-
-def akta_normalize_to_max(xs, ys, idx, user_input_dict):
-
-	flags = user_input_dict['python_misc'][idx].split(';')
-
-	if 'normalize_to_max' in flags:
-
-		# Get max value of the data
-		ys_max = max(ys)
-
-		# Update the y values by getting them as percent of the max value in the data.
-		ys = (ys/ys_max)*100
-
-	return ys
