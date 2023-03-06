@@ -143,7 +143,8 @@ def akta_main_func(df, xs, ys, sample_idx, x_id, y_id, param_dict, master_dict, 
 			frac_volume = abs(fraction[1] - fraction[0])
 
 			# Slicing AKTA data to only get data points that are part of the fraction interval
-			xsys = pd.concat([xs, ys], axis=1)
+			xsys = pd.DataFrame({x_id: xs, y_id: ys})
+			#xsys = pd.concat([xs, ys], axis=1)
 			xsys_slice = xsys[(xsys[x_id] >= fraction[0]) & (xsys[x_id] <= fraction[1])]
 
 			# Slicing baseline data to only get data points that are part of fraction interval
@@ -189,6 +190,16 @@ def akta_main_func(df, xs, ys, sample_idx, x_id, y_id, param_dict, master_dict, 
 			master_dict['culture_yield'].append(culture_yield)
 			fraction_conc = "{:.3f}".format(fraction_conc)
 			master_dict['fraction_concentrations'].append(fraction_conc)
+
+			# Re-plot the baseline. This is important for the fill coloring of the fractions
+			plot_func(figure, graph_name + '_baseline', xsys_baseline_slice[x_id], xsys_baseline_slice[y_id], 'None', 'lines',
+					  x_title, y_title, subplot_row, subplot_col, 'AKTA_baseline', sample_idx, param_dict,
+					  color_list, color_count, user_input_dict, master_dict)
+			plot_func(plot_figure, graph_name + '_baseline', xsys_baseline_slice[x_id], xsys_baseline_slice[y_id], 'None',
+					  'lines',
+					  x_title, y_title, subplot_row, subplot_col, 'AKTA_baseline', sample_idx, param_dict,
+					  color_list, color_count, user_input_dict, master_dict)
+
 
 			# Plotting the fraction
 			plot_func(figure, graph_name + '_peak' + str(peak_count), xsys_slice[x_id], xsys_slice[y_id], 'N/A', 'lines', x_title,

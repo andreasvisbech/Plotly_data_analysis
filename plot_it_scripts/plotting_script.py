@@ -236,12 +236,14 @@ def plot_func(figure, graph_name, x_val, y_val, std_dev, marker, x_title, y_titl
 	elif comment == 'AKTA_fraction':
 		figure.add_trace(
 			go.Scatter(
-				name=graph_name, x=x_val, y=y_val, mode='lines', fill='tozeroy', legendgroup=graph_name,
+				name=graph_name, x=x_val, y=y_val, mode='lines', fill='tonexty', legendgroup=graph_name,
 				showlegend=legend_show,
 				hovertemplate=my_hover_template,
 				line=dict(width=param_dict['graph width'], color=user_input_dict['plot_color'])),
 			row=subplot_row, col=subplot_col
 		)
+
+		# 'tozeroy'
 
 	elif comment == 'Octet':
 		# Re-define template for hover label
