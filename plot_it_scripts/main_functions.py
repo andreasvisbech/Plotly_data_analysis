@@ -96,6 +96,9 @@ def load_user_input(df):
 	fit_intervals = df['Fitting_interval'].fillna('0;0').tolist()
 	out_dict['fit_intervals'] = fit_intervals
 
+	fit_intervals = df['Fit_misc'].fillna('None').tolist()
+	out_dict['fit_misc'] = fit_intervals
+
 	# Getting user info on the subplotting setup
 	subplot_row = []
 	subplot_col = []
@@ -361,7 +364,7 @@ def get_analysis_type(input):
 
 	if input in ['Scatter', 'scatter']:
 		analysis_type = 'scatter'
-	elif input in ['AKTA', 'akta', 'Akta', 'FPLC', 'fplc']:
+	elif input in ['AKTA', 'akta', 'Akta', 'FPLC', 'fplc', 'Chromatography', 'chromatography']:
 		analysis_type = 'fplc'
 	elif input in ['FIDA', 'fida', 'Fida']:
 		analysis_type = 'fida'

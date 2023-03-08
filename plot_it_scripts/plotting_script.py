@@ -233,6 +233,14 @@ def plot_func(figure, graph_name, x_val, y_val, std_dev, marker, x_title, y_titl
 			row=subplot_row, col=subplot_col, secondary_y=user_input_dict['secondary_y']
 		)
 
+	elif comment == 'AKTA_peak_fit':
+		figure.add_trace(
+			go.Scatter(name=graph_name, x=x_val, y=y_val, mode='lines', legendgroup=graph_name, showlegend=legend_show,
+					   hovertemplate=my_hover_template,
+					   line=dict(width=param_dict['graph width'], color='rgb(0,0,0)', dash='dot')),
+			row=subplot_row, col=subplot_col, secondary_y=user_input_dict['secondary_y']
+		)
+
 	elif comment == 'AKTA_fraction':
 		figure.add_trace(
 			go.Scatter(

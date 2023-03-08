@@ -1,9 +1,10 @@
 # Import modules
 from sklearn.metrics import auc
 import peakutils
+from lmfit.models import GaussianModel
 
 # Import functions from other scripts
-from plot_it_scripts.plotting_script import *
+#from plot_it_scripts.plotting_script import *
 from plot_it_scripts.main_functions import *
 from plot_it_scripts.data_manipulation import *
 
@@ -89,9 +90,6 @@ def akta_main_func(df, xs, ys, sample_idx, x_id, y_id, param_dict, master_dict, 
 		plot_func(plot_figure, graph_name + '_baseline', baseline_xs, baseline_ys, 'None', 'lines',
 				  x_title, y_title, subplot_row, subplot_col, 'AKTA_baseline', sample_idx, param_dict,
 				  color_list, color_count, user_input_dict, master_dict)
-		#plot_func(plot_figure, graph_name + '_baseline', baseline_xs, baseline_ys, 'None', 'lines',
-		#		  x_title, y_title, subplot_row, subplot_col, 'AKTA_baseline', sample_idx, param_dict, 'N/A', 'N/A',
-		#		  user_input_dict, master_dict)
 
 	# Calculate the total AUC from entire sample
 	AUC_sample_tot = auc(xs, ys)
@@ -132,19 +130,16 @@ def akta_main_func(df, xs, ys, sample_idx, x_id, y_id, param_dict, master_dict, 
 			master_dict['notes_list'].append(user_input_dict['sample_notes'][sample_idx])
 			master_dict['peak_id'].append('Peak' + str(peak_count))
 			master_dict['sample_areas_tot'].append(round(AUC_sample_tot,3))
-			#master_dict['sample_areas_tot'].append(AUC_sample_tot)
 			master_dict['baseline_area_tot'].append(round(AUC_baseline_tot,3))
 
 			# Get fraction boundaries from excel and turn them to floats
 			fraction = my_peak.split(';')
-			#fraction = list(df['AKTA_fraction'][sample_idx].replace(',', '.').split(';'))
 			for a in range(0, len(fraction)):
 				fraction[a] = float(fraction[a])
 			frac_volume = abs(fraction[1] - fraction[0])
 
 			# Slicing AKTA data to only get data points that are part of the fraction interval
 			xsys = pd.DataFrame({x_id: xs, y_id: ys})
-			#xsys = pd.concat([xs, ys], axis=1)
 			xsys_slice = xsys[(xsys[x_id] >= fraction[0]) & (xsys[x_id] <= fraction[1])]
 
 			# Slicing baseline data to only get data points that are part of fraction interval
@@ -202,7 +197,6 @@ def akta_main_func(df, xs, ys, sample_idx, x_id, y_id, param_dict, master_dict, 
 					  x_title, y_title, subplot_row, subplot_col, 'AKTA_baseline', sample_idx, param_dict,
 					  color_list, color_count, user_input_dict, master_dict)
 
-
 			# Plotting the fraction
 			plot_func(figure, graph_name + '_peak' + str(peak_count), xsys_slice[x_id], xsys_slice[y_id], 'N/A', 'lines', x_title,
 					  y_title, subplot_row, subplot_col, 'AKTA_fraction', sample_idx, param_dict, color_list,
@@ -212,59 +206,37 @@ def akta_main_func(df, xs, ys, sample_idx, x_id, y_id, param_dict, master_dict, 
 					  color_count, user_input_dict, master_dict)
 
 			# Add the appropriate color to the table coloring list
-			table_color_list_manager(color_list[color_count], plot_dict['table_color_list'])
+			table_color_list_manager(user_input_dict['plot_color'], plot_dict['table_color_list'])
+			#table_color_list_manager(color_list[color_count], plot_dict['table_color_list'])
+
+		# If fit models have been supplied by user the script does peak fitting.
+		# First calculate the fit through function and then plot the individual fits for thep peaks
+		if user_input_dict['fit_models'][sample_idx] != 'None':
+			fit_x, fit_y = peak_fit(sample_idx, xsys, x_id, y_id, peak_list, user_input_dict)
+			for k, pk in enumerate(peak_list):
+				plot_func(figure, graph_name + '_peak_fit' + str(k), fit_x[k], fit_y[k], 'None',
+						  'lines', x_title, y_title, subplot_row, subplot_col, 'AKTA_peak_fit',
+						  sample_idx, param_dict, color_list, color_count, user_input_dict, master_dict)
 
 		peak_frac_calculation(peak_AUC_list, AUC_sample_tot, AUC_baseline_tot, master_dict)
 
 	# If no fraction is specified 'N/A' values are appended to the master dict.
 	# This is to make sure value positions in the table are not shifted
-	else:
-		master_dict['ID_list_new'].append('N/A')
-		master_dict['notes_list'].append('N/A')
-		master_dict['peak_id'].append('N/A')
-		master_dict['sample_areas_tot'].append('N/A')
-		master_dict['baseline_area_tot'].append('N/A')
-		master_dict['fraction_retentions'].append('N/A')
-		master_dict['fraction_areas'].append('N/A')
-		master_dict['fraction_baseline'].append('N/A')
-		master_dict['fraction_calculation'].append('N/A')
-		master_dict['fraction_yield'].append('N/A')
-		master_dict['culture_yield'].append('N/A')
-		master_dict['fraction_concentrations'].append('N/A')
-		master_dict['fraction_AUC_of_total'].append('N/A')
-
-
-#def akta_plotly_table(plot_dict, master_dict, user_input_dict):
-	# Getting the figure from the plotting dictionary
-#	figure = plot_dict['figure']
-
-#	figure.add_trace(
-#		go.Table(
-#			header=dict(values=[
-#				'Sample ID',
-#				'Sample notes',
-#				'Total sample area',
-#				'Total baseline area',
-#				'Retention time/volume (beta)',
-#				'Area of fraction',
-#				'Baseline area (fraction)',
-#				'Area used for calculation',
-#				'Fraction yield [mg]',
-#				'Culture yield [ug/mL]'],
-#				align='left'),
-#			cells=dict(values=[
-#				user_input_dict['ID_list'],
-#				master_dict['notes_list'],
-#				master_dict['sample_areas_tot'],
-#				master_dict['baseline_area_tot'],
-#				master_dict['fraction_retentions'],
-#				master_dict['fraction_areas'],
-#				master_dict['fraction_baseline'],
-#				master_dict['fraction_calculation'],
-#				master_dict['fraction_yield'],
-#				master_dict['culture_yield']],
-#				align='left', height=50)))
-
+	#else:
+	#	None
+		#master_dict['ID_list_new'].append('N/A')
+		#master_dict['notes_list'].append('N/A')
+		#master_dict['peak_id'].append('N/A')
+		#master_dict['sample_areas_tot'].append('N/A')
+		#master_dict['baseline_area_tot'].append('N/A')
+		#master_dict['fraction_retentions'].append('N/A')
+		#master_dict['fraction_areas'].append('N/A')
+		#master_dict['fraction_baseline'].append('N/A')
+		#master_dict['fraction_calculation'].append('N/A')
+		#master_dict['fraction_yield'].append('N/A')
+		#master_dict['culture_yield'].append('N/A')
+		#master_dict['fraction_concentrations'].append('N/A')
+		#master_dict['fraction_AUC_of_total'].append('N/A')
 
 def akta_baseline(baseline, x_val, y_val, mode, param_dict):
 
@@ -387,3 +359,87 @@ def trace_stacking(i, ys, param_dict, master_dict):
 		master_dict['trace_stack_jump'] = master_dict['trace_stack_jump'] + max(ys)*factor
 
 	return ys_new
+
+def peak_fit(idx, xsys, x_id, y_id, peak_list, user_input_dict):
+
+	# Get xs and ys as arrays and make sure they are floats
+	xs = xsys[x_id].to_numpy().astype(float)
+	ys = xsys[y_id].to_numpy().astype(float)
+
+	# Defining lists for storing user specified peak limits
+	peak_lim_low = []
+	peak_lim_high = []
+
+	peak_count = len(peak_list)
+
+	# Getting the peak limits and putting them into the lists.
+	for pk in peak_list:
+		low = pk.split(';')[0]
+		peak_lim_low.append(float(low))
+		high = pk.split(';')[1]
+		peak_lim_high.append(float(high))
+
+	# Getting the initial guesses from the user.
+	# If no guesses supplied will use center of the peak interval.
+	fit_flags = user_input_dict['fit_misc'][idx].split('|')
+	for j in fit_flags:
+		if 'center_guess' in j:
+			center_vals = j.split('=')[1]
+			center_guesses = center_vals.split(';')
+			center_guesses = np.array(center_guesses).astype(float)
+		else:
+			center_guesses = []
+			for k, pk in enumerate(peak_list):
+				cen_var = (peak_lim_high[k] - peak_lim_low[k])/2
+				center_guesses.append(cen_var)
+
+	# Create a dict for storing the models
+	model_dict = {}
+
+	# Getting the user specified models. Default is Gaussian
+	models = user_input_dict['fit_models'][idx].split(';')
+
+	# Set the model for the first peak.
+	# Note that the model is called "zero" simply to make more compatible with loop below
+	if models[0] == 'Gaussian':
+		model_dict['mod0'] = GaussianModel(prefix='mod0_')
+		pars = model_dict['mod0'].guess(ys, x=xs)
+		pars['mod0_center'].set(value=center_guesses[0], min=peak_lim_low[0], max=peak_lim_high[0])
+		pars['mod0_sigma'].set(value=0.2, max=(peak_lim_high[0]-peak_lim_low[0]))
+		pars['mod0_amplitude'].set(value=10, min=0.1)
+
+	# Set the model for the other peaks
+	for i in range(1, len(models)):
+		if models[i] == 'Gaussian':
+			model_dict['mod' + str(i)] = GaussianModel(prefix=str('mod' + str(i) + '_'))
+			pars.update(model_dict['mod' + str(i)].make_params())
+			pars['mod' + str(i) + '_center'].set(value=center_guesses[i], min=peak_lim_low[i], max=peak_lim_high[i])
+			pars['mod' + str(i) + '_sigma'].set(value=0.1, max=(peak_lim_high[i] - peak_lim_low[i]))
+
+	# Define a final model based on the number of peaks
+	if peak_count == 1:
+		final_mod = model_dict['mod0']
+	elif peak_count == 2:
+		final_mod = model_dict['mod0'] + model_dict['mod1']
+	elif peak_count == 3:
+		final_mod = model_dict['mod0'] + model_dict['mod1'] + model_dict['mod2']
+
+	init = final_mod.eval(pars, x=xs)
+	out = final_mod.fit(ys, pars, x=xs)
+
+	#print(out.fit_report())
+
+	comps = out.eval_components(x=xs)
+
+	xs_out = []
+	ys_out = []
+	for i in range(peak_count):
+		xs_out.append(xs)
+		ys_out.append(comps['mod' + str(i) + '_'])
+
+	return xs_out, ys_out
+
+
+
+
+

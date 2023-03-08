@@ -949,4 +949,5 @@ def default_param_dict():
 		'plot_fig_xmax': 'N/A',
 		'bar_edge_width':0,
 		'trace_stacking': 0
+
 	}
