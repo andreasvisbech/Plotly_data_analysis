@@ -1,7 +1,7 @@
 # Import modules
 from sklearn.metrics import auc
 import peakutils
-from lmfit.models import GaussianModel
+from lmfit.models import GaussianModel, SkewedGaussianModel, ExponentialGaussianModel
 
 # Import functions from other scripts
 #from plot_it_scripts.plotting_script import *
@@ -397,24 +397,54 @@ def peak_fit(idx, xsys, x_id, y_id, peak_list, user_input_dict):
 	model_dict = {}
 
 	# Getting the user specified models. Default is Gaussian
-	models = user_input_dict['fit_models'][idx].split(';')
+	models = user_input_dict['fit_models'][idx].lower().split(';')
 
 	# Set the model for the first peak.
 	# Note that the model is called "zero" simply to make more compatible with loop below
-	if models[0] == 'Gaussian':
+	if models[0] == 'gaussian':
 		model_dict['mod0'] = GaussianModel(prefix='mod0_')
 		pars = model_dict['mod0'].guess(ys, x=xs)
 		pars['mod0_center'].set(value=center_guesses[0], min=peak_lim_low[0], max=peak_lim_high[0])
 		pars['mod0_sigma'].set(value=0.2, max=(peak_lim_high[0]-peak_lim_low[0]))
 		pars['mod0_amplitude'].set(value=10, min=0.1)
 
+	elif models[0] in ['skewedgaussian', 'skewed_gaussian']:
+		model_dict['mod0'] = SkewedGaussianModel(prefix='mod0_')
+		pars = model_dict['mod0'].guess(ys, x=xs)
+		pars['mod0_center'].set(value=center_guesses[0], min=peak_lim_low[0], max=peak_lim_high[0])
+		pars['mod0_sigma'].set(value=0.2, max=(peak_lim_high[0] - peak_lim_low[0]))
+		pars['mod0_amplitude'].set(value=10, min=0.1)
+		pars['mod0_gamma'].set(value=0.0)
+
+	elif models[0] in ['expgaussian', 'exp_gaussian']:
+		model_dict['mod0'] = ExponentialGaussianModel(prefix='mod0_')
+		pars = model_dict['mod0'].guess(ys, x=xs)
+		pars['mod0_center'].set(value=center_guesses[0], min=peak_lim_low[0], max=peak_lim_high[0])
+		pars['mod0_sigma'].set(value=0.2, max=(peak_lim_high[0] - peak_lim_low[0]))
+		pars['mod0_amplitude'].set(value=10, min=0.1)
+		pars['mod0_gamma'].set(value=0.0)
+
 	# Set the model for the other peaks
 	for i in range(1, len(models)):
-		if models[i] == 'Gaussian':
+		if models[i] == 'gaussian':
 			model_dict['mod' + str(i)] = GaussianModel(prefix=str('mod' + str(i) + '_'))
 			pars.update(model_dict['mod' + str(i)].make_params())
 			pars['mod' + str(i) + '_center'].set(value=center_guesses[i], min=peak_lim_low[i], max=peak_lim_high[i])
 			pars['mod' + str(i) + '_sigma'].set(value=0.1, max=(peak_lim_high[i] - peak_lim_low[i]))
+
+		elif models[i] in ['skewedgaussian', 'skewed_gaussian']:
+			model_dict['mod' + str(i)] = SkewedGaussianModel(prefix=str('mod' + str(i) + '_'))
+			pars.update(model_dict['mod' + str(i)].make_params())
+			pars['mod' + str(i) + '_center'].set(value=center_guesses[i], min=peak_lim_low[i], max=peak_lim_high[i])
+			pars['mod' + str(i) + '_sigma'].set(value=0.1, max=(peak_lim_high[i] - peak_lim_low[i]))
+			pars['mod' + str(i) + '_gamma'].set(value=0.0)
+
+		elif models[i] in ['expgaussian', 'exp_gaussian']:
+			model_dict['mod' + str(i)] = ExponentialGaussianModel(prefix=str('mod' + str(i) + '_'))
+			pars.update(model_dict['mod' + str(i)].make_params())
+			pars['mod' + str(i) + '_center'].set(value=center_guesses[i], min=peak_lim_low[i], max=peak_lim_high[i])
+			pars['mod' + str(i) + '_sigma'].set(value=0.1, max=(peak_lim_high[i] - peak_lim_low[i]))
+			pars['mod' + str(i) + '_gamma'].set(value=0.0)
 
 	# Define a final model based on the number of peaks
 	if peak_count == 1:
