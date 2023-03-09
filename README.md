@@ -30,7 +30,7 @@ AKTA MODULE:
   The extinction coefficient should be given in Abs 0.1% i.e. the M-1 cm-1 extinction coeff. divided by MW.
 - "AKTA_volume_load": Specific to AKTA analysis. Takes the amount of supernatant loaded during chromatography. Used for
   calculating the culture yield.
-- "Fit_model": Specify the models used for peak fitting. Separate with semicolon (;). Can be: "Gaussian". 
+- "Fit_model": Specify the models used for peak fitting. Separate with semicolon (;). Can be: "gaussian", "skewed_gaussian", "exp_gaussian", "lorentzian". 
 - "Fit_misc": 
     * "center_guess": used as initial values for guessing peak centers. Specify a value for each peak separated by semicolon (;). 
   
