@@ -42,6 +42,8 @@ FIDA MODULE:
 - "Fit_approach": Used for fitting data. Can be "Local" or "Global". Local fitting will calculate mean y values and
   standard errors for identical x values and then do fitting on the mean values. "Global fitting" will treat each data
   set individually.
+- It is possible to create an "ignore$ID" column next to the data that can be used for excluding certain data points from the fitting. 
+  The $ID refers to the ID of the data. 
   
 SCATTER MODULE: 
 - "Fitting_interval": Used for fitting data. Two numbers separated by ";". Denotes the x value interval that should be
