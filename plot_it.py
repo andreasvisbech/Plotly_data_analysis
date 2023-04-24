@@ -142,8 +142,11 @@ elif analysis_type == 'fplc':
 		print('Analysing data: ' + str(ID_list[i]))
 
 		plot_dict['graph_names'].append(ID_list[i])
-		#master_dict['ID_list_new'].append(ID_list[i])
-		#master_dict['notes_list'].append(user_input_dict['sample_notes'][i])
+
+		# The "ignore_data" flag will cause script to ignore this data trace.
+		# Can be used by compiling data in excel and then easily selecting which traces to include in an analysis
+		if 'ignore_data' in user_input_dict['python_misc'][i].split(';'):
+			continue
 
 		x_id = 'x' + str(i + 1)
 		y_id = 'y' + str(i + 1)
