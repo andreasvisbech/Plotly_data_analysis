@@ -68,4 +68,5 @@ OCTET MODULE:
     5. "normalize_to_max". Will normalize the data to the max value of the data so the data is really in % of max. 
     6. "table_pos=$VALUE". Allows user to specify positions of data samples in the analysis table. Can make comparison
        easier in case of large datasets.
-    5. "Box_all" will include all the datapoints next to the boxplot in the figure.    
+    5. "Box_all" will include all the datapoints next to the boxplot in the figure.  
+    6. "ignore_data" can be used for excluding data from the analysis while allowing it to stay in the excel sheet. 
