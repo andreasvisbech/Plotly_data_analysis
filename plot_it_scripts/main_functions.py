@@ -351,12 +351,44 @@ def write_plot_fig_out(name, plot_fig, param_dict):
 		plot_fig.update_xaxes(range=[x_min, x_max])
 
 	# If specified by user manually set the y axis range.
+	#if param_dict['plot_fig_ymin'] != 'N/A' and param_dict['plot_fig_ymax'] != 'N/A':
+
+	#	y_min = float(param_dict['plot_fig_ymin'])
+	#	y_max = float(param_dict['plot_fig_ymax'])
+
+	#	plot_fig.update_yaxes(range=[y_min, y_max])
+
+	# If specified by user manually set the y axis range.
 	if param_dict['plot_fig_ymin'] != 'N/A' and param_dict['plot_fig_ymax'] != 'N/A':
 
-		y_min = float(param_dict['plot_fig_ymin'])
-		y_max = float(param_dict['plot_fig_ymax'])
+		# Load the user specified input. We split the input because two values can be given in case of secondary y.
+		y_min_list = param_dict['plot_fig_ymin'].split(';')
+		y_max_list = param_dict['plot_fig_ymax'].split(';')
 
-		plot_fig.update_yaxes(range=[y_min, y_max])
+		# List contents to floats
+		y_min_list = [float(x) for x in y_min_list]
+		y_max_list = [float(x) for x in y_max_list]
+
+		# If only a single value is given the axis setting is easy
+		if len(y_min_list) == 1 and len(y_max_list) == 1:
+			plot_fig.update_yaxes(range=[y_min_list[0], y_max_list[0]])
+
+		elif len(y_min_list) == 2 and len(y_max_list) == 2:
+			plot_fig.update_layout(
+				yaxis=dict(
+					side="left",
+					range=[y_min_list[0], y_max_list[0]],
+				),
+				yaxis2=dict(
+					side="right",
+					range=[y_min_list[1], y_max_list[1]],
+					overlaying="y",
+					tickmode="sync",
+				),
+			)
+
+
+
 
 	plot_fig.write_image(name + '_Output.svg')
 
