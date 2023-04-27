@@ -115,7 +115,7 @@ def create_advanced_box(analysis_type):
 		ttk.Label(master, text="Plotting theme [layout]").grid(row=6, column=6)
 		var107 = tk.StringVar(master)
 		var107.set('plotly')
-		e107 = ttk.OptionMenu(master, var107, 'plotly', 'plotly', 'plotly_white', 'simple_white')
+		e107 = ttk.OptionMenu(master, var107, 'simple_white', 'plotly', 'plotly_white', 'simple_white')
 		e107.grid(row=6, column=7)
 
 		ttk.Label(master, text="Error markers [layout]").grid(row=7, column=6)
@@ -286,7 +286,7 @@ def create_advanced_box(analysis_type):
 		ttk.Label(master, text="Plotting theme [layout]").grid(row=6, column=6)
 		var107 = tk.StringVar(master)
 		var107.set('plotly')
-		e107 = ttk.OptionMenu(master, var107, 'plotly', 'plotly', 'plotly_white', 'simple_white')
+		e107 = ttk.OptionMenu(master, var107, 'simple_white', 'plotly', 'plotly_white', 'simple_white')
 		e107.grid(row=6, column=7)
 
 		ttk.Label(master, text="Error markers [layout]").grid(row=7, column=6)
@@ -919,7 +919,7 @@ def default_param_dict():
 		'yaxis_title_font_size': 12,
 		'xaxis_ticks_font_size': 12,
 		'yaxis_ticks_font_size': 12,
-		'plot_template': 'plotly',
+		'plot_template': 'simple_white',
 		'error_marker': 'Error bands',
 		'table_coloring': 'yes',
 		'color_palette': 'Default (10 color)',
