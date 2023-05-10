@@ -34,17 +34,6 @@ def akta_data_slice(x_id, y_id, sample_idx, xs, ys, user_input_dict):
 		xs_new = xs
 		ys_new = ys
 
-	# Slicing the data so only data within the specified data interval is included.
-	#if data_interval[sample_idx] != 0:
-	#	interval_var = data_interval[sample_idx].split(';')
-
-	#	xsys_interval = pd.concat([xs, ys], axis=1)
-	#	xsys_interval_slice = xsys_interval[
-	#		(xsys_interval[x_id] >= float(interval_var[0])) & (xsys_interval[x_id] <= float(interval_var[1]))]
-
-	#	xs = xsys_interval_slice[x_id]
-	#	ys = xsys_interval_slice[y_id]
-
 	return xs_new, ys_new
 
 

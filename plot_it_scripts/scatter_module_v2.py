@@ -410,13 +410,28 @@ def fit_statistics(xs, ys, model, fit_result, fit_mode, master_dict):
     # The RMSE value is calculated on the full data i.e. not the means of replicates
     MSE = np.square(np.subtract(ys, y_fit_full)).mean()
     RMSE = np.sqrt(MSE)
-    RMSE = str(round(RMSE, 3))
-    #MSE_full = np.square(np.subtract(ys, y_fit_full)).mean()
-    #RMSE_full = np.sqrt(MSE_full)
-    #RMSE_full = str(round(RMSE_full, 3))
+    RMSE_txt = str(round(RMSE, 3))
 
     # Append RMSE to master dict
-    master_dict['RMSE'].append('RMSE=' + RMSE)
+    master_dict['RMSE'].append('RMSE=' + RMSE_txt)
+
+    # Calculate leverage scores
+    x_val_avr = np.mean(x_val)
+    x_val_SS = np.sum((x_val-x_val_avr)**2)
+    leverage = (1/n) + (((x_val-x_val_avr)**2)/x_val_SS)
+
+    # Calculate Cook's distances
+    # First calculate residuals
+    # Then standardize residuals. I'M NOT SURE THIS STANDARDIZATION IS CORRECT!!?!?!?!?
+    # Finally use standardized residuals together with leverage scores for Cooks distance
+    resids = y_val - y_fit
+    resids_std = resids/(np.std(y_fit)*np.sqrt(1-leverage))
+    Di = (resids_std**2/(p+1)) * (leverage/((1-leverage)**2))
+
+    #print(x_val[Di>(4/n)])
+    #print(y_val[Di > (4 /n)])
+    #print(Di[Di>(4/n)])
+    #print(Di.tolist())
 
 def calc_residuals(xs, ys, model, fit_result):
 

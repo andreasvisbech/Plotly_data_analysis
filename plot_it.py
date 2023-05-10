@@ -159,7 +159,7 @@ elif analysis_type == 'fplc':
 		xs = df[x_id][pd.to_numeric(df[x_id], errors='coerce').notnull()]
 		ys = df[y_id][pd.to_numeric(df[y_id], errors='coerce').notnull()]
 
-		# Subtracting baseline value specified by the user.
+		# Subtracting baseline value specified by the user. This is to normalize to a given baseline point.
 		ys = normalize_to_x(xs, ys, i, user_input_dict)
 
 		# Slicing the data so only data within the specified data interval is included.
@@ -220,6 +220,11 @@ elif analysis_type == 'fida':
 
 		plot_dict['graph_names'].append(ID_list[i])
 		#master_dict['notes_list'].append(user_input_dict['sample_notes'][i])
+
+		# The "ignore_data" flag will cause script to ignore this data trace.
+		# Can be used by compiling data in excel and then easily selecting which traces to include in an analysis
+		if 'ignore_data' in user_input_dict['python_misc'][i].split(';'):
+			continue
 
 		x_id = 'x' + str(i + 1)
 		y_id = 'y' + str(i + 1)
@@ -384,6 +389,45 @@ elif analysis_type == 'panta':
 
 	# Adding interactive buttons to the plotly plot
 	plotly_buttons(plot_dict)
+
+elif analysis_type == 'bioanalyzer':
+
+	from plot_it_scripts.BioAnalyzer import *
+	from plot_it_scripts.data_manipulation import *
+
+	# Go over each sample in the excel sheet
+	for i in range(len(ID_list)):
+
+		print('Analysing data: ' + str(ID_list[i]))
+
+		plot_dict['graph_names'].append(ID_list[i])
+		# master_dict['notes_list'].append(user_input_dict['sample_notes'][i])
+
+		# The "ignore_data" flag will cause script to ignore this data trace.
+		# Can be used by compiling data in excel and then easily selecting which traces to include in an analysis
+		if 'ignore_data' in user_input_dict['python_misc'][i].split(';'):
+			continue
+
+		x_id = 'x' + str(i + 1)
+		y_id = 'y' + str(i + 1)
+		graph_name = ID_list[i]
+
+		# Updating the color counter to ensure the graphs are different colors.
+		plot_dict['color_count'] = color_selector(plot_dict, graph_name, used_graph_names)
+
+		if x_id in df.columns:
+			xs, ys = bioanalyzer_clean_input(df[x_id])
+		elif y_id in df.columns:
+			xs, ys = bioanalyzer_clean_input(df[y_id])
+
+		# Slice data if specified by user
+		xs, ys = data_slice(i, xs, ys, user_input_dict)
+
+		# Normalizing the data relative to max y value if specified by user
+		ys = normalize_to_max(ys, i, user_input_dict)
+
+		bioanalyzer_main(df, xs, ys, i, x_id, y_id, param_dict, master_dict, user_input_dict, plot_dict)
+
 
 if args.log_output == True:
 	output_file_name = str(args.input_file[:len(args.input_file) - 5])

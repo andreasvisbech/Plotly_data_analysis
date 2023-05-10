@@ -107,3 +107,28 @@ def normalize_to_x(xs, ys, idx, user_input_dict):
 
 	return ys
 
+def data_slice(sample_idx, xs, ys, user_input_dict):
+
+	data_interval = user_input_dict['data_interval']
+
+	# Make sure xs and ys are arrays
+	xs = np.array(xs)
+	ys = np.array(ys)
+
+	# Slicing the data so only data within the specified data interval is included.
+	if data_interval[sample_idx] != 0:
+
+		interval_var = data_interval[sample_idx].split(';')
+		interval_min = float(interval_var[0])
+		interval_max = float(interval_var[1])
+
+		# Getting the x_range as the x values that are within the specified inter
+		xs_new = xs[np.logical_and(xs >= interval_min, xs <= interval_max)]
+		ys_new = ys[np.logical_and(xs >= interval_min, xs <= interval_max)]
+
+	else:
+		xs_new = xs
+		ys_new = ys
+
+	return xs_new, ys_new
+

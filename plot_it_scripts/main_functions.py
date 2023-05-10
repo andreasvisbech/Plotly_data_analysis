@@ -406,7 +406,8 @@ def get_analysis_type(input):
 		analysis_type = 'octet'
 	elif input in ['Bar', 'BAR', 'bar']:
 		analysis_type = 'bar'
-
+	elif input in ['BioAnalyzer', 'bioanalyzer', 'Bioanalyzer']:
+		analysis_type = 'bioanalyzer'
 
 	return analysis_type
 
