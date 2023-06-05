@@ -10,9 +10,10 @@ from scipy.signal import find_peaks
 from plot_it_scripts.main_functions import *
 from plot_it_scripts.plotting_script import *
 from plot_it_scripts.scatter_module import linear_model
+from plot_it_scripts.data_manipulation import *
 
 
-def panta_main(df, x_id, y_id, sample_idx, plot_dict, user_input_dict, param_dict, master_dict):
+def panta_main(df, xs, ys, x_id, y_id, sample_idx, plot_dict, user_input_dict, param_dict, master_dict):
 	# Creating local variables for plotting
 	figure = plot_dict['figure']
 	plot_figure = plot_dict['plot_figure']
@@ -26,8 +27,8 @@ def panta_main(df, x_id, y_id, sample_idx, plot_dict, user_input_dict, param_dic
 	color_count = plot_dict['color_count']
 
 	# Getting data and slicing if needed
-	xs = df[x_id][pd.to_numeric(df[x_id], errors='coerce').notnull()]
-	ys = df[y_id][pd.to_numeric(df[y_id], errors='coerce').notnull()]
+	#xs = df[x_id][pd.to_numeric(df[x_id], errors='coerce').notnull()]
+	#ys = df[y_id][pd.to_numeric(df[y_id], errors='coerce').notnull()]
 
 	# Slicing the data so only data within the specified data interval is included.
 	xs, ys = panta_data_slice(x_id, y_id, sample_idx, xs, ys, user_input_dict)
@@ -75,7 +76,10 @@ def panta_main(df, x_id, y_id, sample_idx, plot_dict, user_input_dict, param_dic
 	master_dict['vertex_max'].append(vertex_max)
 
 	# Add the appropriate color to the table coloring list
-	table_color_list_manager(color_list[color_count], plot_dict['table_color_list'])
+	#table_color_list_manager(color_list[color_count], plot_dict['table_color_list'])
+
+	# Add the appropriate color to the table coloring list
+	table_color_list_manager(user_input_dict['plot_color'], plot_dict['table_color_list'])
 
 def panta_data_slice(x_id, y_id, sample_idx, xs, ys, user_input_dict):
 

@@ -2,7 +2,7 @@
 from sklearn.metrics import auc
 import peakutils
 from lmfit.models import GaussianModel, SkewedGaussianModel, ExponentialGaussianModel, LorentzianModel, \
-							SplitLorentzianModel, VoigtModel, PseudoVoigtModel
+							SplitLorentzianModel, VoigtModel, PseudoVoigtModel, PowerLawModel, Pearson7Model
 
 # Import functions from other scripts
 #from plot_it_scripts.plotting_script import *
@@ -210,24 +210,6 @@ def akta_main_func(df, xs, ys, sample_idx, x_id, y_id, param_dict, master_dict, 
 
 		peak_frac_calculation(peak_AUC_list, AUC_sample_tot, AUC_baseline_tot, master_dict)
 
-	# If no fraction is specified 'N/A' values are appended to the master dict.
-	# This is to make sure value positions in the table are not shifted
-	#else:
-	#	None
-		#master_dict['ID_list_new'].append('N/A')
-		#master_dict['notes_list'].append('N/A')
-		#master_dict['peak_id'].append('N/A')
-		#master_dict['sample_areas_tot'].append('N/A')
-		#master_dict['baseline_area_tot'].append('N/A')
-		#master_dict['fraction_retentions'].append('N/A')
-		#master_dict['fraction_areas'].append('N/A')
-		#master_dict['fraction_baseline'].append('N/A')
-		#master_dict['fraction_calculation'].append('N/A')
-		#master_dict['fraction_yield'].append('N/A')
-		#master_dict['culture_yield'].append('N/A')
-		#master_dict['fraction_concentrations'].append('N/A')
-		#master_dict['fraction_AUC_of_total'].append('N/A')
-
 def akta_baseline(baseline, x_val, y_val, mode, param_dict):
 
 	#baseline_values = [[], []]
@@ -394,7 +376,8 @@ def peak_fit(idx, xsys, x_id, y_id, peak_list, user_input_dict):
 	if models[0] == 'gaussian':
 		model_dict['mod0'] = GaussianModel(prefix='mod0_')
 		pars = model_dict['mod0'].guess(ys, x=xs)
-		pars['mod0_center'].set(value=center_guesses[0], min=peak_lim_low[0], max=peak_lim_high[0])
+		#pars['mod0_center'].set(value=center_guesses[0], min=peak_lim_low[0], max=peak_lim_high[0])
+		pars['mod0_center'].set(value=center_guesses[0], min=center_guesses[0]-0.1, max=center_guesses[0]+0.1)
 		pars['mod0_sigma'].set(value=0.2, max=(peak_lim_high[0]-peak_lim_low[0]))
 		pars['mod0_amplitude'].set(value=10, min=0.1)
 
@@ -410,9 +393,9 @@ def peak_fit(idx, xsys, x_id, y_id, peak_list, user_input_dict):
 		model_dict['mod0'] = ExponentialGaussianModel(prefix='mod0_')
 		pars = model_dict['mod0'].guess(ys, x=xs)
 		pars['mod0_center'].set(value=center_guesses[0], min=peak_lim_low[0], max=peak_lim_high[0])
-		pars['mod0_sigma'].set(value=0.2, max=(peak_lim_high[0] - peak_lim_low[0]))
-		pars['mod0_amplitude'].set(value=10, min=0.1)
-		pars['mod0_gamma'].set(value=0.0)
+		pars['mod0_sigma'].set(value=0.2, min=0.1, max=(peak_lim_high[0] - peak_lim_low[0]))
+		pars['mod0_amplitude'].set(value=10, min=0.1, max=100)
+		pars['mod0_gamma'].set(value=0.0, min=0.1, max=50)
 
 	elif models[0] in ['lorentzian']:
 		model_dict['mod0'] = LorentzianModel(prefix='mod0_')
@@ -426,22 +409,25 @@ def peak_fit(idx, xsys, x_id, y_id, peak_list, user_input_dict):
 		if models[i] == 'gaussian':
 			model_dict['mod' + str(i)] = GaussianModel(prefix=str('mod' + str(i) + '_'))
 			pars.update(model_dict['mod' + str(i)].make_params())
-			pars['mod' + str(i) + '_center'].set(value=center_guesses[i], min=peak_lim_low[i], max=peak_lim_high[i])
-			pars['mod' + str(i) + '_sigma'].set(value=0.1, max=(peak_lim_high[i] - peak_lim_low[i]))
+			#pars['mod' + str(i) + '_center'].set(value=center_guesses[i], min=peak_lim_low[i], max=peak_lim_high[i])
+			pars['mod' + str(i) + '_center'].set(value=center_guesses[i], min=center_guesses[i]-0.1, max=center_guesses[i]+0.1)
+			pars['mod' + str(i) + '_sigma'].set(value=0.1, max=(peak_lim_high[i] - peak_lim_low[i])/4)
+			pars['mod' + str(i) + '_amplitude'].set(value=10, min=0.1)
 
 		elif models[i] in ['skewedgaussian', 'skewed_gaussian']:
 			model_dict['mod' + str(i)] = SkewedGaussianModel(prefix=str('mod' + str(i) + '_'))
 			pars.update(model_dict['mod' + str(i)].make_params())
-			pars['mod' + str(i) + '_center'].set(value=center_guesses[i], min=peak_lim_low[i], max=peak_lim_high[i])
-			pars['mod' + str(i) + '_sigma'].set(value=0.1, max=(peak_lim_high[i] - peak_lim_low[i]))
-			pars['mod' + str(i) + '_gamma'].set(value=0.0)
+			pars['mod' + str(i) + '_center'].set(value=center_guesses[i], min=center_guesses[i]-0.1, max=center_guesses[i]+0.1)
+			pars['mod' + str(i) + '_sigma'].set(value=0.1, max=(peak_lim_high[i] - peak_lim_low[i])/4)
+			pars['mod' + str(i) + '_gamma'].set(value=0.2, min=0.0, max=10)
 
 		elif models[i] in ['expgaussian', 'exp_gaussian']:
 			model_dict['mod' + str(i)] = ExponentialGaussianModel(prefix=str('mod' + str(i) + '_'))
 			pars.update(model_dict['mod' + str(i)].make_params())
 			pars['mod' + str(i) + '_center'].set(value=center_guesses[i], min=peak_lim_low[i], max=peak_lim_high[i])
-			pars['mod' + str(i) + '_sigma'].set(value=0.1, max=(peak_lim_high[i] - peak_lim_low[i]))
-			pars['mod' + str(i) + '_gamma'].set(value=0.0)
+			pars['mod' + str(i) + '_sigma'].set(value=1, min=0.1, max=(peak_lim_high[0] - peak_lim_low[0])/8)
+			pars['mod' + str(i) + '_amplitude'].set(value=10, min=0.1, max=50)
+			pars['mod' + str(i) + '_gamma'].set(value=1, min=0.1, max=30)
 
 		elif models[i] in ['lorentzian']:
 			model_dict['mod' + str(i)] = LorentzianModel(prefix=str('mod' + str(i) + '_'))
@@ -456,11 +442,15 @@ def peak_fit(idx, xsys, x_id, y_id, peak_list, user_input_dict):
 		final_mod = model_dict['mod0'] + model_dict['mod1']
 	elif peak_count == 3:
 		final_mod = model_dict['mod0'] + model_dict['mod1'] + model_dict['mod2']
+	elif peak_count == 4:
+		final_mod = model_dict['mod0'] + model_dict['mod1'] + model_dict['mod2'] + model_dict['mod3']
+	elif peak_count == 5:
+		final_mod = model_dict['mod0'] + model_dict['mod1'] + model_dict['mod2'] + model_dict['mod3'] + model_dict['mod4']
 
 	init = final_mod.eval(pars, x=xs)
 	out = final_mod.fit(ys, pars, x=xs)
 
-	#print(out.fit_report())
+	print(out.fit_report())
 
 	comps = out.eval_components(x=xs)
 

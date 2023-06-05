@@ -253,6 +253,16 @@ def plot_func(figure, graph_name, x_val, y_val, std_dev, marker, x_title, y_titl
 
 		# 'tozeroy'
 
+	elif comment == 'bioanalyzer_fraction':
+		figure.add_trace(
+			go.Scatter(
+				name=graph_name, x=x_val, y=y_val, mode='lines', fill='tozeroy', legendgroup=graph_name,
+				showlegend=legend_show,
+				hovertemplate=my_hover_template,
+				line=dict(width=param_dict['graph width'], color=user_input_dict['plot_color'])),
+			row=subplot_row, col=subplot_col
+		)
+
 	elif comment == 'Octet':
 		# Re-define template for hover label
 		my_hover_template = graph_name + '<extra></extra>' + '<br>x: %{x}' + '<br>y: %{y}<br>' + 'Note: ' + \
@@ -294,13 +304,25 @@ def plot_func(figure, graph_name, x_val, y_val, std_dev, marker, x_title, y_titl
 
 	#print(figure)
 
-	figure.update_layout(
-		template=param_dict['plot_template'],
-		xaxis=dict(title_font=dict(size=param_dict['xaxis_title_font_size']),
-				   tickfont_size=param_dict['xaxis_ticks_font_size']),
-		yaxis=dict(title_font=dict(size=param_dict['yaxis_title_font_size']),
-				   tickfont_size=param_dict['yaxis_ticks_font_size'])
+	# If a secondary y axis is given then both y axis fonts must be updated.
+	if user_input_dict['secondary_y'] == True:
+		figure.update_layout(
+			template=param_dict['plot_template'],
+			xaxis=dict(title_font=dict(size=param_dict['xaxis_title_font_size']),
+					   tickfont_size=param_dict['xaxis_ticks_font_size']),
+			yaxis=dict(title_font=dict(size=param_dict['yaxis_title_font_size']),
+					   tickfont_size=param_dict['yaxis_ticks_font_size']),
+			yaxis2=dict(title_font=dict(size=param_dict['yaxis_title_font_size']),
+					   tickfont_size=param_dict['yaxis_ticks_font_size'])
 	)
+	else:
+		figure.update_layout(
+			template=param_dict['plot_template'],
+			xaxis=dict(title_font=dict(size=param_dict['xaxis_title_font_size']),
+					   tickfont_size=param_dict['xaxis_ticks_font_size']),
+			yaxis=dict(title_font=dict(size=param_dict['yaxis_title_font_size']),
+					   tickfont_size=param_dict['yaxis_ticks_font_size'])
+		)
 
 	figure.update_layout(
 		hoverlabel=dict(
@@ -308,11 +330,6 @@ def plot_func(figure, graph_name, x_val, y_val, std_dev, marker, x_title, y_titl
 			font_family="Arial"
 		)
 	)
-
-	#if user_input_dict['python_misc'][i] != 'None':
-	#	plot_customize(figure, user_input_dict['python_misc'][i], ax_id)
-
-
 
 def plot_customize(figure, sample_idx, user_input_dict, param_dict, subplot_id):
 
@@ -344,11 +361,11 @@ def plot_customize(figure, sample_idx, user_input_dict, param_dict, subplot_id):
 
 	# We go through the flags again looking for other inputs.
 	for b in range(len(flag_list)):
-		if flag_list[b].lower() == 'logx':
+		if flag_list[b].lower() in ['logx', 'log_x']:
 			figure['layout']['xaxis' + ax_id_x]['type'] = 'log'
 			figure['layout']['xaxis' + ax_id_x]['dtick'] = 1
 
-		if flag_list[b].lower() == 'logy':
+		if flag_list[b].lower() in ['logy', 'log_y']:
 			figure['layout']['yaxis' + ax_id_y]['type'] = 'log'
 			figure['layout']['yaxis' + ax_id_y]['dtick'] = 1
 

@@ -366,6 +366,11 @@ elif analysis_type == 'panta':
 		plot_dict['graph_names'].append(ID_list[i])
 		master_dict['notes_list'].append(user_input_dict['sample_notes'][i])
 
+		# The "ignore_data" flag will cause script to ignore this data trace.
+		# Can be used by compiling data in excel and then easily selecting which traces to include in an analysis
+		if 'ignore_data' in user_input_dict['python_misc'][i].split(';'):
+			continue
+
 		x_id = 'x' + str(i + 1)
 		y_id = 'y' + str(i + 1)
 		graph_name = ID_list[i]
@@ -373,7 +378,14 @@ elif analysis_type == 'panta':
 		# Updating the color counter to ensure the graphs are different colors.
 		plot_dict['color_count'] = color_selector(plot_dict, graph_name, used_graph_names)
 
-		panta_main(df, x_id, y_id, i, plot_dict, user_input_dict, param_dict, master_dict)
+		# Getting data and slicing if needed
+		xs = df[x_id][pd.to_numeric(df[x_id], errors='coerce').notnull()]
+		ys = df[y_id][pd.to_numeric(df[y_id], errors='coerce').notnull()]
+
+		# Subtracting baseline value specified by the user. This is to normalize to a given baseline point.
+		ys = normalize_to_x(xs, ys, i, user_input_dict)
+
+		panta_main(df, xs, ys, x_id, y_id, i, plot_dict, user_input_dict, param_dict, master_dict)
 
 	# Adding table to the interactive plot
 	table_plot(plot_dict, ['Samples',
@@ -423,10 +435,30 @@ elif analysis_type == 'bioanalyzer':
 		# Slice data if specified by user
 		xs, ys = data_slice(i, xs, ys, user_input_dict)
 
+		# Subtracting baseline value specified by the user. This is to normalize to a given baseline point.
+		ys = normalize_to_x(xs, ys, i, user_input_dict)
+
 		# Normalizing the data relative to max y value if specified by user
 		ys = normalize_to_max(ys, i, user_input_dict)
 
 		bioanalyzer_main(df, xs, ys, i, x_id, y_id, param_dict, master_dict, user_input_dict, plot_dict)
+
+		# Adding table to the interactive plot
+		table_plot(plot_dict, [
+			'Sample ID',
+			'Sample notes',
+			'Peak ID',
+			'% of total peak area',
+			'% of total sample area'],
+		    [
+				master_dict['ID_list_new'],
+				master_dict['notes_list'],
+				master_dict['peak_id'],
+				master_dict['fraction_calculation'],
+				master_dict['fraction_AUC_of_total']], user_input_dict, param_dict)
+
+		# Adding interactive buttons to the plotly plot
+		plotly_buttons(plot_dict)
 
 
 if args.log_output == True:

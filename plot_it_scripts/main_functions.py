@@ -115,6 +115,9 @@ def load_user_input(df):
 	out_dict['subplot_row_count'] = subplot_row_count
 	out_dict['subplot_col_count'] = subplot_col_count
 
+	# Get the user specified fractions
+	out_dict['peak_limits'] = df['AKTA_fraction'].fillna('None').replace(',', '.').tolist()
+
 	# Get list of AKTA baseline boundaries. If nothing specified assume user don't want a baseline
 	out_dict['baseline_bounds'] = df['AKTA_baseline'].fillna('None').replace(',', '.').tolist()
 
