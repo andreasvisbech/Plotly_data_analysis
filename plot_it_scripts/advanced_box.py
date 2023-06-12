@@ -36,6 +36,7 @@ def create_advanced_box(analysis_type):
 			param_dict['plot_fig_xmax'] = str(e114.get())
 			param_dict['plot_fig_ymin'] = str(e115.get())
 			param_dict['plot_fig_ymax'] = str(e116.get())
+			param_dict['2nd_yaxis_sync'] = str(var117.get())
 
 		master = tk.Tk()
 
@@ -166,6 +167,12 @@ def create_advanced_box(analysis_type):
 		e116 = ttk.Entry(master)
 		e116.insert(10, "N/A")
 		e116.grid(row=12, column=10)
+
+		ttk.Label(master, text="Sync. secondary y axis? [layout]").grid(row=13, column=6)
+		var117 = tk.StringVar(master)
+		var117.set('yes')
+		e117 = ttk.OptionMenu(master, var117, 'no', 'no', 'yes')
+		e117.grid(row=13, column=7)
 
 	elif analysis_type == 'fida':
 
@@ -1219,6 +1226,8 @@ def default_param_dict():
 		'plot_fig_xmin': 'N/A',
 		'plot_fig_xmax': 'N/A',
 		'plot_fig_ymin': 'N/A',
+		'plot_fig_ymax': 'N/A',
+		'2nd_yaxis_sync': 'no',
 		'bar_edge_width':0,
 		'trace_stacking': 0,
 		'peak_analysis': 'yes',

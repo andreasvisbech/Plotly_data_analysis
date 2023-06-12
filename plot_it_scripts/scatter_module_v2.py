@@ -162,7 +162,7 @@ def scatter_fit(xs, ys, fit_mode, model, param_dict, master_dict):
         master_dict['replicates'] = len(ys)
 
         fit_result = global_fitting(model, xs, ys, param_dict)
-        # print(fit_result.params.pretty_print())
+        #print(fit_result.params.pretty_print())
 
     else:
         fit_result = None

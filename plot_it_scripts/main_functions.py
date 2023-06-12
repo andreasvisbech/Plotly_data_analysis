@@ -377,18 +377,33 @@ def write_plot_fig_out(name, plot_fig, param_dict):
 			plot_fig.update_yaxes(range=[y_min_list[0], y_max_list[0]])
 
 		elif len(y_min_list) == 2 and len(y_max_list) == 2:
-			plot_fig.update_layout(
-				yaxis=dict(
-					side="left",
-					range=[y_min_list[0], y_max_list[0]],
-				),
-				yaxis2=dict(
-					side="right",
-					range=[y_min_list[1], y_max_list[1]],
-					overlaying="y",
-					tickmode="sync",
-				),
-			)
+
+			if param_dict['2nd_yaxis_sync'] == 'no':
+				plot_fig.update_layout(
+					yaxis=dict(
+						side="left",
+						range=[y_min_list[0], y_max_list[0]],
+					),
+					yaxis2=dict(
+						side="right",
+						range=[y_min_list[1], y_max_list[1]],
+						overlaying="y",
+					),
+				)
+			else:
+				plot_fig.update_layout(
+					yaxis=dict(
+						side="left",
+						range=[y_min_list[0], y_max_list[0]],
+					),
+					yaxis2=dict(
+						side="right",
+						range=[y_min_list[1], y_max_list[1]],
+						overlaying="y",
+						tickmode="sync",
+					),
+				)
+
 
 
 

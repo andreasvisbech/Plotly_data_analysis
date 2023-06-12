@@ -375,7 +375,7 @@ def plot_customize(figure, sample_idx, user_input_dict, param_dict, subplot_id):
 			user_input_dict['plot_color'] = new_color
 
 
-	# Setting titles on the subplots
+	# Setting axis titles
 	# Note this code used to be defined after adding traces.
 	figure['layout']['xaxis' + ax_id_x]['title'] = {'text': x_title, 'font': {'size':x_title_font_size}}
 	figure['layout']['yaxis' + ax_id_y]['title'] = {'text': y_title, 'font': {'size':y_title_font_size}}
