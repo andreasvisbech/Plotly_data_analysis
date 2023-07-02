@@ -165,8 +165,11 @@ elif analysis_type == 'fplc':
 		# Slicing the data so only data within the specified data interval is included.
 		xs, ys = akta_data_slice(x_id, y_id, i, xs, ys, user_input_dict)
 
-		# Normalizing the data is specified by user
+		# Normalizing the data to the signal max value if specified by user
 		ys = normalize_to_max(ys, i, user_input_dict)
+
+		# Normalizing the data to the total signal area under curve if specified by user
+		ys = normalize_to_area(xs, ys, i, user_input_dict)
 
 		# Stacking the traces if specified. The default is no stacking.
 		ys = trace_stacking(i, ys, param_dict, master_dict)
@@ -440,6 +443,9 @@ elif analysis_type == 'bioanalyzer':
 
 		# Normalizing the data relative to max y value if specified by user
 		ys = normalize_to_max(ys, i, user_input_dict)
+
+		# Normalizing the data to the total signal area under curve if specified by user
+		ys = normalize_to_area(xs, ys, i, user_input_dict)
 
 		bioanalyzer_main(df, xs, ys, i, x_id, y_id, param_dict, master_dict, user_input_dict, plot_dict)
 

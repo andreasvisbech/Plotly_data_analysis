@@ -782,6 +782,9 @@ def create_advanced_box(analysis_type):
 			param_dict['peak_analysis'] = str(var1.get())
 			param_dict['peak_fitting'] = str(var2.get())
 			param_dict['fit_report'] = str(var3.get())
+			param_dict['samples_for_smooth'] = str(e4.get())
+			param_dict['savgol_window'] = str(e5.get())
+			param_dict['savgol__pol'] = str(e6.get())
 
 			param_dict['graph width'] = float(e100.get())
 			param_dict['Baseline graph width'] = float(e101.get())
@@ -820,6 +823,21 @@ def create_advanced_box(analysis_type):
 		var3.set('no')
 		e3 = ttk.OptionMenu(master, var3, 'no', 'no', 'yes')
 		e3.grid(row=3, column=2)
+
+		ttk.Label(master, text="Samples for smoothing").grid(row=4, column=1)
+		e4 = ttk.Entry(master)
+		e4.insert(10, "N/A")
+		e4.grid(row=4, column=2)
+
+		ttk.Label(master, text="Savgol window").grid(row=5, column=1)
+		e5 = ttk.Entry(master)
+		e5.insert(10, "N/A")
+		e5.grid(row=5, column=2)
+
+		ttk.Label(master, text="Savgol polynomium").grid(row=6, column=1)
+		e6 = ttk.Entry(master)
+		e6.insert(10, "N/A")
+		e6.grid(row=6, column=2)
 
 		ttk.Label(master, text="Graph width").grid(row=1, column=6)
 		e100 = ttk.Entry(master)
@@ -1219,6 +1237,8 @@ def default_param_dict():
 		'scatter_residuals': 'no',
 		'scatter_fit_error_weighing': 'no',
 		'alpha_level': 0.05,
+		'savgol_window': 'N/A',
+		'savgol_pol': 'N/A',
 		'savgol_1st_deriv_window': 'N/A',
 		'savgol_1st_deriv_pol': 'N/A',
 		'plot_fig_width': 'N/A',
@@ -1232,6 +1252,7 @@ def default_param_dict():
 		'trace_stacking': 0,
 		'peak_analysis': 'yes',
 		'peak_fitting': 'no',
-		'fit_report': 'no'			# Show the reported values from the fit
+		'fit_report': 'no',				# Show the reported values from the fit
+		'samples_for_smooth': 'N/A'
 
 	}

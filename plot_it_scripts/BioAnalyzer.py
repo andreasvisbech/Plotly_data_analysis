@@ -4,6 +4,7 @@ from lmfit import Model
 
 # Import functions from other scripts
 from plot_it_scripts.akta_module import *
+from plot_it_scripts.data_manipulation import *
 
 def bioanalyzer_main(df, xs, ys, sample_idx, x_id, y_id, param_dict, master_dict, user_input_dict, plot_dict):
 
@@ -18,6 +19,9 @@ def bioanalyzer_main(df, xs, ys, sample_idx, x_id, y_id, param_dict, master_dict
 	subplot_col = user_input_dict['subplot_col'][sample_idx]
 	color_list = plot_dict['color_list']
 	color_count = plot_dict['color_count']
+
+	if param_dict['samples_for_smooth'] != 'N/A':
+		ys = data_smooth(sample_idx, ys, param_dict)
 
 	# Plotting the data values
 	plot_func(figure, graph_name, xs, ys, 'None', plot_marker, x_title, y_title, subplot_row, subplot_col,

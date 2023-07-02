@@ -1,6 +1,6 @@
 # Import modules
 from scipy.signal import savgol_filter
-from sklearn.ensemble import IsolationForest
+from sklearn.metrics import auc
 
 # Import relevant scripts
 from plot_it_scripts.plotting_script import *
@@ -70,6 +70,22 @@ def normalize_to_max(ys, idx, user_input_dict):
 
 	return ys
 
+def normalize_to_area(xs, ys, idx, user_input_dict):
+
+	# Make sure data is arrays
+	xs = np.array(xs)
+	ys = np.array(ys)
+
+	flags = user_input_dict['python_misc'][idx].split(';')
+
+	if 'normalize_to_area' in flags:
+		# Get max value of the data
+		area = auc(xs,ys)
+
+		# Update the y values by getting them as percent of the max value in the data.
+		ys = ys / area
+
+	return ys
 
 def find_nearest(arr, value):
 
@@ -132,3 +148,21 @@ def data_slice(sample_idx, xs, ys, user_input_dict):
 
 	return xs_new, ys_new
 
+
+def data_smooth(sample_idx, ys, param_dict):
+
+	# This function applies Savitsky-Golay filter to smooth the data
+
+	sg_window = int(param_dict['savgol_window'])
+	sg_pol = int(param_dict['savgol__pol'])
+
+	# Adjust sample_idx
+	sample_idx = sample_idx+1
+
+	id_list = param_dict['samples_for_smooth'].split(';')
+	id_list = [int(x) for x in id_list]
+
+	if sample_idx in id_list:
+		ys = savgol_filter(ys, sg_window, sg_pol)
+
+	return ys
