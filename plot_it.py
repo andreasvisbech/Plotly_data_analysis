@@ -466,6 +466,30 @@ elif analysis_type == 'bioanalyzer':
 		# Adding interactive buttons to the plotly plot
 		plotly_buttons(plot_dict)
 
+elif analysis_type == 'test':
+
+	from plot_it_scripts.test import *
+	import numpy as np
+	from scipy import signal
+
+	x1 = np.array([df['x1'][pd.to_numeric(df['x1'], errors='coerce').notnull()]])
+	x2 = np.array(df['x2'][pd.to_numeric(df['x2'], errors='coerce').notnull()])
+	y1 = np.array([df['y1'][pd.to_numeric(df['y1'], errors='coerce').notnull()]])
+	y2 = np.array([df['y2'][pd.to_numeric(df['y2'], errors='coerce').notnull()]])
+
+	data = np.concatenate((y1,y2))
+
+	error = np.std(data, axis=0)
+
+	#data_new = np.concatenate((data, error), axis=1)
+
+	print(len(error))
+
+	df = pd.DataFrame(list(zip(x1[0], error)), columns =['x1', 'error'])
+
+	df.to_csv(r'C:\Users\avima\Desktop\Dummy\dummy.csv')
+
+	#df = pd.DataFrame(my_array, columns=['Column_A', 'Column_B', 'Column_C'])
 
 if args.log_output == True:
 	output_file_name = str(args.input_file[:len(args.input_file) - 5])

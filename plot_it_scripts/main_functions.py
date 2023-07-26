@@ -426,6 +426,8 @@ def get_analysis_type(input):
 		analysis_type = 'bar'
 	elif input in ['BioAnalyzer', 'bioanalyzer', 'Bioanalyzer']:
 		analysis_type = 'bioanalyzer'
+	elif input in ['Test', 'test']:
+		analysis_type = 'test'
 
 	return analysis_type
 
