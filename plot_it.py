@@ -93,11 +93,11 @@ if analysis_type == 'scatter':
 			df = df[df[ignore_id].fillna(' ').str.isalpha() == False]
 
 		# Check if user has supplied error values
-		if error_id in df.columns:
-			plot_dict['errors'] = df[error_id][pd.to_numeric(df[error_id], errors='coerce').notnull()]
+		#if error_id in df.columns:
+		#	plot_dict['errors'] = df[error_id][pd.to_numeric(df[error_id], errors='coerce').notnull()]
 
 		# Getting x values, y values and a non-redundant list of x values
-		xs, ys, unique_x = scatter_data_slice(df, i, x_id, y_id, user_input_dict)
+		xs, ys, unique_x = scatter_data_slice(df, i, x_id, y_id, user_input_dict, plot_dict)
 
 		# Check if the data should just be plotted or if user is trying to fit.
 		# This is checked by seing if user has inputed fitting interval and fitting model

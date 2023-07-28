@@ -647,7 +647,7 @@ def fida_text2floats(x_id, y_id, df):
 
     return func_list, ydata_list
 
-def scatter_data_slice(df, sample_idx, x_id, y_id, user_input_dict):
+def scatter_data_slice(df, sample_idx, x_id, y_id, user_input_dict, plot_dict):
 
     data_interval = user_input_dict['data_interval']
 
@@ -657,6 +657,12 @@ def scatter_data_slice(df, sample_idx, x_id, y_id, user_input_dict):
     ys = df[y_id][pd.to_numeric(df[y_id], errors='coerce').notnull()]
     xs = pd.to_numeric(xs.astype(str).str.replace(",", "."))
     ys = pd.to_numeric(ys.astype(str).str.replace(",", "."))
+
+    # Check if user has supplied error values
+    error_id = 'error' + str(sample_idx + 1)
+    if error_id in df.columns:
+        errors = df[error_id][pd.to_numeric(df[error_id], errors='coerce').notnull()]
+        errors = errors.to_numpy()
 
     # Convert to arrays
     xs = xs.to_numpy()
@@ -671,10 +677,19 @@ def scatter_data_slice(df, sample_idx, x_id, y_id, user_input_dict):
         xs_slice = xs[(xs >= interval_min) & (xs <= interval_max)]
         ys_slice = ys[(xs >= interval_min) & (xs <= interval_max)]
 
+        # Again need to check if errors are specified
+        if error_id in df.columns:
+            error_slice = errors[(xs >= interval_min) & (xs <= interval_max)]
+            plot_dict['errors'] = error_slice
+
+
     else:
 
         xs_slice = xs
         ys_slice = ys
+
+        if error_id in df.columns:
+            plot_dict['errors'] = errors
 
     # Create a list with unique concentration values. These should include ALL relevant x values.
     unique_x = np.unique(xs)
