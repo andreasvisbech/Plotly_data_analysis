@@ -178,6 +178,8 @@ def define_master_dict():
 	master_dict['octet_KD_SS'] = []
 	master_dict['octet_R2_SS'] = []
 	master_dict['trace_stack_jump'] = 0
+	master_dict['Rh'] = []
+	master_dict['tR'] = []
 
 	return master_dict
 
@@ -365,8 +367,8 @@ def write_plot_fig_out(name, plot_fig, param_dict):
 	if param_dict['plot_fig_ymin'] != 'N/A' and param_dict['plot_fig_ymax'] != 'N/A':
 
 		# Load the user specified input. We split the input because two values can be given in case of secondary y.
-		y_min_list = param_dict['plot_fig_ymin'].split(';')
-		y_max_list = param_dict['plot_fig_ymax'].split(';')
+		y_min_list = str(param_dict['plot_fig_ymin']).split(';')
+		y_max_list = str(param_dict['plot_fig_ymax']).split(';')
 
 		# List contents to floats
 		y_min_list = [float(x) for x in y_min_list]
@@ -426,6 +428,8 @@ def get_analysis_type(input):
 		analysis_type = 'bar'
 	elif input in ['BioAnalyzer', 'bioanalyzer', 'Bioanalyzer']:
 		analysis_type = 'bioanalyzer'
+	elif input.lower() in ['taylor', 'taylorgram', 'tda']:
+		analysis_type = 'taylorgram'
 	elif input in ['Test', 'test']:
 		analysis_type = 'test'
 

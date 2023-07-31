@@ -89,6 +89,7 @@ if analysis_type == 'scatter':
 		plot_dict['color_count'] = color_selector(plot_dict, graph_name, used_graph_names)
 
 		# Check if the "ignore column" exists i.e. if user has specified dropping specific values of data.
+		# This is for ignoring specific rows i.e. data points and not for ignoring the entire data
 		if ignore_id in df.columns:
 			df = df[df[ignore_id].fillna(' ').str.isalpha() == False]
 
@@ -466,30 +467,59 @@ elif analysis_type == 'bioanalyzer':
 		# Adding interactive buttons to the plotly plot
 		plotly_buttons(plot_dict)
 
-elif analysis_type == 'test':
+elif analysis_type == 'taylorgram':
 
-	from plot_it_scripts.test import *
+	from plot_it_scripts.taylorgram import *
 	import numpy as np
-	from scipy import signal
+	from plot_it_scripts.data_manipulation import *
 
-	x1 = np.array([df['x1'][pd.to_numeric(df['x1'], errors='coerce').notnull()]])
-	x2 = np.array(df['x2'][pd.to_numeric(df['x2'], errors='coerce').notnull()])
-	y1 = np.array([df['y1'][pd.to_numeric(df['y1'], errors='coerce').notnull()]])
-	y2 = np.array([df['y2'][pd.to_numeric(df['y2'], errors='coerce').notnull()]])
+	# Go over each sample in the excel sheet
+	for i in range(len(ID_list)):
+		print('Analysing data: ' + str(ID_list[i]))
 
-	data = np.concatenate((y1,y2))
+		plot_dict['graph_names'].append(ID_list[i])
 
-	error = np.std(data, axis=0)
+		# The "ignore_data" flag will cause script to ignore this data trace.
+		# Can be used by compiling data in excel and then easily selecting which traces to include in an analysis
+		if 'ignore_data' in user_input_dict['python_misc'][i].split(';'):
+			continue
 
-	#data_new = np.concatenate((data, error), axis=1)
+		x_id = 'x' + str(i + 1)
+		y_id = 'y' + str(i + 1)
+		ignore_id = 'ignore' + str(i + 1)
+		graph_name = ID_list[i]
 
-	print(len(error))
+		# Updating the color counter to ensure the graphs are different colors.
+		plot_dict['color_count'] = color_selector(plot_dict, graph_name, used_graph_names)
 
-	df = pd.DataFrame(list(zip(x1[0], error)), columns =['x1', 'error'])
+		error_id = 'error' + str(i + 1)
+		plot_dict['error_id'] = error_id
 
-	df.to_csv(r'C:\Users\avima\Desktop\Dummy\dummy.csv')
+		# Getting data and slicing if needed
+		xs = df[x_id][pd.to_numeric(df[x_id], errors='coerce').notnull()]
+		ys = df[y_id][pd.to_numeric(df[y_id], errors='coerce').notnull()]
 
-	#df = pd.DataFrame(my_array, columns=['Column_A', 'Column_B', 'Column_C'])
+		# Slice data if specified by user
+		xs, ys = data_slice(i, xs, ys, user_input_dict)
+
+		taylor_main(df, master_dict, i, user_input_dict, plot_dict, xs, ys, param_dict)
+
+	# Adding table to the interactive plot
+	table_plot(plot_dict, [
+		'Sample ID',
+		'Sample notes',
+		'tR',
+		'Rh'],
+			   [
+				   master_dict['ID_list_new'],
+				   master_dict['notes_list'],
+				   master_dict['tR'],
+				   master_dict['Rh']], user_input_dict, param_dict)
+
+	# Adding interactive buttons to the plotly plot
+	plotly_buttons(plot_dict)
+
+
 
 if args.log_output == True:
 	output_file_name = str(args.input_file[:len(args.input_file) - 5])

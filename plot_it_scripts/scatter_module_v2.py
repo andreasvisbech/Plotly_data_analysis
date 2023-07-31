@@ -569,6 +569,18 @@ def local_minimizer_3pl(pars, xs, ys):
 
     return resid
 
+def local_minimizer_gauss(pars, xs, ys):
+
+    params = pars.valuesdict()
+
+    amp = params['amp_1']
+    cen = params['cen_1']
+    wid = params['wid_1']
+
+    resid = ys - model_gaussian(xs, amp, cen, wid)
+
+    return resid
+
 def global_minimizer_fida1to1(params, xs, ys):
 
     resid_list = []
@@ -783,3 +795,7 @@ def model_4pl(x, bmin, bmax, kd, k_coop):
 def model_3pl(x, bmin, bmax, kd):
     y = bmin + (x * (bmax - bmin)) / (kd + x)
     return y
+
+def model_gaussian(x, amp, cen, wid):
+    x = x.astype(float)
+    return amp * np.exp(-(x-cen)**2 / wid)

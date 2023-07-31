@@ -929,6 +929,193 @@ def create_advanced_box(analysis_type):
 		e116.insert(10, "N/A")
 		e116.grid(row=12, column=10)
 
+	elif analysis_type == 'taylorgram':
+
+		def show_entry_fields():
+
+			print('Values have been registered')
+
+			param_dict['peak_analysis'] = str(var1.get())
+			param_dict['peak_fitting'] = str(var2.get())
+			param_dict['fit_report'] = str(var3.get())
+			param_dict['samples_for_smooth'] = str(e4.get())
+			param_dict['savgol_window'] = str(e5.get())
+			param_dict['savgol_pol'] = str(e6.get())
+			param_dict['time_unit'] = str(var7.get())
+			param_dict['cap_diameter'] = str(e8.get())
+			param_dict['visc'] = str(e9.get())
+			param_dict['pressure'] = str(e10.get())
+			param_dict['cap_length'] = str(e11.get())
+
+			param_dict['graph width'] = float(e100.get())
+			param_dict['Baseline graph width'] = float(e101.get())
+			param_dict['marker_size'] = float(e102.get())
+			param_dict['xaxis_title_font_size'] = float(e103.get())
+			param_dict['yaxis_title_font_size'] = float(e104.get())
+			param_dict['xaxis_ticks_font_size'] = float(e105.get())
+			param_dict['yaxis_ticks_font_size'] = float(e106.get())
+			param_dict['plot_template'] = str(var107.get())
+			param_dict['error_marker'] = str(var108.get())
+			param_dict['table_coloring'] = str(var109.get())
+			param_dict['color_palette'] = str(var110.get())
+			param_dict['plot_fig_width'] = str(e111.get())
+			param_dict['plot_fig_height'] = str(e112.get())
+			param_dict['plot_fig_xmin'] = str(e113.get())
+			param_dict['plot_fig_xmax'] = str(e114.get())
+			param_dict['plot_fig_ymin'] = str(e115.get())
+			param_dict['plot_fig_ymax'] = str(e116.get())
+
+		master = tk.Tk()
+
+		ttk.Label(master, text="Analyze peaks?").grid(row=1, column=1)
+		var1 = tk.StringVar(master)
+		var1.set('yes')
+		e1 = ttk.OptionMenu(master, var1, 'yes', 'yes', 'no')
+		e1.grid(row=1, column=2)
+
+		ttk.Label(master, text="Fit Gaussian to peaks?").grid(row=2, column=1)
+		var2 = tk.StringVar(master)
+		var2.set('no')
+		e2 = ttk.OptionMenu(master, var2, 'no', 'no', 'yes')
+		e2.grid(row=2, column=2)
+
+		ttk.Label(master, text="Show fit report?").grid(row=3, column=1)
+		var3 = tk.StringVar(master)
+		var3.set('no')
+		e3 = ttk.OptionMenu(master, var3, 'no', 'no', 'yes')
+		e3.grid(row=3, column=2)
+
+		ttk.Label(master, text="Samples for smoothing").grid(row=4, column=1)
+		e4 = ttk.Entry(master)
+		e4.insert(10, "N/A")
+		e4.grid(row=4, column=2)
+
+		ttk.Label(master, text="Savgol window").grid(row=5, column=1)
+		e5 = ttk.Entry(master)
+		e5.insert(10, "N/A")
+		e5.grid(row=5, column=2)
+
+		ttk.Label(master, text="Savgol polynomium").grid(row=6, column=1)
+		e6 = ttk.Entry(master)
+		e6.insert(10, "N/A")
+		e6.grid(row=6, column=2)
+
+		ttk.Label(master, text="Taylorgram time unit").grid(row=7, column=1)
+		var7 = tk.StringVar(master)
+		var7.set('min')
+		e7 = ttk.OptionMenu(master, var7, 'min', 'min', 'sec')
+		e7.grid(row=7, column=2)
+
+		ttk.Label(master, text="Capillary diameter (um)").grid(row=8, column=1)
+		e8 = ttk.Entry(master)
+		e8.insert(10, "75")
+		e8.grid(row=8, column=2)
+
+		ttk.Label(master, text="Viscocity (Pa*s)").grid(row=9, column=1)
+		e9 = ttk.Entry(master)
+		e9.insert(10, "0.000890")
+		e9.grid(row=9, column=2)
+
+		ttk.Label(master, text="Pressure during analysis (mbar)").grid(row=10, column=1)
+		e10 = ttk.Entry(master)
+		e10.insert(10, "400")
+		e10.grid(row=10, column=2)
+
+		ttk.Label(master, text="Capillary length (m)").grid(row=11, column=1)
+		e11 = ttk.Entry(master)
+		e11.insert(10, "1")
+		e11.grid(row=11, column=2)
+
+		ttk.Label(master, text="Graph width").grid(row=1, column=6)
+		e100 = ttk.Entry(master)
+		e100.insert(10, "2")
+		e100.grid(row=1, column=7)
+
+		ttk.Label(master, text="Baseline graph width").grid(row=2, column=6)
+		e101 = ttk.Entry(master)
+		e101.insert(10, "2")
+		e101.grid(row=2, column=7)
+
+		ttk.Label(master, text='Marker size').grid(row=3, column=6)
+		e102 = ttk.Entry(master)
+		e102.insert(10, "10")
+		e102.grid(row=3, column=7)
+
+		ttk.Label(master, text='X axis title font size').grid(row=4, column=6)
+		e103 = ttk.Entry(master)
+		e103.insert(10, "12")
+		e103.grid(row=4, column=7)
+
+		ttk.Label(master, text='Y axis title font size').grid(row=4, column=9)
+		e104 = ttk.Entry(master)
+		e104.insert(10, "12")
+		e104.grid(row=4, column=10)
+
+		ttk.Label(master, text='X axis tick font size').grid(row=5, column=6)
+		e105 = ttk.Entry(master)
+		e105.insert(10, "12")
+		e105.grid(row=5, column=7)
+
+		ttk.Label(master, text='Y axis tick font size').grid(row=5, column=9)
+		e106 = ttk.Entry(master)
+		e106.insert(10, "12")
+		e106.grid(row=5, column=10)
+
+		ttk.Label(master, text="Plotting theme [layout]").grid(row=6, column=6)
+		var107 = tk.StringVar(master)
+		var107.set('plotly')
+		e107 = ttk.OptionMenu(master, var107, 'simple_white', 'simple_white', 'plotly', 'plotly_white')
+		e107.grid(row=6, column=7)
+
+		ttk.Label(master, text="Error markers [layout]").grid(row=7, column=6)
+		var108 = tk.StringVar(master)
+		var108.set('Error bands')
+		e108 = ttk.OptionMenu(master, var108, 'Error bands', 'Error bands', 'Error bars')
+		e108.grid(row=7, column=7)
+
+		ttk.Label(master, text="Table coloring [layout]").grid(row=8, column=6)
+		var109 = tk.StringVar(master)
+		var109.set('yes')
+		e109 = ttk.OptionMenu(master, var109, 'yes', 'yes', 'no')
+		e109.grid(row=8, column=7)
+
+		ttk.Label(master, text="Coloring palette [layout]").grid(row=9, column=6)
+		var110 = tk.StringVar(master)
+		var110.set('Default (10 color)')
+		e110 = ttk.OptionMenu(master, var110, 'Default (10 color)', 'Default (10 color)', '15 color', '18 color',
+							  '4 color (color blind safe')
+		e110.grid(row=9, column=7)
+
+		ttk.Label(master, text="Plot figure width [layout]").grid(row=10, column=6)
+		e111 = ttk.Entry(master)
+		e111.insert(10, "N/A")
+		e111.grid(row=10, column=7)
+
+		ttk.Label(master, text="Plot figure height [layout]").grid(row=10, column=9)
+		e112 = ttk.Entry(master)
+		e112.insert(10, "N/A")
+		e112.grid(row=10, column=10)
+
+		ttk.Label(master, text="Plot figure x_min [layout]").grid(row=11, column=6)
+		e113 = ttk.Entry(master)
+		e113.insert(10, "N/A")
+		e113.grid(row=11, column=7)
+
+		ttk.Label(master, text="Plot figure x_max [layout]").grid(row=11, column=9)
+		e114 = ttk.Entry(master)
+		e114.insert(10, "N/A")
+		e114.grid(row=11, column=10)
+
+		ttk.Label(master, text="Plot figure y_min [layout]").grid(row=12, column=6)
+		e115 = ttk.Entry(master)
+		e115.insert(10, "N/A")
+		e115.grid(row=12, column=7)
+
+		ttk.Label(master, text="Plot figure y_max [layout]").grid(row=12, column=9)
+		e116 = ttk.Entry(master)
+		e116.insert(10, "N/A")
+		e116.grid(row=12, column=10)
+
 	else:
 		def show_entry_fields():
 			print('Values have been registered')
@@ -1253,6 +1440,11 @@ def default_param_dict():
 		'peak_analysis': 'yes',
 		'peak_fitting': 'no',
 		'fit_report': 'no',				# Show the reported values from the fit
-		'samples_for_smooth': 'N/A'
+		'samples_for_smooth': 'N/A',
+		'time_unit': 'min',
+		'cap_diameter': '75',
+		'visc': '0.000890',
+		'pressure': '400',
+		'cap_length': 1
 
 	}

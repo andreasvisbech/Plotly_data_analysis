@@ -242,8 +242,9 @@ def onset_detect(x_val, y_val, slope, intercept, detect_limit, baseline_cutoff):
 		data_obs = y_val_list[a]
 		data_calc = linear_model(x_val_list[a], slope, intercept)
 
-		# The onset is defined as as the point where the observed data deviates more and 0.5% from the linear baseline.
-		# It is further required that the x value is higher than the baseline cutoff to avoid predicting onsets on noise in the beginning of the dataset.
+		# The onset is defined as as the point where the observed data deviates more than 0.5%
+		# from the linear baseline. It is further required that the x value is higher than the baseline
+		# cutoff to avoid predicting onsets on noise in the beginning of the dataset.
 		if data_obs > data_calc * (1 + (detect_limit / 100)) and x_val_list[a] > baseline_cutoff:
 			onset_val = x_val_list[a]
 			onset_val = "{:.1f}".format(onset_val)
