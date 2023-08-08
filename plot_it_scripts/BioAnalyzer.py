@@ -1,6 +1,7 @@
 # import relevant modules
 from scipy.signal import find_peaks, peak_widths
 from lmfit import Model
+from lmfit.models import Pearson7Model
 
 # Import functions from other scripts
 from plot_it_scripts.akta_module import *

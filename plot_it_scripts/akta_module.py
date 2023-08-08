@@ -1,14 +1,11 @@
 # Import modules
-from sklearn.metrics import auc
 import peakutils
-from lmfit.models import GaussianModel, SkewedGaussianModel, ExponentialGaussianModel, LorentzianModel, \
-							SplitLorentzianModel, VoigtModel, PseudoVoigtModel, PowerLawModel, Pearson7Model
+from lmfit.models import GaussianModel, SkewedGaussianModel, ExponentialGaussianModel, LorentzianModel
 
 # Import functions from other scripts
-#from plot_it_scripts.plotting_script import *
+
 from plot_it_scripts.main_functions import *
 from plot_it_scripts.data_manipulation import *
-
 
 
 def akta_data_slice(x_id, y_id, sample_idx, xs, ys, user_input_dict):
@@ -138,7 +135,10 @@ def akta_main_func(df, xs, ys, sample_idx, x_id, y_id, param_dict, master_dict, 
 			xsys_baseline_slice = xsys_baseline[(xsys_baseline[x_id] >= fraction[0]) & (xsys_baseline[x_id] <= fraction[1])]
 
 			# The retention time/volume is defined as the x value where the y value hits max
-			Retention_frac = float(xsys_slice[x_id][xsys_slice[y_id] == max(xsys_slice[y_id])])
+			#retention_frac = float(xsys_slice[x_id][xsys_slice[y_id] == max(xsys_slice[y_id])])
+			retention_frac = xsys_slice[x_id][xsys_slice[y_id] == max(xsys_slice[y_id])]
+			retention_frac = retention_frac.to_numpy()[0]
+
 
 			# Calculate AUC for the specified fraction
 			AUC_frac = auc(xsys_slice[x_id], xsys_slice[y_id])
@@ -161,8 +161,9 @@ def akta_main_func(df, xs, ys, sample_idx, x_id, y_id, param_dict, master_dict, 
 			culture_yield = (frac_yield / volume_load[sample_idx] * 1000)
 
 			# Putting all the calculated values into master dict in a re-formatted way
-			Retention_frac = "{:.3f}".format(Retention_frac)
-			master_dict['fraction_retentions'].append(Retention_frac)
+			#Retention_frac = "{:.3f}".format(Retention_frac)
+			retention_frac = str(round(retention_frac, 2))
+			master_dict['fraction_retentions'].append(retention_frac)
 			AUC_frac = "{:.3f}".format(AUC_frac)
 			master_dict['fraction_areas'].append(AUC_frac)
 			AUC_frac_baseline = "{:.3f}".format(AUC_frac_baseline)

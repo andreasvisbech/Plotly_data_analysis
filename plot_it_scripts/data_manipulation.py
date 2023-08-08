@@ -70,6 +70,7 @@ def normalize_to_max(ys, idx, user_input_dict):
 
 	return ys
 
+
 def normalize_to_area(xs, ys, idx, user_input_dict):
 
 	# Make sure data is arrays
@@ -86,6 +87,7 @@ def normalize_to_area(xs, ys, idx, user_input_dict):
 		ys = ys / area
 
 	return ys
+
 
 def find_nearest(arr, value):
 
@@ -122,6 +124,7 @@ def normalize_to_x(xs, ys, idx, user_input_dict):
 			ys = ys-y_ref
 
 	return ys
+
 
 def data_slice(sample_idx, xs, ys, user_input_dict):
 
@@ -166,3 +169,4 @@ def data_smooth(sample_idx, ys, param_dict):
 		ys = savgol_filter(ys, sg_window, sg_pol)
 
 	return ys
+

@@ -450,22 +450,22 @@ elif analysis_type == 'bioanalyzer':
 
 		bioanalyzer_main(df, xs, ys, i, x_id, y_id, param_dict, master_dict, user_input_dict, plot_dict)
 
-		# Adding table to the interactive plot
-		table_plot(plot_dict, [
-			'Sample ID',
-			'Sample notes',
-			'Peak ID',
-			'% of total peak area',
-			'% of total sample area'],
-		    [
-				master_dict['ID_list_new'],
-				master_dict['notes_list'],
-				master_dict['peak_id'],
-				master_dict['fraction_calculation'],
-				master_dict['fraction_AUC_of_total']], user_input_dict, param_dict)
+	# Adding table to the interactive plot
+	table_plot(plot_dict, [
+		'Sample ID',
+		'Sample notes',
+		'Peak ID',
+		'% of total peak area',
+		'% of total sample area'],
+		[
+			master_dict['ID_list_new'],
+			master_dict['notes_list'],
+			master_dict['peak_id'],
+			master_dict['fraction_calculation'],
+			master_dict['fraction_AUC_of_total']], user_input_dict, param_dict)
 
-		# Adding interactive buttons to the plotly plot
-		plotly_buttons(plot_dict)
+	# Adding interactive buttons to the plotly plot
+	plotly_buttons(plot_dict)
 
 elif analysis_type == 'taylorgram':
 

@@ -38,6 +38,7 @@ def create_advanced_box(analysis_type):
 			param_dict['plot_fig_ymax'] = str(e116.get())
 			param_dict['2nd_yaxis_sync'] = str(var117.get())
 
+
 		master = tk.Tk()
 
 		ttk.Label(master, text="Baseline mode").grid(row=1, column=0)
