@@ -7,7 +7,7 @@ from sklearn.metrics import r2_score
 from plot_it_scripts.plotting_script import *
 from plot_it_scripts.main_functions import *
 
-def scatter_plot_without_fit(master_dict, sample_idx, user_input_dict, plot_dict, xs, ys, param_dict):
+def scatter_plot_without_fit(master_dict, sample_idx, user_input_dict, plot_dict, xs, ys, param_dict, unique_x):
 
     # Appending dummy values to the master dict to avoid mispairing of cells in the output table
     master_dict['ID_list_new'].append(user_input_dict['ID_list'][sample_idx])
@@ -47,12 +47,27 @@ def scatter_plot_without_fit(master_dict, sample_idx, user_input_dict, plot_dict
 
 
     else:
-        plot_func(
-            figure, graph_name, xs, ys, 'None', plot_marker, x_title, y_title, subplot_row, subplot_col, 'None',
-            sample_idx, param_dict, color_list, color_count, user_input_dict, master_dict)
-        plot_func(
-            plot_figure, graph_name, xs, ys, 'None', plot_marker, x_title, y_title, subplot_row, subplot_col, 'None',
-            sample_idx, param_dict, color_list, color_count, user_input_dict, master_dict)
+
+        if param_dict['data_visual'] == 'Mean w. std. dev.':
+
+            y_mean, std_dev = replicate_mean_error(unique_x, xs, ys)
+
+            plot_func(
+                figure, graph_name, unique_x, y_mean, std_dev, plot_marker, x_title, y_title, subplot_row,
+                subplot_col, 'Scatter_error', sample_idx, param_dict, color_list, color_count,
+                user_input_dict, master_dict)
+            plot_func(
+                plot_figure, graph_name, unique_x, y_mean, std_dev, plot_marker, x_title, y_title, subplot_row,
+                subplot_col, 'Scatter_error', sample_idx, param_dict, color_list, color_count,
+                user_input_dict, master_dict)
+
+        else:
+            plot_func(
+                figure, graph_name, xs, ys, 'None', plot_marker, x_title, y_title, subplot_row, subplot_col, 'None',
+                sample_idx, param_dict, color_list, color_count, user_input_dict, master_dict)
+            plot_func(
+                plot_figure, graph_name, xs, ys, 'None', plot_marker, x_title, y_title, subplot_row, subplot_col, 'None',
+                sample_idx, param_dict, color_list, color_count, user_input_dict, master_dict)
 
     # Add the appropriate color to the table coloring list
     table_color_list_manager(color_list[color_count], plot_dict['table_color_list'])
@@ -646,15 +661,17 @@ def global_minimizer_3pl(params, xs, ys):
 
     return np.array(resid_list)
 
-def fida_text2floats(x_id, y_id, df):
+def fida_text2floats(x_id, y_id, df, param_dict):
     func_list = []
 
+    unit = str(param_dict['conc_unit'])
+
     # Slice the dataframe to only include the rows that contain a concentration
-    data_slice = df[df[x_id].str.contains('nM]', na=False)]
+    data_slice = df[df[x_id].str.contains(unit+']', na=False)]
     xdata_list = data_slice[x_id].astype(str).str.replace(",", ".").tolist()
     ydata_list = pd.to_numeric(data_slice[y_id].astype(str).str.replace(",", ".")).tolist()
     for m in range(len(xdata_list)):
-        conc = xdata_list[m][xdata_list[m].index('[') + 1: xdata_list[m].index(' nM]')]
+        conc = xdata_list[m][xdata_list[m].index('[') + 1: xdata_list[m].index(' '+unit+']')]
         func_list.append(float(conc))
 
     return func_list, ydata_list

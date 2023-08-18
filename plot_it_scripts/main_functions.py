@@ -180,6 +180,7 @@ def define_master_dict():
 	master_dict['trace_stack_jump'] = 0
 	master_dict['Rh'] = []
 	master_dict['tR'] = []
+	master_dict['spike_count'] = []
 
 	return master_dict
 

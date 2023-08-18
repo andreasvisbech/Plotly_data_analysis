@@ -3,9 +3,10 @@ from scipy.interpolate import interp1d
 from scipy.signal import savgol_filter
 from lmfit import Model
 import peakutils
+from scipy.signal import find_peaks, peak_widths
 
-from plot_it_scripts.plotting_script import *
 from plot_it_scripts.scatter_module_v2 import *
+from plot_it_scripts.data_manipulation import *
 
 def taylor_main(df, master_dict, sample_idx, user_input_dict, plot_dict, xs, ys, param_dict):
 
@@ -92,6 +93,10 @@ def find_tR(xs, ys):
 
 def fit_gauss(xs, ys):
 
+    tR = find_tR(xs, ys)
+    #print(tR)
+    y_max = ys[xs==tR]
+
     gmodel = Model(gaussian)
 
     result = gmodel.fit(ys-3.35, x=xs, cen=0, amp=5, wid=0.5)
@@ -123,11 +128,24 @@ def fit_Rh(xs, ys, param_dict, master_dict):
     # Convert x values to appropriate time unit
     xs = xs*conv
 
-    # Reference tine
+    # Reference time
     tR = find_tR(xs, ys)
 
+    # Determine baseline
+    baseline = peakutils.baseline(ys, 1)
+
+    spike_counter(xs, ys, master_dict)
+
+    # Asign peaks using scipy and determine where the peak ends.
+    peak, _ = find_peaks(ys, width=50)
+    peak_width = peak_widths(ys, peak, rel_height=param_dict['peak_rel_height'])
+    peak_end = int(peak_width[3][0])
+
+    xs_new = xs[:peak_end]
+    ys_new = ys[:peak_end]
+
     model1 = Model(mod_gaussian)
-    result1 = model1.fit(ys, x=xs, base=0, cen=tR, amp=5, wid=0.5)
+    result1 = model1.fit(ys_new, x=xs_new, base=0, cen=tR, amp=5, wid=0.5)
 
     # Set sigma from the gaussian fit
     sigma = result1.params['wid'].value
@@ -137,7 +155,8 @@ def fit_Rh(xs, ys, param_dict, master_dict):
 
     k = ((mu**2)*(sigma**2))/(2*tR)
 
-    D = ((rc**2)*(mu**2))/(48*k)
+    #D = ((rc**2)*(mu**2))/(48*k)
+    D = ((rc**2)/(24*(sigma**2)))*tR
 
     kB = 1.380649*(10**(-23))
 
@@ -153,6 +172,19 @@ def fit_Rh(xs, ys, param_dict, master_dict):
     master_dict['Rh'].append(Rh)
 
     return xs_out, result1.best_fit
+
+def spike_counter(xs, ys, master_dict):
+
+    y_max = max(ys)
+    prom = y_max/200
+
+    # Determine spikes
+    spikes, _ = find_peaks(ys, prominence=prom)
+
+    # Count spikes and add to master_dict
+    spike_count = len(spikes)
+
+    master_dict['spike_count'] = spike_count
 
 def polydis_eval(xs, ys, tR):
 

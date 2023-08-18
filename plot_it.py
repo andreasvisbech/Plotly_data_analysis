@@ -235,6 +235,9 @@ elif analysis_type == 'fida':
 		ignore_id = 'ignore' + str(i+1)
 		graph_name = ID_list[i]
 
+		error_id = 'error' + str(i + 1)
+		plot_dict['error_id'] = error_id
+
 		# Updating the color counter to ensure the graphs are different colors.
 		plot_dict['color_count'] = color_selector(plot_dict, graph_name, used_graph_names)
 
@@ -244,12 +247,13 @@ elif analysis_type == 'fida':
 
 		# Extract concentration float values and float apparent Rh values from the text FIDA output
 		# Extract the values into lists and make into dataframe
-		xs, ys = fida_text2floats(x_id, y_id, df)
+		xs, ys = fida_text2floats(x_id, y_id, df, param_dict)
 		df_new = {x_id: xs, y_id: ys}
 		df_new = pd.DataFrame(df_new)
 
+
 		# Getting x values, y values and a non-redundant list of x values
-		xs, ys, unique_x = scatter_data_slice(df_new, i, x_id, y_id, user_input_dict)
+		xs, ys, unique_x = scatter_data_slice(df_new, i, x_id, y_id, user_input_dict, plot_dict)
 
 		# Check if the data should just be plotted or if user is trying to fit.
 		# This is checked by seing if user has inputed fitting interval and fitting model
@@ -257,7 +261,7 @@ elif analysis_type == 'fida':
 			scatter_plot_with_fit(i, user_input_dict, plot_dict, param_dict, master_dict, xs, ys, unique_x)
 
 		else:
-			scatter_plot_without_fit(master_dict, i, user_input_dict, plot_dict, xs, ys, param_dict)
+			scatter_plot_without_fit(master_dict, i, user_input_dict, plot_dict, xs, ys, param_dict, unique_x)
 
 	# Adding table to the interactive plot
 	table_plot(plot_dict,[
@@ -509,17 +513,21 @@ elif analysis_type == 'taylorgram':
 		'Sample ID',
 		'Sample notes',
 		'tR',
-		'Rh'],
+		'Rh',
+		'Spike count'],
 			   [
 				   master_dict['ID_list_new'],
 				   master_dict['notes_list'],
 				   master_dict['tR'],
-				   master_dict['Rh']], user_input_dict, param_dict)
+				   master_dict['Rh'],
+			   	   master_dict['spike_count']], user_input_dict, param_dict)
 
 	# Adding interactive buttons to the plotly plot
 	plotly_buttons(plot_dict)
 
+elif analysis_type == 'test':
 
+	from plot_it_scripts.test import *
 
 if args.log_output == True:
 	output_file_name = str(args.input_file[:len(args.input_file) - 5])

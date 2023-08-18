@@ -94,7 +94,7 @@ def akta_main_func(df, xs, ys, sample_idx, x_id, y_id, param_dict, master_dict, 
 	savgol_1st_deriv(xs, ys, sample_idx, param_dict, master_dict, user_input_dict, plot_dict)
 
 	# Check if the user has specified a peak. If this is the case minimum one ; must be placed
-	if str(df['AKTA_fraction'][sample_idx]).count(';') > 0:
+	if str(df['AKTA_fraction'][sample_idx]).count(';') > 0 and param_dict['peak_analysis'] == 'yes':
 
 		peak_count = 0
 
